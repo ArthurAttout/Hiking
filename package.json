@@ -9,6 +9,7 @@
   "dependencies": {
     "react": "16.2.0",
     "react-native": "0.53.0",
+    "react-native-cardview": "^1.1.5",
     "rn-textinputlayout": "^1.0.5"
   },
   "devDependencies": {
