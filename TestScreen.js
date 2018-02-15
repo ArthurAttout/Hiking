@@ -3,8 +3,7 @@ import { Alert,AppRegistry, Text, TextInput, View,StyleSheet,Button } from 'reac
 import {TextInputLayout} from 'rn-textinputlayout';
 
 
-export default class HomeScreen extends React.Component {
-
+export default class TestScreen extends React.Component {
     static navigationOptions = ({ navigation }) => ({
         title: `${navigation.state.params.title}`,
         headerTitleStyle : {textAlign: 'center',alignSelf:'center'},
@@ -12,16 +11,4 @@ export default class HomeScreen extends React.Component {
             backgroundColor:'white',
         },
     });
-
-    constructor(props) {
-        super(props);
-        this.props.navigation.setParams({ title: " Hello, " + this.props.navigation.state.params.username});
-    }
-
-    render() {
-        const { navigate } = this.props.navigation;
-        return (
-            <Text>Hello</Text>
-        );
-    }
 }
