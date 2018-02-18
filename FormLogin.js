@@ -18,11 +18,7 @@ export default class FormLogin extends React.Component {
     const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
-        <CardView
-            cardElevation={2}
-            cardMaxElevation={2}
-            cornerRadius={5}
-            style={styles.cardView}>
+
             <TextInputLayout
                 style={styles.inputLayout}
                 focusColor='#000000'>
@@ -47,7 +43,7 @@ export default class FormLogin extends React.Component {
               onPress={this._onPressButton}
               title="Login"
             />
-        </CardView>
+        
       </View>
     );
   }
@@ -89,3 +85,5 @@ const styles = StyleSheet.create({
         padding: 150
     }
 });
+
+AppRegistry.registerComponent('TestReact', () => FormLogin);
