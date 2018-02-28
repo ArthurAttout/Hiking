@@ -2,6 +2,12 @@ import React, { Component } from 'react';
 import { Alert,AppRegistry, Text, TextInput, View,StyleSheet,Button } from 'react-native';
 import {TextInputLayout} from 'rn-textinputlayout';
 import CardView from 'react-native-cardview';
+import {registerKilledListener, registerAppListener} from "./Listeners";
+import FCM from "react-native-fcm";
+
+
+registerKilledListener();
+registerAppListener();
 
 export default class FormLogin extends React.Component {
   static navigationOptions = {
@@ -12,6 +18,7 @@ export default class FormLogin extends React.Component {
     super(props);
     this._onPressButton = this._onPressButton.bind(this);
     this.state = {username:'', password: ''};
+    FCM.subscribeToTopic('gameStart');
   }
 
   render() {
@@ -52,9 +59,10 @@ export default class FormLogin extends React.Component {
     );
   }
 
-  _onPressButton() {
-    const { navigate } = this.props.navigation;
-    navigate('HomeScreen',this.state);
+
+    _onPressButton() {
+        const { navigate } = this.props.navigation;
+        navigate('HomeScreen',this.state);
   }
 }
 const styles = StyleSheet.create({
@@ -91,3 +99,4 @@ const styles = StyleSheet.create({
 });
 
 AppRegistry.registerComponent('Hiking', () => FormLogin);
+

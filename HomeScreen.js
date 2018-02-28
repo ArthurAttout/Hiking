@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Alert,AppRegistry, Text, TextInput, View,StyleSheet,Button } from 'react-native';
 import {TextInputLayout} from 'rn-textinputlayout';
 
-
 export default class HomeScreen extends React.Component {
 
     static navigationOptions = ({ navigation }) => ({

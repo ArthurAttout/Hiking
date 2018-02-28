@@ -1,14 +1,25 @@
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ * @flow
+ */
+
 import React, { Component } from 'react';
-import { Alert,AppRegistry, Text, TextInput, View,StyleSheet,Button } from 'react-native';
-import {TextInputLayout} from 'rn-textinputlayout';
+import {
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    Clipboard,
+    Platform
+} from 'react-native';
 
+import FCM from "react-native-fcm";
 
-export default class TestScreen extends React.Component {
-    static navigationOptions = ({ navigation }) => ({
-        title: `${navigation.state.params.title}`,
-        headerTitleStyle : {textAlign: 'center',alignSelf:'center'},
-        headerStyle:{
-            backgroundColor:'white',
-        },
-    });
-}
+import {registerKilledListener, registerAppListener} from "./Listeners";
+import firebaseClient from  "./FirebaseClient";
+
+registerKilledListener();
+
+export default class App extends Component {
+};

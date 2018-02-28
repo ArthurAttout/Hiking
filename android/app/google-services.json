@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "833966078798",
+    "firebase_url": "https://hikong-cbe53.firebaseio.com",
+    "project_id": "hikong-cbe53",
+    "storage_bucket": "hikong-cbe53.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:833966078798:android:3ef3ce3220b7b11c",
+        "android_client_info": {
+          "package_name": "com.hiking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "833966078798-q422804knccc05k2l73rrrtc7744ipji.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRcMNaLBj3_J1Wk9AyBnxmZXZMmS9f4jg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
