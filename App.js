@@ -7,8 +7,8 @@ import CreateGameScreen from './CreateGameScreen'
 import {StackNavigator} from 'react-navigation';
 
 export default App = StackNavigator({
+    CreateGameScreen: {screen: CreateGameScreen},
     FormLogin: {screen: FormLogin},
     HomeScreen: { screen: HomeScreen},
-    TestScreen: {screen: TestScreen},
-    CreateGameScreen: {screen: CreateGameScreen}
+    TestScreen: {screen: TestScreen}
 });

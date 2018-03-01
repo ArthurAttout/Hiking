@@ -143,6 +143,7 @@ dependencies {
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
     compile project(':react-native-fcm')
+    compile project(':react-native-vector-icons')
     compile 'com.google.firebase:firebase-core:10.0.1' //this decides your firebase SDK version
 }
 
@@ -153,3 +154,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
     into 'libs'
 }
 apply plugin: 'com.google.gms.google-services'
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
