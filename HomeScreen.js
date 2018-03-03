@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AppRegistry, Text, View, StyleSheet, TouchableNativeFeedback } from 'react-native';
+import { AppRegistry, Text, View, StyleSheet, TouchableNativeFeedback, StatusBar } from 'react-native';
 import CardView from 'react-native-cardview';
 import { registerKilledListener, registerAppListener } from "./Listeners";
 import FCM from "react-native-fcm";
@@ -11,7 +11,7 @@ registerAppListener();
 
 export default class HomeScreen extends React.Component {
     static navigationOptions = {
-        title: 'Welcome',
+        header: null
     };
 
     constructor(props) {
@@ -24,16 +24,16 @@ export default class HomeScreen extends React.Component {
         const { navigate } = this.props.navigation;
         return (
             <View style={styles.container}>
+                <StatusBar
+                    backgroundColor="#558b2f"
+                    barStyle="light-content"
+                />
                 <SvgUri
-                    width="300"
-                    height="300"
+                    width="350"
+                    height="350"
                     source={require('./assets/images/logo.svg')}
                 />
-                <CardView
-                    cardElevation={2}
-                    cardMaxElevation={2}
-                    cornerRadius={5}
-                    style={styles.cardView}>
+                <View style={styles.cardView}>
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('white')}
                         style={styles.button}
@@ -50,7 +50,7 @@ export default class HomeScreen extends React.Component {
                             <Text style={styles.buttonText}>NEW GAME</Text>
                         </View>
                     </TouchableNativeFeedback>
-                </CardView>
+                </View>
             </View>
         );
     }
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#266184'
+        backgroundColor: '#ffffff'
     },
     cardView: {
         width: '80%',
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     button: {
-        width: '60%',
+        width: '70%',
         alignItems: 'center',
         backgroundColor: '#558b2f',
         margin: 20,
@@ -91,7 +91,8 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontWeight: 'bold',
-        margin: 10,
+        fontSize: 17,
+        margin: 15,
     },
     separator: {
         backgroundColor: '#558b2f',
