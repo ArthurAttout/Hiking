@@ -31,7 +31,7 @@ export default class HomeScreen extends React.Component {
                 <Image
                     style={{height: '50%', resizeMode: 'contain'}}
                     source={require('./assets/images/logo_512.png')}/>
-                <View style={styles.cardView}>
+                <View style={styles.codesView}>
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('white')}
                         style={styles.button}
@@ -49,6 +49,9 @@ export default class HomeScreen extends React.Component {
                         </View>
                     </TouchableNativeFeedback>
                 </View>
+                <View style={styles.copyrightView}>
+                    <Text style={styles.copyrightText}>COPYRIGHT AtBoLo Team 2018</Text>
+                </View>
             </View>
         );
     }
@@ -65,7 +68,6 @@ export default class HomeScreen extends React.Component {
     }
 }
 const styles = StyleSheet.create({
-
     container: {
         flex: 1,
         flexDirection: 'column',
@@ -73,7 +75,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#ffffff'
     },
-    cardView: {
+    codesView: {
         width: '80%',
         height: 200,
         backgroundColor: '#ffffff',
@@ -89,6 +91,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontWeight: 'bold',
+        color: '#000000',
         fontSize: 17,
         margin: 15,
     },
@@ -96,7 +99,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#558b2f',
         height: 5,
         width: '90%',
-    }
+    },
+    copyrightView: {
+        position: 'absolute',
+        bottom:10,
+    },
+    copyrightText: {
+        color: '#a4a4a4',
+    },
 });
 
 AppRegistry.registerComponent('Hiking', () => HomeScreen);
