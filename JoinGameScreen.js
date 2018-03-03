@@ -6,7 +6,7 @@ import {
 import { registerKilledListener, registerAppListener } from "./Listeners";
 import FCM from "react-native-fcm";
 import { TextInputLayout } from "rn-textinputlayout";
-import GameNotStartedScreen from "./GameNotStartedScreen";
+import TeamSelectionScreen from "./TeamSelectionScreen";
 
 registerKilledListener();
 registerAppListener();
@@ -74,7 +74,7 @@ export default class JoinGameScreen extends React.Component {
     _onPressNext() {
         // TODO check if game ready (NB: should be done in background for player on the GameNotStarted screen)
         const { navigate } = this.props.navigation;
-        navigate('GameNotStartedScreen');
+        navigate('TeamSelectionScreen');
     }
 
 }

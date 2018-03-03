@@ -7,11 +7,13 @@ import CreateGameScreen from './CreateGameScreen'
 import JoinGameScreen from './JoinGameScreen'
 import {StackNavigator} from 'react-navigation';
 import GameNotStartedScreen from "./GameNotStartedScreen";
+import TeamSelectionScreen from "./TeamSelectionScreen";
 
 export default App = StackNavigator({
     HomeScreen: {screen: HomeScreen},
     CreateGameScreen: {screen: CreateGameScreen},
     JoinGameScreen: {screen: JoinGameScreen},
+    TeamSelectionScreen: {screen: TeamSelectionScreen},
     GameNotStartedScreen: {screen: GameNotStartedScreen},
     FormLogin: {screen: FormLogin},
     HelloScreen: { screen: HelloScreen},

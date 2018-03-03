@@ -21,7 +21,7 @@ export default class GameNotStartedScreen extends React.Component {
         super(props);
         // TODO replace with redux
         this.state = {
-            isGameReady: true,
+            isGameReady: false,
             gameCode: 'XEJ6',
             playerName: 'Cybo12',
             teamName: 'AtBoLo'
