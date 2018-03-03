@@ -62,7 +62,7 @@ export default class FormLogin extends React.Component {
 
     _onPressButton() {
         const { navigate } = this.props.navigation;
-        navigate('HomeScreen',this.state);
+        navigate('HelloScreen',this.state);
   }
 }
 const styles = StyleSheet.create({
