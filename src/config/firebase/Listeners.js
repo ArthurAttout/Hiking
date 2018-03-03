@@ -4,7 +4,7 @@ import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, 
 
 AsyncStorage.getItem('lastNotification').then(data=>{
     if(data){
-        // if notification arrives when app is killed, it should still be logged here
+        // if notification arrives when src is killed, it should still be logged here
         console.log('last notification', JSON.parse(data));
         AsyncStorage.removeItem('lastNotification');
     }
@@ -12,14 +12,14 @@ AsyncStorage.getItem('lastNotification').then(data=>{
 
 AsyncStorage.getItem('lastMessage').then(data=>{
     if(data){
-        // if notification arrives when app is killed, it should still be logged here
+        // if notification arrives when src is killed, it should still be logged here
         console.log('last message', JSON.parse(data));
         AsyncStorage.removeItem('lastMessage');
     }
 })
 
 export function registerKilledListener(){
-    // these callback will be triggered even when app is killed
+    // these callback will be triggered even when src is killed
     FCM.on(FCMEvent.Notification, notif => {
         AsyncStorage.setItem('lastNotification', JSON.stringify(notif));
         if(notif.opened_from_tray){
@@ -40,7 +40,7 @@ export function registerKilledListener(){
     });
 }
 
-// these callback will be triggered only when app is foreground or background
+// these callback will be triggered only when src is foreground or background
 export function registerAppListener(){
     FCM.on(FCMEvent.Notification, notif => {
         console.log("Notification", notif);

@@ -4,7 +4,7 @@ import {View, Text, FlatList, StyleSheet, Button, TouchableOpacity, TouchableNat
 import { List, ListItem, SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import {getGameModes} from "./FakeServer";
+import {getGameModes} from "../config/FakeServer";
 
 export default class CreateGameScreen extends Component {
 

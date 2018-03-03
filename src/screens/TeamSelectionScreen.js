@@ -3,11 +3,11 @@ import {
     Alert, AppRegistry, Text, View, StyleSheet, TouchableNativeFeedback,
     FlatList
 } from 'react-native';
-import { registerKilledListener, registerAppListener } from "./Listeners";
+import { registerKilledListener, registerAppListener } from "../config/firebase/Listeners";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FCM from "react-native-fcm";
 
-import {getGameTeams} from "./FakeServer";
+import {getGameTeams} from "../config/FakeServer";
 
 registerKilledListener();
 registerAppListener();

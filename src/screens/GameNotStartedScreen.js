@@ -1,12 +1,7 @@
-import React, { Component } from 'react';
-import {
-    AppRegistry, Text, TextInput, View, StyleSheet, Button, TouchableNativeFeedback,
-    StatusBar, Image
-} from 'react-native';
-import CardView from 'react-native-cardview';
-import { registerKilledListener, registerAppListener } from "./Listeners";
+import React from 'react';
+import { AppRegistry, Text, View, StyleSheet, StatusBar, Image } from 'react-native';
+import { registerKilledListener, registerAppListener } from "../config/firebase/Listeners";
 import FCM from "react-native-fcm";
-import { TextInputLayout } from "rn-textinputlayout";
 
 registerKilledListener();
 registerAppListener();
@@ -43,7 +38,7 @@ export default class GameNotStartedScreen extends React.Component {
                     </View>
                     <Image
                         style={styles.image}
-                        source={require('./assets/images/logo_512.png')}/>
+                        source={require('../images/logo_512.png')}/>
                 </View>
                 <View style={styles.codesView}>
                     <View style={styles.codesPrompts}>

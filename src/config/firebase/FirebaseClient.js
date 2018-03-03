@@ -6,7 +6,7 @@ class FirebaseClient {
 
     async send(body, type) {
         if(FirebaseClient.KEY === 'YOUR_API_KEY'){
-            Alert.alert('Set your API_KEY in app/FirebaseConstants.js')
+            Alert.alert('Set your API_KEY in src/FirebaseConstants.js')
             return;
         }
         let headers = new Headers({

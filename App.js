@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
-import HelloScreen from './HelloScreen'
-import HomeScreen from './HomeScreen'
-import TestScreen from './TestScreen'
-import FormLogin from './FormLogin'
-import CreateGameScreen from './CreateGameScreen'
-import JoinGameScreen from './JoinGameScreen'
 import {StackNavigator} from 'react-navigation';
-import GameNotStartedScreen from "./GameNotStartedScreen";
-import TeamSelectionScreen from "./TeamSelectionScreen";
+import HelloScreen from './src/screens/HelloScreen'
+import HomeScreen from './src/screens/HomeScreen'
+import FormLogin from './src/screens/FormLogin'
+import CreateGameScreen from './src/screens/CreateGameScreen'
+import JoinGameScreen from './src/screens/JoinGameScreen'
+import GameNotStartedScreen from "./src/screens/GameNotStartedScreen";
+import TeamSelectionScreen from "./src/screens/TeamSelectionScreen";
 
 export default App = StackNavigator({
     HomeScreen: {screen: HomeScreen},
@@ -17,5 +16,4 @@ export default App = StackNavigator({
     GameNotStartedScreen: {screen: GameNotStartedScreen},
     FormLogin: {screen: FormLogin},
     HelloScreen: { screen: HelloScreen},
-    TestScreen: {screen: TestScreen}
 });

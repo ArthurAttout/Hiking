@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {
     AppRegistry, Text, TextInput, View, StyleSheet, TouchableNativeFeedback,
     StatusBar, Image
 } from 'react-native';
-import { registerKilledListener, registerAppListener } from "./Listeners";
+import { registerKilledListener, registerAppListener } from "../config/firebase/Listeners";
 import FCM from "react-native-fcm";
 import { TextInputLayout } from "rn-textinputlayout";
 import TeamSelectionScreen from "./TeamSelectionScreen";
@@ -39,7 +39,7 @@ export default class JoinGameScreen extends React.Component {
                 />
                 <Image
                     style={styles.image}
-                    source={require('./assets/images/logo_512.png')}/>
+                    source={require('../images/logo_512.png')}/>
                 <View style={styles.codesView}>
                     <TextInputLayout
                         style={styles.inputLayout}
