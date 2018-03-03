@@ -95,8 +95,8 @@ const styles = StyleSheet.create({
     },
     iconStyle:{
         backgroundColor:'transparent',
-        fontFamily: 'Feather',
-        fontSize: 15,
+        //fontFamily: 'Feather',
+        //fontSize: 15,
         flexGrow: 1,
         justifyContent:'center',
         alignItems: 'center'
