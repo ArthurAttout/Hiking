@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AppRegistry, Text, View, StyleSheet, TouchableNativeFeedback, StatusBar } from 'react-native';
+import { AppRegistry, Text, View, StyleSheet, TouchableNativeFeedback, StatusBar, Image } from 'react-native';
 import CardView from 'react-native-cardview';
 import { registerKilledListener, registerAppListener } from "./Listeners";
 import FCM from "react-native-fcm";
@@ -28,11 +28,9 @@ export default class HomeScreen extends React.Component {
                     backgroundColor="#558b2f"
                     barStyle="light-content"
                 />
-                <SvgUri
-                    width="350"
-                    height="350"
-                    source={require('./assets/images/logo.svg')}
-                />
+                <Image
+                    style={{height: '50%', resizeMode: 'contain'}}
+                    source={require('./assets/images/logo_512.png')}/>
                 <View style={styles.cardView}>
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('white')}
