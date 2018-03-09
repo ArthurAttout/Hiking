@@ -6,6 +6,7 @@ import FCM from "react-native-fcm";
 registerKilledListener();
 registerAppListener();
 
+
 export default class HomeScreen extends React.Component {
     static navigationOptions = {
         header: null

@@ -1,62 +1,83 @@
+'use strict';
+
 import React, { Component } from 'react';
 import CardView from 'react-native-cardview';
-import {View, Text, FlatList, StyleSheet, Button, TouchableOpacity, TouchableNativeFeedback} from "react-native";
+import {View, Text, FlatList, StyleSheet, Alert, TouchableOpacity, TouchableNativeFeedback} from "react-native";
 import { List, ListItem, SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {bindActionCreators} from 'redux';
+import { connect } from 'react-redux';
+import * as Actions from '../actions/actionsCreateGame'; //Import your actions
 
-import {getGameModes} from "../config/FakeServer";
+class CreateGameScreen extends Component {
 
-export default class CreateGameScreen extends Component {
+    constructor(props) {
+        super(props);
 
-    constructor() {
-        super();
         this.state = {
-            data : getGameModes()
-        }
+
+        };
     }
 
     render() {
         return (
             <View style={styles.container}>
-                    <FlatList
-                        data={this.state.data}
-                        style={styles.flatList}
-                        keyExtractor={item => item.title}
-                        renderItem={({ item }) => (
-                        <View
-                            style={styles.buttonViewStyle}>
-                            <TouchableNativeFeedback
-                                background={TouchableNativeFeedback.Ripple('grey')}
-                                delayPressIn={0}>
-                                <View style={styles.nativeFeedbackStyle}>
-                                    <Text style={styles.textStyleMode}>
-                                        {item.title}
-                                    </Text>
-                                    <Icon.Button name="info-circle"
-                                         color="#000000"
-                                         backgroundColor='transparent'
-                                         style={styles.iconStyle}/>
-                                </View>
-                            </TouchableNativeFeedback>
-                        </View>
-
-                        )}
-                    />
+                <FlatList
+                    data={this.props.gameModes}
+                    style={styles.flatList}
+                    keyExtractor={item => item.title}
+                    renderItem={({ item }) => (
+                    <View
+                        style={styles.buttonViewStyle}>
+                        <TouchableNativeFeedback
+                            background={TouchableNativeFeedback.Ripple('grey')}
+                            delayPressIn={0}>
+                            <View style={styles.nativeFeedbackStyle}>
+                                <Text style={styles.textStyleMode}>
+                                    {item.title}
+                                </Text>
+                                <Icon.Button name="info-circle"
+                                 color="#000000"
+                                 backgroundColor='transparent'
+                                 style={styles.iconStyle}
+                                 onPress={() => {
+                                     Alert.alert(item.title,item.info);
+                                 }}/>
+                            </View>
+                        </TouchableNativeFeedback>
+                    </View>
+                    )}/>
             </View>
         );
     }
 
-    _onValidate() {
-
+    componentDidMount() {
+        this.props.getGameModes(); //call our action
     }
-};
+}
 
+function mapStateToProps(state, props) {
+    return {
+        loading: state.gameModesReducer.loading,
+        gameModes: state.gameModesReducer.data
+    }
+}
+
+// Doing this merges our actions into the component’s props,
+// while wrapping them in dispatch() so that they immediately dispatch an Action.
+// Just by doing this, we will have access to the actions defined in out actions file (action/home.js)
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators(Actions, dispatch);
+}
+
+//Connect everything
+export default connect(mapStateToProps, mapDispatchToProps)(CreateGameScreen);
 
 const styles = StyleSheet.create({
 
     container: {
         flex:1,
-        backgroundColor: '#266184'
+        backgroundColor: '#FFFFFF'
     },
     buttonViewStyle:{
         flex: 1,
