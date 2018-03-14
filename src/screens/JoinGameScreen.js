@@ -26,7 +26,6 @@ export default class JoinGameScreen extends React.Component {
             playerName: ''
         };
         this._onPressNext = this._onPressNext.bind(this);
-        FCM.subscribeToTopic('gameStart');
     }
 
     render() {

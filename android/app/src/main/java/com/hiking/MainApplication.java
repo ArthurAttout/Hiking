@@ -3,6 +3,7 @@ package com.hiking;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.github.xinthink.rnmk.ReactMaterialKitPackage;
 import com.horcrux.svg.SvgPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.kishanjvaghela.cardview.RNCardViewPackage;
@@ -27,6 +28,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ReactMaterialKitPackage(),
             new SvgPackage(),
             new VectorIconsPackage(),
             new FIRMessagingPackage(),

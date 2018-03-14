@@ -53,6 +53,7 @@
 		772275210B4D44D6A0A39964 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 115D4DB79D284503AFF9BBB1 /* Zocial.ttf */; };
 		5985334763BC4F8A855EA2B2 /* libRNSVG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5691CC79BA9C4FE9B5320830 /* libRNSVG.a */; };
 		AE1578E122234F8CA61BEDFE /* libRNSVG-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 008801622EB547A69A1C1F6A /* libRNSVG-tvOS.a */; };
+		74A3E309853845029A5A196A /* libRCTMaterialKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D357573AD3D4246BE162F68 /* libRCTMaterialKit.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -324,6 +325,8 @@
 		72FCA4F33D3E47FDA057D662 /* RNSVG.xcodeproj */ = {isa = PBXFileReference; name = "RNSVG.xcodeproj"; path = "../node_modules/react-native-svg/ios/RNSVG.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		5691CC79BA9C4FE9B5320830 /* libRNSVG.a */ = {isa = PBXFileReference; name = "libRNSVG.a"; path = "libRNSVG.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		008801622EB547A69A1C1F6A /* libRNSVG-tvOS.a */ = {isa = PBXFileReference; name = "libRNSVG-tvOS.a"; path = "libRNSVG-tvOS.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		7B3B051D423D4A21B911B7B6 /* RCTMaterialKit.xcodeproj */ = {isa = PBXFileReference; name = "RCTMaterialKit.xcodeproj"; path = "../node_modules/react-native-material-kit/iOS/RCTMaterialKit.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		4D357573AD3D4246BE162F68 /* libRCTMaterialKit.a */ = {isa = PBXFileReference; name = "libRCTMaterialKit.a"; path = "libRCTMaterialKit.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -358,6 +361,7 @@
 				FB5B4A528E4E463DBB791351 /* libRNVectorIcons.a in Frameworks */,
 				5985334763BC4F8A855EA2B2 /* libRNSVG.a in Frameworks */,
 				AE1578E122234F8CA61BEDFE /* libRNSVG-tvOS.a in Frameworks */,
+				74A3E309853845029A5A196A /* libRCTMaterialKit.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -540,6 +544,7 @@
 				88166A3F54334CBA82906DF7 /* RNFIRMessaging.xcodeproj */,
 				27385830FCB845F6803A9308 /* RNVectorIcons.xcodeproj */,
 				72FCA4F33D3E47FDA057D662 /* RNSVG.xcodeproj */,
+				7B3B051D423D4A21B911B7B6 /* RCTMaterialKit.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1147,6 +1152,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1155,6 +1161,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-fcm\ios",
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
 				);
 			};
 			name = Debug;
@@ -1181,6 +1188,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1189,6 +1197,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-fcm\ios",
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
 				);
 			};
 			name = Release;
@@ -1215,6 +1224,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-fcm\ios",
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
 				);
 			};
 			name = Debug;
@@ -1240,6 +1250,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-fcm\ios",
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
 				);
 			};
 			name = Release;
@@ -1275,6 +1286,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1283,6 +1295,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-fcm\ios",
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
 				);
 			};
 			name = Debug;
@@ -1318,6 +1331,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1326,6 +1340,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-fcm\ios",
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
 				);
 			};
 			name = Release;
@@ -1356,6 +1371,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 			};
 			name = Debug;
@@ -1380,6 +1396,7 @@
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",

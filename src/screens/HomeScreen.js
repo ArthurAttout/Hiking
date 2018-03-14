@@ -16,11 +16,9 @@ export default class HomeScreen extends React.Component {
         super(props);
         this._onPressJoinGame = this._onPressJoinGame.bind(this);
         this._onPressNewGame = this._onPressNewGame.bind(this);
-        FCM.subscribeToTopic('gameStart');
     }
 
     render() {
-        const { navigate } = this.props.navigation;
         return (
             <View style={styles.container}>
                 <StatusBar
@@ -33,6 +31,7 @@ export default class HomeScreen extends React.Component {
                 <View style={styles.codesView}>
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('white')}
+                        delayPressIn={0}
                         style={styles.button}
                         onPress={this._onPressJoinGame}>
                         <View style={styles.button}>
@@ -42,6 +41,7 @@ export default class HomeScreen extends React.Component {
                     <View style={styles.separator}/>
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('white')}
+                        delayPressIn={0}
                         onPress={this._onPressNewGame}>
                         <View style={styles.button}>
                             <Text style={styles.buttonText}>NEW GAME</Text>
@@ -55,7 +55,6 @@ export default class HomeScreen extends React.Component {
         );
     }
 
-
     _onPressJoinGame() {
         const { navigate } = this.props.navigation;
         navigate('JoinGameScreen');
@@ -63,7 +62,7 @@ export default class HomeScreen extends React.Component {
 
     _onPressNewGame() {
         const { navigate } = this.props.navigation;
-        navigate('CreateGameScreen');
+        navigate('ChooseModeScreen');
     }
 }
 const styles = StyleSheet.create({
