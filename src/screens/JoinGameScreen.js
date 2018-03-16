@@ -7,6 +7,7 @@ import { registerKilledListener, registerAppListener } from "../config/firebase/
 import FCM from "react-native-fcm";
 import { TextInputLayout } from "rn-textinputlayout";
 import TeamSelectionScreen from "./TeamSelectionScreen";
+import {COLORS} from '../utils/constants'
 
 registerKilledListener();
 registerAppListener();
@@ -42,7 +43,7 @@ export default class JoinGameScreen extends React.Component {
                 <View style={styles.codesView}>
                     <TextInputLayout
                         style={styles.inputLayout}
-                        focusColor='#000000'>
+                        focusColor={COLORS.Primary}>
                         <TextInput
                             style={styles.textInput}
                             placeholder={'Game code'}
@@ -106,7 +107,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontWeight: 'bold',
-        color: '#000000',
+        color: '#ffffff',
         fontSize: 17,
         margin: 15,
     },

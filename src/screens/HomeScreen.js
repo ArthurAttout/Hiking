@@ -2,6 +2,7 @@ import React from 'react';
 import { AppRegistry, Text, View, StyleSheet, TouchableNativeFeedback, StatusBar, Image } from 'react-native';
 import { registerKilledListener, registerAppListener } from "../config/firebase/Listeners";
 import FCM from "react-native-fcm";
+import {COLORS} from '../utils/constants'
 
 registerKilledListener();
 registerAppListener();
@@ -83,18 +84,18 @@ const styles = StyleSheet.create({
     button: {
         width: '70%',
         alignItems: 'center',
-        backgroundColor: '#558b2f',
+        backgroundColor: COLORS.Secondary,
         margin: 20,
         borderRadius: 10,
     },
     buttonText: {
         fontWeight: 'bold',
-        color: '#000000',
+        color: '#ffffff',
         fontSize: 17,
         margin: 15,
     },
     separator: {
-        backgroundColor: '#558b2f',
+        backgroundColor: COLORS.Secondary,
         height: 5,
         width: '90%',
     },

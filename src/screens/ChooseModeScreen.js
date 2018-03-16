@@ -9,10 +9,11 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {bindActionCreators} from 'redux';
 import { connect } from 'react-redux';
-import {getGameModes} from '../actions/actionsCreateGame'; //Import your actions
+import {getGameModes} from '../actions/actionsChooseMode'; //Import your actions
+import {COLORS} from '../utils/constants'
 
 
-class ChooseModeScreen extends React.Component {
+class Screen extends React.Component {
 
     constructor(props) {
         super(props);
@@ -48,7 +49,7 @@ class ChooseModeScreen extends React.Component {
                                             {item.title}
                                         </Text>
                                         <Icon.Button name="info-circle"
-                                             color="#000000"
+                                             color="#ffffff"
                                              backgroundColor='transparent'
                                              onPress={this._onClickInfo.bind(null,item)}
                                              style={styles.iconStyle}
@@ -65,11 +66,11 @@ class ChooseModeScreen extends React.Component {
 
     _onClickGame(itemClicked){
         const { navigate } = this.props.navigation;
-        navigate('CreateGameSettingsScreen');
+        navigate('CreateGameSettingsScreen',{chosenMode:itemClicked});
     }
 
     _onClickInfo(itemClicked){
-        alert(itemClicked.info);
+        Alert.alert("Rules",itemClicked.info);
     }
 
 
@@ -94,8 +95,8 @@ function mapDispatchToProps(dispatch,own) {
 }
 
 //Connect everything
-const Screen = connect(mapStateToProps, mapDispatchToProps)(ChooseModeScreen);
-export default Screen;
+const ChooseModeScreen = connect(mapStateToProps, mapDispatchToProps)(Screen);
+export default ChooseModeScreen;
 
 const styles = StyleSheet.create({
 
@@ -131,10 +132,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         height: 70,
-        backgroundColor:'#558b2f',
+        backgroundColor : COLORS.Secondary,
         borderRadius:4
     },
     textStyleMode:{
+        color:"#ffffff",
         textAlignVertical:'center',
         fontSize:18,
         marginLeft: 50,

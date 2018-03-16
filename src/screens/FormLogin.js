@@ -32,6 +32,7 @@ export default class FormLogin extends React.Component {
             style={styles.cardView}>
             <TextInputLayout
                 style={styles.inputLayout}
+                hintColor='#000000'
                 focusColor='#000000'>
                 <TextInput
                     style={styles.textInput}

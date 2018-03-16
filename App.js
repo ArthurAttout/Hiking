@@ -4,12 +4,12 @@ import HelloScreen from './src/screens/HelloScreen'
 import HomeScreen from './src/screens/HomeScreen'
 import store from './src/config/store'; //Import the store
 import { Provider } from 'react-redux';
-import Screen from './src/screens/ChooseModeScreen'
+import ChooseModeScreen from './src/screens/ChooseModeScreen'
 import JoinGameScreen from './src/screens/JoinGameScreen'
 import GameNotStartedScreen from "./src/screens/GameNotStartedScreen";
 import TeamSelectionScreen from "./src/screens/TeamSelectionScreen";
 import CreateGameSettingsScreen from "./src/screens/CreateGameSettingsScreen";
-
+import CreateGameMapBeacon from "./src/screens/CreateGameMapBeacon";
 
 const mapNavigationStateParamsToProps = (SomeComponent) => {
     return class extends Component {
@@ -28,12 +28,15 @@ const mapNavigationStateParamsToProps = (SomeComponent) => {
 const RootStack = StackNavigator(
     {
         HomeScreen: {screen: mapNavigationStateParamsToProps(HomeScreen)},
-        ChooseModeScreen: {screen: mapNavigationStateParamsToProps(Screen)},
+        ChooseModeScreen: {screen: mapNavigationStateParamsToProps(ChooseModeScreen)},
         CreateGameSettingsScreen: {screen: mapNavigationStateParamsToProps(CreateGameSettingsScreen)},
         JoinGameScreen: {screen: mapNavigationStateParamsToProps(JoinGameScreen)},
         GameNotStartedScreen: {screen: mapNavigationStateParamsToProps(GameNotStartedScreen)},
         TeamSelectionScreen: {screen: mapNavigationStateParamsToProps(TeamSelectionScreen)},
         HelloScreen: {screen: mapNavigationStateParamsToProps(HelloScreen)},
+        CreateGameMapBeaconScreen: {screen: mapNavigationStateParamsToProps(CreateGameMapBeacon)},
+
+        HomeContainer: {screen: mapNavigationStateParamsToProps(HomeContainer)},
     },
     {
         initialRouteName: 'HomeScreen',
