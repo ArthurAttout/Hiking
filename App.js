@@ -35,8 +35,6 @@ const RootStack = StackNavigator(
         TeamSelectionScreen: {screen: mapNavigationStateParamsToProps(TeamSelectionScreen)},
         HelloScreen: {screen: mapNavigationStateParamsToProps(HelloScreen)},
         CreateGameMapBeaconScreen: {screen: mapNavigationStateParamsToProps(CreateGameMapBeacon)},
-
-        HomeContainer: {screen: mapNavigationStateParamsToProps(HomeContainer)},
     },
     {
         initialRouteName: 'HomeScreen',

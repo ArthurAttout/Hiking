@@ -11,6 +11,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
+import com.airbnb.android.react.maps.MapsPackage;
 import com.facebook.soloader.SoLoader;
 
 import java.util.Arrays;
@@ -32,7 +33,8 @@ public class MainApplication extends Application implements ReactApplication {
             new SvgPackage(),
             new VectorIconsPackage(),
             new FIRMessagingPackage(),
-            new RNCardViewPackage()
+            new RNCardViewPackage(),
+            new MapsPackage()
       );
     }
 

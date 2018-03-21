@@ -1,11 +1,23 @@
 import MapView from 'react-native-maps';
 import React from "react";
+import { View,StyleSheet } from 'react-native';
 import {
     setLives,
     setShrinkDelay, setTimerMaxRiddle, switchDropDistanceVisible,
     switchMapEnabled, switchNextBeaconVisibility
 } from "../actions/actionsSettingsGame";
 import {connect} from "react-redux";
+
+const styles = StyleSheet.create({
+    container: {
+        height: '100%',
+        width: '100%',
+    },
+    map: {
+        height: '100%',
+        width: '100%',
+    },
+});
 
 class Screen extends React.Component {
 
@@ -15,14 +27,18 @@ class Screen extends React.Component {
 
     render(){
         return(
-            <MapView
-                initialRegion={{
-                    latitude: 37.78825,
-                    longitude: -122.4324,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
-                }}
-            />
+           <View
+           style={styles.container}>
+               <MapView
+                   style={styles.map}
+                   region={{
+                       latitude: 50.223777,
+                       longitude: 5.335017,
+                       latitudeDelta: 0.015,
+                       longitudeDelta: 0.0121,
+                   }}
+               />
+           </View>
         );
     }
 }
