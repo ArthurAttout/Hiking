@@ -42,6 +42,7 @@ class Screen extends React.Component {
     mode1(){
         return (
             <View style={styles.container}>
+                <ScrollView>
                 <CardView
                     cardElevation={2}
                     cardMaxElevation={2}
@@ -92,6 +93,7 @@ class Screen extends React.Component {
                         <Text style={styles.buttonText}>START</Text>
                     </View>
                 </TouchableNativeFeedback>
+                </ScrollView>
             </View>
         );
     }
@@ -313,11 +315,11 @@ const styles = StyleSheet.create({
     textInput: {
         padding: 15,
         fontSize: 16,
-        height: 60,
+        height: 40,
         alignSelf: 'stretch'
     },
     inputLayout:{
-        paddingTop:30,
+        paddingTop:15,
         width:'100%'
     },
     switch:{
@@ -343,14 +345,17 @@ const styles = StyleSheet.create({
         justifyContent:'center',
     },
     cardViewContent: {
-        marginTop:30,
+        marginTop:10,
         flex:1,
         width:'90%',
         backgroundColor: '#ffffff',
         alignItems:'center',
         justifyContent:'center',
         alignSelf:'center',
-        padding:50,
+        paddingTop: 20,
+        paddingLeft:20,
+        paddingRight:20,
+        paddingBottom:50,
     },
     title:{
         fontSize:15,
@@ -366,7 +371,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontWeight: 'bold',
-        color: '#000000',
+        color: '#ffffff',
         fontSize: 17,
         margin: 15,
     },

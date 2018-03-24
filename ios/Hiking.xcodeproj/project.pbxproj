@@ -54,6 +54,7 @@
 		5985334763BC4F8A855EA2B2 /* libRNSVG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5691CC79BA9C4FE9B5320830 /* libRNSVG.a */; };
 		AE1578E122234F8CA61BEDFE /* libRNSVG-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 008801622EB547A69A1C1F6A /* libRNSVG-tvOS.a */; };
 		74A3E309853845029A5A196A /* libRCTMaterialKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D357573AD3D4246BE162F68 /* libRCTMaterialKit.a */; };
+		E9291043FDD642BDAD940A86 /* libRNUUIDGenerator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 807D80F04425452C88DA03B8 /* libRNUUIDGenerator.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -327,6 +328,8 @@
 		008801622EB547A69A1C1F6A /* libRNSVG-tvOS.a */ = {isa = PBXFileReference; name = "libRNSVG-tvOS.a"; path = "libRNSVG-tvOS.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		7B3B051D423D4A21B911B7B6 /* RCTMaterialKit.xcodeproj */ = {isa = PBXFileReference; name = "RCTMaterialKit.xcodeproj"; path = "../node_modules/react-native-material-kit/iOS/RCTMaterialKit.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		4D357573AD3D4246BE162F68 /* libRCTMaterialKit.a */ = {isa = PBXFileReference; name = "libRCTMaterialKit.a"; path = "libRCTMaterialKit.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		82C6756555804416A5D04FEC /* RNUUIDGenerator.xcodeproj */ = {isa = PBXFileReference; name = "RNUUIDGenerator.xcodeproj"; path = "../node_modules/react-native-uuid-generator/ios/RNUUIDGenerator.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		807D80F04425452C88DA03B8 /* libRNUUIDGenerator.a */ = {isa = PBXFileReference; name = "libRNUUIDGenerator.a"; path = "libRNUUIDGenerator.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -362,6 +365,7 @@
 				5985334763BC4F8A855EA2B2 /* libRNSVG.a in Frameworks */,
 				AE1578E122234F8CA61BEDFE /* libRNSVG-tvOS.a in Frameworks */,
 				74A3E309853845029A5A196A /* libRCTMaterialKit.a in Frameworks */,
+				E9291043FDD642BDAD940A86 /* libRNUUIDGenerator.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -545,6 +549,7 @@
 				27385830FCB845F6803A9308 /* RNVectorIcons.xcodeproj */,
 				72FCA4F33D3E47FDA057D662 /* RNSVG.xcodeproj */,
 				7B3B051D423D4A21B911B7B6 /* RCTMaterialKit.xcodeproj */,
+				82C6756555804416A5D04FEC /* RNUUIDGenerator.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1153,6 +1158,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1162,6 +1168,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
+					"$(SRCROOT)\..\node_modules\react-native-uuid-generator\ios",
 				);
 			};
 			name = Debug;
@@ -1189,6 +1196,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1198,6 +1206,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
+					"$(SRCROOT)\..\node_modules\react-native-uuid-generator\ios",
 				);
 			};
 			name = Release;
@@ -1225,6 +1234,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
+					"$(SRCROOT)\..\node_modules\react-native-uuid-generator\ios",
 				);
 			};
 			name = Debug;
@@ -1251,6 +1261,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
+					"$(SRCROOT)\..\node_modules\react-native-uuid-generator\ios",
 				);
 			};
 			name = Release;
@@ -1287,6 +1298,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1296,6 +1308,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
+					"$(SRCROOT)\..\node_modules\react-native-uuid-generator\ios",
 				);
 			};
 			name = Debug;
@@ -1332,6 +1345,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1341,6 +1355,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
+					"$(SRCROOT)\..\node_modules\react-native-uuid-generator\ios",
 				);
 			};
 			name = Release;
@@ -1372,6 +1387,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 			};
 			name = Debug;
@@ -1396,6 +1412,7 @@
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",

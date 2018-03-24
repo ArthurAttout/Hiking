@@ -138,6 +138,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-uuid-generator')
 
 /**
 *

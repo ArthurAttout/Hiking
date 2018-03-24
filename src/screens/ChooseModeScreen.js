@@ -23,13 +23,13 @@ class Screen extends React.Component {
     }
 
     render() {
-
         if(this.props.loading){
             return(
                 <ActivityIndicator/>
             )
         }
         else {
+
             return (
                 <View style={styles.container}>
                     <FlatList
@@ -42,8 +42,7 @@ class Screen extends React.Component {
                                 <TouchableNativeFeedback
                                     background={TouchableNativeFeedback.Ripple('white')}
                                     onPress={this._onClickGame.bind(null,item)}
-                                    delayPressIn={0}
-                                    >
+                                    delayPressIn={0}>
                                     <View style={styles.nativeFeedbackStyle}>
                                         <Text style={styles.textStyleMode}>
                                             {item.title}
@@ -82,8 +81,8 @@ class Screen extends React.Component {
 const mapStateToProps = (state, own) => {
     return {
         ...own,
-        loading: state.loading,
-        gameModes: state.data
+        loading: state.gameModesReducer.loading,
+        gameModes: state.gameModesReducer.data
     }
 };
 
