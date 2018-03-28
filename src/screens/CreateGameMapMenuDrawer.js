@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
         textDecorationLine:'underline',
         textAlign:'center',
         fontSize:30,
+        paddingBottom:30,
         color:"#000000"
     },
     text:{
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
         borderRadius:10
     },
     addTrackButton:{
-        paddingTop:50,
+        paddingTop:20,
         alignSelf:'center'
     },
     headerText:{

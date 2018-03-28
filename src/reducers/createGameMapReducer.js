@@ -1,7 +1,7 @@
 import {
     DRAG_BEACON, SETUP_INITIAL_MAP, ADD_NEW_BEACON, TOGGLE_TRACKING,
     TOUCH_BEACON, ADD_NEW_TRACK,CENTER_REGION_CHANGED,DELETE_TRACK,
-    EDIT_TRACK
+    EDIT_TRACK, CONFIRM_PATH, CLEAR_PATH
 } from "../actions/actionsCreateGameMap";
 import UUIDGenerator from 'react-native-uuid-generator';
 
@@ -12,7 +12,8 @@ let dataState = {
     },
     tracks: [],               //All the tracks the user made
     isTrackingMode: false,
-    newCenteredRegion: undefined
+    newCenteredRegion: undefined,
+    confirmLinkedBeacons:false
 };
 
 export default function createGameMapReducer(state = dataState, action){
@@ -46,6 +47,12 @@ export default function createGameMapReducer(state = dataState, action){
             };
 
         case ADD_NEW_BEACON:
+            if(state.isTrackingMode){
+                return {
+                    ...state,
+                    isTrackingMode: false
+                }
+            }
             return {
                 ...state,
                 isTrackingMode:false,
@@ -72,7 +79,8 @@ export default function createGameMapReducer(state = dataState, action){
                             latitude: state.newCenteredRegion.latitude,
                             longitude: state.newCenteredRegion.longitude
                         }
-                    })
+                    }),
+
                 },
                 centerRegion:state.newCenteredRegion
             };
@@ -111,6 +119,13 @@ export default function createGameMapReducer(state = dataState, action){
                         }
                     }
                 }
+
+                if(newState.currentTrack.path.length === newState.currentTrack.beacons.length){ //The user has linked all beacons
+                    return{
+                        ...newState,
+                        confirmLinkedBeacons:true
+                    }
+                }
                 return newState;
             }
             return state;
@@ -119,16 +134,6 @@ export default function createGameMapReducer(state = dataState, action){
 
             return {
                 ...state,
-                currentPath:state.currentPath.map((beacon,index) => {
-                    if(beacon.id === action.draggedBeacon.id){
-                        return {
-                            ...beacon,
-                            latitude:action.newCoordinates.latitude,
-                            longitude:action.newCoordinates.longitude
-                        }
-                    }
-                    return beacon;
-                }),
                 currentTrack:{
                     ...state.currentTrack,
                     beacons:state.currentTrack.beacons.map((beacon,index) => {
@@ -143,27 +148,47 @@ export default function createGameMapReducer(state = dataState, action){
                             }
                         }
                         return beacon;
+                    }),
+                    path:state.currentTrack.path.map((beacon,index) => {
+                        if(beacon.id === action.draggedBeacon.id){
+                            return {
+                                ...beacon,
+                                latitude:action.newCoordinates.latitude,
+                                longitude:action.newCoordinates.longitude
+                            }
+                        }
+                        return beacon;
                     })},
 
-                tracks:state.tracks.map((track,index) => {
-                    return {
-                        ...track,
-                        beacons : track.beacons.map((beacon,index) => {
-                            if(beacon.id === action.draggedBeacon.id){
-                                return {
-                                    ...beacon,
-                                    coordinate:{
-                                        ...beacon.coordinate,
+                    tracks:state.tracks.map((track,index) => {
+                        return {
+                            ...track,
+                            beacons : track.beacons.map((beacon,index) => {
+                                if(beacon.id === action.draggedBeacon.id){
+                                    return {
+                                        ...beacon,
+                                        coordinate:{
+                                            ...beacon.coordinate,
+                                            latitude:action.newCoordinates.latitude,
+                                            longitude:action.newCoordinates.longitude
+                                        }
+                                    }
+                                }
+                                return beacon;
+                            }),
+                            path : track.path.map((beacon,index) => {
+                                if(beacon.id === action.draggedBeacon.id){
+                                    return {
+                                        ...beacon,
                                         latitude:action.newCoordinates.latitude,
                                         longitude:action.newCoordinates.longitude
                                     }
                                 }
-                            }
-                            return beacon;
-                        })
-                    };
-                })
-            };
+                                return beacon;
+                            })
+                        };
+                    })
+                };
 
         case ADD_NEW_TRACK:
             return{
@@ -200,7 +225,7 @@ export default function createGameMapReducer(state = dataState, action){
             return newState;
 
         case EDIT_TRACK:
-            return {
+            let res = {
                 ...state,
                 currentTrack:{
                     id: action.payload.id,
@@ -208,6 +233,33 @@ export default function createGameMapReducer(state = dataState, action){
                     path: action.payload.path
                 },
                 isTrackingMode: false
+            };
+            console.log(res.currentTrack);
+            return res;
+
+        case CONFIRM_PATH:
+            return {
+                ...state,
+                confirmLinkedBeacons: false,
+                tracks:state.tracks.map((track,index) => {
+                    if(track.id === state.currentTrack.id){
+                        return {
+                            ...track,
+                            path:state.currentTrack.path
+                        }
+                    }
+                    return track;
+                })
+            };
+
+        case CLEAR_PATH:
+            return {
+                ...state,
+                confirmLinkedBeacons: false,
+                currentTrack:{
+                    ...state.currentTrack,
+                    path:[]
+                }
             };
 
         default:

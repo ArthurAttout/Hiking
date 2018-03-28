@@ -11,6 +11,7 @@
     "react": "16.2.0",
     "react-devtools": "^3.2.0",
     "react-native": "0.53.0",
+    "react-native-action-button": "^2.8.4",
     "react-native-cardview": "^1.1.5",
     "react-native-checkbox": "^2.0.0",
     "react-native-collapsible": "^0.10.0",

@@ -9,6 +9,8 @@ export const ADD_NEW_TRACK = 'ADD_NEW_TRACK';
 export const CENTER_REGION_CHANGED = 'CENTER_REGION_CHANGED';
 export const DELETE_TRACK = 'DELETE_TRACK';
 export const EDIT_TRACK = 'EDIT_TRACK';
+export const CLEAR_PATH = 'CLEAR_PATH';
+export const CONFIRM_PATH = 'CONFIRM_PATH';
 
 export const dragBeacon = (original,coord) =>{
     return{
@@ -70,5 +72,17 @@ export const onEditTrack = (trackID) => {
     return{
         type:EDIT_TRACK,
         payload:trackID
+    }
+};
+
+export const onClearLinkedPath = () =>{
+    return{
+        type:CLEAR_PATH
+    }
+};
+
+export const onConfirmLinkedPath = () => {
+    return{
+        type:CONFIRM_PATH
     }
 };
