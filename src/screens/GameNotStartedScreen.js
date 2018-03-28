@@ -1,12 +1,8 @@
 import React from 'react';
 import { AppRegistry, Text, View, StyleSheet, StatusBar, Image } from 'react-native';
-import { registerKilledListener, registerAppListener } from "../config/firebase/Listeners";
-import FCM from "react-native-fcm";
+import { connect } from "react-redux";
 
-registerKilledListener();
-registerAppListener();
-
-export default class GameNotStartedScreen extends React.Component {
+class GNSScreen extends React.Component {
     static navigationOptions = {
         title: 'Game Not Started',
         header: null,
@@ -14,14 +10,6 @@ export default class GameNotStartedScreen extends React.Component {
 
     constructor(props) {
         super(props);
-        // TODO replace with redux
-        this.state = {
-            isGameReady: false,
-            gameCode: 'XEJ6',
-            playerName: 'Cybo12',
-            teamName: 'AtBoLo'
-        };
-        FCM.subscribeToTopic('gameStart');
     }
 
     render() {
@@ -47,15 +35,27 @@ export default class GameNotStartedScreen extends React.Component {
                         <Text style={styles.codesPromptsText}>Team name :</Text>
                     </View>
                     <View style={styles.codesEntered}>
-                        <Text style={styles.codesEnteredText}>{this.state.gameCode}</Text>
-                        <Text style={styles.codesEnteredText}>{this.state.playerName}</Text>
-                        <Text style={styles.codesEnteredText}>{this.state.teamName}</Text>
+                        <Text style={styles.codesEnteredText}>{this.props.gameCode}</Text>
+                        <Text style={styles.codesEnteredText}>{this.props.playerName}</Text>
+                        <Text style={styles.codesEnteredText}>{this.props.teamName}</Text>
                     </View>
                 </View>
             </View>
         );
     }
 }
+
+const mapStateToProps = state => {
+    return {
+        gameCode: state.joinGameReducer.gameCode,
+        playerName: state.joinGameReducer.playerName,
+        teamName: state.joinGameReducer.teamName
+    }
+};
+
+//Connect everything
+export default GameNotStartedScreen = connect(mapStateToProps)(GNSScreen);
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -94,11 +94,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     codesPrompts: {
-        flex: 1,
+        flex: 2,
         justifyContent: 'space-around',
     },
     codesEntered: {
-        flex: 2,
+        flex: 3,
         justifyContent: 'space-around',
     },
     codesPromptsText: {
@@ -114,6 +114,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
 });
-
-AppRegistry.registerComponent('Hiking', () => GameNotStartedScreen);
 

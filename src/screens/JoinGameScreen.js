@@ -8,11 +8,14 @@ import FCM from "react-native-fcm";
 import { TextInputLayout } from "rn-textinputlayout";
 import TeamSelectionScreen from "./TeamSelectionScreen";
 import {COLORS} from '../utils/constants'
+import {addBeacon, dragBeacon, setupInitialMap, startTracking, touchBeacon} from "../actions/actionsCreateGameMap";
+import {connect} from "react-redux";
+import {inputCode} from "../actions/actionsJoinGame";
 
 registerKilledListener();
 registerAppListener();
 
-export default class JoinGameScreen extends React.Component {
+class JGScreen extends React.Component {
     static navigationOptions = {
         title: 'Joining Game',
         header: null,
@@ -20,13 +23,21 @@ export default class JoinGameScreen extends React.Component {
 
     constructor(props) {
         super(props);
-        // TODO replace with redux
+
         this.state = {
-            isGameReady: true,
-            gameCode: '',
-            playerName: ''
+            gameCode: "",
+            playerName:""
         };
-        this._onPressNext = this._onPressNext.bind(this);
+
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleSubmit() {
+        const gameCode = this.state.gameCode;
+        const playerName = this.state.playerName;
+        this.props.inputCode(gameCode, playerName);
+        const { navigate } = this.props.navigation;
+        navigate('TeamSelectionScreen');
     }
 
     render() {
@@ -47,6 +58,8 @@ export default class JoinGameScreen extends React.Component {
                         <TextInput
                             style={styles.textInput}
                             placeholder={'Game code'}
+                            id={'gameCode'}
+                            value={this.state.gameCode}
                             onChangeText={(gameCode) => this.setState({gameCode})}
                         />
                     </TextInputLayout>
@@ -56,13 +69,15 @@ export default class JoinGameScreen extends React.Component {
                         <TextInput
                             style={styles.textInput}
                             placeholder={'Player name'}
+                            id={'playerName'}
+                            value={this.state.playerName}
                             onChangeText={(playerName) => this.setState({playerName})}
                         />
                     </TextInputLayout>
                 </View>
                 <TouchableNativeFeedback
                     background={TouchableNativeFeedback.Ripple('white')}
-                    onPress={this._onPressNext}>
+                    onPress={this.handleSubmit}>
                     <View style={styles.button}>
                         <Text style={styles.buttonText}>NEXT</Text>
                     </View>
@@ -70,14 +85,25 @@ export default class JoinGameScreen extends React.Component {
             </View>
         );
     }
-
-    _onPressNext() {
-        // TODO check if game ready (NB: should be done in background for player on the GameNotStarted screen)
-        const { navigate } = this.props.navigation;
-        navigate('TeamSelectionScreen');
-    }
-
 }
+
+/*const mapStateToProps = (state, own) => {
+    return {
+        ...own,
+        gameCode: state.joinGameReducer.gameCode,
+        playerName: state.joinGameReducer.playerName
+    }
+};*/
+
+const mapDispatchToProps = (dispatch) =>{
+    return {
+        inputCode: (gameCode, playerName) => dispatch(inputCode(gameCode, playerName)),
+    }
+}
+
+//Connect everything
+export default JoinGameScreen = connect(null, mapDispatchToProps)(JGScreen);
+
 const styles = StyleSheet.create({
     image: {
         height: '55%',

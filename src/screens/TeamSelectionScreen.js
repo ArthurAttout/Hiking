@@ -3,18 +3,14 @@ import {
     Alert, AppRegistry, Text, View, StyleSheet, TouchableNativeFeedback,
     FlatList
 } from 'react-native';
-import { registerKilledListener, registerAppListener } from "../config/firebase/Listeners";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import FCM from "react-native-fcm";
-
 import {getGameTeams} from "../config/FakeServer";
+import {connect} from "react-redux";
+import {joinTeam} from "../actions/actionsJoinGame";
 
-registerKilledListener();
-registerAppListener();
-
-export default class TeamSelectionScreen extends React.Component {
+class TSScreen extends React.Component {
     static navigationOptions = {
-        title: 'Choose your team',
+        title: 'Choose your teamName',
         headerStyle: {
             backgroundColor: '#558b2f',
         },
@@ -26,15 +22,11 @@ export default class TeamSelectionScreen extends React.Component {
 
     constructor(props) {
         super(props);
-        // TODO replace with redux
         this.state = {
-            gameCode: 'XEJ6',
-            playerName: 'Cybo12',
-            teamName: 'AtBoLo',
+            teamName: '',
             teams: getGameTeams()
         };
         this._onTeamPress = this._onTeamPress.bind(this);
-        FCM.subscribeToTopic('gameStart');
     }
 
     render() {
@@ -75,6 +67,8 @@ export default class TeamSelectionScreen extends React.Component {
             [
                 {text: 'Cancel', onPress: () => null},
                 {text: 'OK', onPress: () => {
+                        const teamTitle = item.title;
+                        this.props.joinTeam(teamTitle);
                         const { navigate } = this.props.navigation;
                         navigate('GameNotStartedScreen');
                     }
@@ -84,6 +78,25 @@ export default class TeamSelectionScreen extends React.Component {
         )
     }
 }
+
+
+/*const mapStateToProps = (state, own) => {
+    return {
+        ...own,
+        gameCode: state.joinGameReducer.gameCode,
+        playerName: state.joinGameReducer.playerName
+    }
+};*/
+
+const mapDispatchToProps = (dispatch) =>{
+    return {
+        joinTeam: (team) => dispatch(joinTeam(team)),
+    }
+};
+
+//Connect everything
+export default TeamSelectionScreen = connect(null, mapDispatchToProps)(TSScreen);
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -113,6 +126,4 @@ const styles = StyleSheet.create({
         fontSize: 25
     }
 });
-
-AppRegistry.registerComponent('Hiking', () => TeamSelectionScreen);
 
