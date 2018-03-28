@@ -1,6 +1,7 @@
 import {
     DRAG_BEACON, SETUP_INITIAL_MAP, ADD_NEW_BEACON, TOGGLE_TRACKING,
-    TOUCH_BEACON
+    TOUCH_BEACON, ADD_NEW_TRACK,CENTER_REGION_CHANGED,DELETE_TRACK,
+    EDIT_TRACK
 } from "../actions/actionsCreateGameMap";
 import UUIDGenerator from 'react-native-uuid-generator';
 
@@ -9,11 +10,9 @@ let dataState = {
     currentTrack:{
         beacons:[]
     },
-    currentPath:[],
     tracks: [],               //All the tracks the user made
-    confirmedTracks:[],       //All the tracks the user has confirmed (linked beacons)
     isTrackingMode: false,
-    firstTouchedBeacon: undefined
+    newCenteredRegion: undefined
 };
 
 export default function createGameMapReducer(state = dataState, action){
@@ -24,13 +23,21 @@ export default function createGameMapReducer(state = dataState, action){
                 ...state,
                 currentTrack: {
                     ...state.currentTrack,
-                    id:generatedUUID
+                    id:generatedUUID,
+                    path:[]
                 },
                 tracks: [{
                     id: generatedUUID,
-                    beacons: []
+                    beacons: [],
+                    path:[]
                 }],
                 centerRegion:{
+                    latitude: action.centerLatitude,
+                    longitude: action.centerLongitude,
+                    latitudeDelta: action.centerLatitudeDelta,
+                    longitudeDelta: action.centerLongitudeDelta,
+                },
+                newCenteredRegion:{
                     latitude: action.centerLatitude,
                     longitude: action.centerLongitude,
                     latitudeDelta: action.centerLatitudeDelta,
@@ -49,8 +56,8 @@ export default function createGameMapReducer(state = dataState, action){
                             beacons: item.beacons.concat({
                                 id: action.id,
                                 coordinate:{
-                                    latitude: action.latitude,
-                                    longitude: action.longitude
+                                    latitude: state.newCenteredRegion.latitude,
+                                    longitude: state.newCenteredRegion.longitude
                                 }
                             })
                         }
@@ -62,11 +69,12 @@ export default function createGameMapReducer(state = dataState, action){
                     beacons:state.currentTrack.beacons.concat({
                         id: action.id,
                         coordinate:{
-                            latitude: action.latitude,
-                            longitude: action.longitude
+                            latitude: state.newCenteredRegion.latitude,
+                            longitude: state.newCenteredRegion.longitude
                         }
                     })
-                }
+                },
+                centerRegion:state.newCenteredRegion
             };
 
         case TOGGLE_TRACKING:
@@ -77,35 +85,39 @@ export default function createGameMapReducer(state = dataState, action){
 
         case TOUCH_BEACON:
             if(state.isTrackingMode){
-                let res;
-                res = {
+                let newState = {
                     ...state,
-                    confirmedTracks:state.confirmedTracks.map((track,index) =>{
-                        if(track.id === state.currentTrack.id){
-                            return{
-                                ...track,
-                                beacons: track.beacons.concat(action.touchedBeacon)
+                    tracks:state.tracks.map((track,index) => {
+                        if (track.id === state.currentTrack.id) {
+                            if (!track.beacons.some((item) => item.id === action.touchedBeacon.id)) { //Prevent user from adding twice the same location
+                                return {
+                                    ...track,
+                                    beacons: track.beacons.concat(action.touchedBeacon)
+                                }
                             }
                         }
                         return track;
-                    }),
-                    currentPath:state.currentPath.concat({
-                        id:action.touchedBeacon.id,
-                        latitude:action.touchedBeacon.coordinate.latitude,
-                        longitude:action.touchedBeacon.coordinate.longitude,
-                    })
-                };
-                console.log("-------------------");
-                console.log(res);
-                console.log("-------------------");
-                return res;
+                    })};
+                if(!newState.currentTrack.path.some((item) => item.id === action.touchedBeacon.id)){//Prevent user from adding twice the same location
+                    newState = {
+                        ...newState,
+                        currentTrack:{
+                            ...newState.currentTrack,
+                            path: newState.currentTrack.path.concat({
+                                id:action.touchedBeacon.id,
+                                latitude:action.touchedBeacon.coordinate.latitude,
+                                longitude:action.touchedBeacon.coordinate.longitude,
+                            })
+                        }
+                    }
+                }
+                return newState;
             }
             return state;
 
         case DRAG_BEACON:
-            console.log("before : ");
-            console.log(state);
-            let res = {
+
+            return {
                 ...state,
                 currentPath:state.currentPath.map((beacon,index) => {
                     if(beacon.id === action.draggedBeacon.id){
@@ -152,9 +164,51 @@ export default function createGameMapReducer(state = dataState, action){
                     };
                 })
             };
-            console.log("after : ");
-            console.log(res);
-            return res;
+
+        case ADD_NEW_TRACK:
+            return{
+                ...state,
+                tracks:state.tracks.concat({
+                    id: UUIDGenerator.getRandomUUID(),
+                    beacons: [],
+                    path:[]
+                })
+            };
+
+        case CENTER_REGION_CHANGED:
+            return {
+                ...state,
+                newCenteredRegion:action.payload
+            };
+
+        case DELETE_TRACK:
+            let newState = {
+                ...state,
+                tracks: state.tracks.filter((track) => track.id !== action.payload.id),
+            };
+
+            if(newState.currentTrack.id === action.payload.id){
+                newState = {
+                    ...newState,
+                    currentTrack:{
+                        id: undefined,
+                        beacons:[],
+                        path:[]
+                    }
+                }
+            }
+            return newState;
+
+        case EDIT_TRACK:
+            return {
+                ...state,
+                currentTrack:{
+                    id: action.payload.id,
+                    beacons:action.payload.beacons,
+                    path: action.payload.path
+                },
+                isTrackingMode: false
+            };
 
         default:
             return state;

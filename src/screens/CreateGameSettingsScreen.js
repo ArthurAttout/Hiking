@@ -279,13 +279,13 @@ class Screen extends React.Component {
 const mapStateToProps = (state, own) => {
     return {
         ...own,
-        chosenMode: state.chosenMode,
-        viewMapEnabled:state.viewMapEnabled,
-        nextBeaconVisibilityEnabled:state.nextBeaconVisibilityEnabled,
-        dropDistanceVisibilityEnabled:state.dropDistanceVisibilityEnabled,
-        numberLives:state.numberLives,
-        timerMaxRiddle:state.timerMaxRiddle,
-        shrinkDelay:state.shrinkDelay
+        chosenMode: state.gameModesReducer.chosenMode,
+        viewMapEnabled:state.gameModesReducer.viewMapEnabled,
+        nextBeaconVisibilityEnabled:state.gameModesReducer.nextBeaconVisibilityEnabled,
+        dropDistanceVisibilityEnabled:state.gameModesReducer.dropDistanceVisibilityEnabled,
+        numberLives:state.gameModesReducer.numberLives,
+        timerMaxRiddle:state.gameModesReducer.timerMaxRiddle,
+        shrinkDelay:state.gameModesReducer.shrinkDelay
     }
 };
 

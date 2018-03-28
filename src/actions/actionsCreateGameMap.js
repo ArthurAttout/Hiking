@@ -5,6 +5,10 @@ export const SETUP_INITIAL_MAP = 'SETUP_INITIAL_MAP';
 export const ADD_NEW_BEACON = 'ADD_NEW_BEACON';
 export const TOGGLE_TRACKING = 'TOGGLE_TRACKING';
 export const TOUCH_BEACON = 'TOUCH_BEACON';
+export const ADD_NEW_TRACK = 'ADD_NEW_TRACK';
+export const CENTER_REGION_CHANGED = 'CENTER_REGION_CHANGED';
+export const DELETE_TRACK = 'DELETE_TRACK';
+export const EDIT_TRACK = 'EDIT_TRACK';
 
 export const dragBeacon = (original,coord) =>{
     return{
@@ -34,10 +38,6 @@ export const addBeacon = () => {
     return {
         type:ADD_NEW_BEACON,
         id:UUIDGenerator.getRandomUUID(),
-        latitude:  50.223777,
-        longitude: 5.335017,
-        centerLatitudeDelta: 0.015,
-        centerLongitudeDelta: 0.0121,
     }
 };
 
@@ -45,3 +45,30 @@ export const startTracking = () =>{
     return{
         type:TOGGLE_TRACKING
 }};
+
+export const addNewTrack = () =>{
+    return {
+        type:ADD_NEW_TRACK
+    }
+};
+
+export const onCenterRegionChange = (newRegion) =>{
+    return{
+        type:CENTER_REGION_CHANGED,
+        payload:newRegion
+    }
+};
+
+export const onDeleteTrack = (track) =>{
+    return{
+        type:DELETE_TRACK,
+        payload:track
+    }
+};
+
+export const onEditTrack = (trackID) => {
+    return{
+        type:EDIT_TRACK,
+        payload:trackID
+    }
+};

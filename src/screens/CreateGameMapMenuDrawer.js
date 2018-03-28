@@ -1,37 +1,34 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {COLORS} from '../utils/constants'
+import Accordion from 'react-native-collapsible/Accordion';
 import Icon from 'react-native-vector-icons/Foundation';
-import {
-    Dimensions,
-    StyleSheet,
-    ScrollView,
-    View,
-    Image,
-    Text,
-    FlatList, TouchableNativeFeedback
-} from 'react-native';
-
-const window = Dimensions.get('window');
-const uri = 'https://pickaface.net/gallery/avatar/Opi51c74d0125fd4.png';
+import CardView from 'react-native-cardview'
+import {Dimensions,StyleSheet, ScrollView,
+    View, Image, Text,FlatList, TouchableNativeFeedback} from 'react-native';
 
 const styles = StyleSheet.create({
     container: {
         flex:1,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#f9f9f9',
         flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center'
     },
     flatList:{
-        backgroundColor:'#ffffff',
+        flex:1,
+        backgroundColor:'#f9f9f9',
         width:'100%'
     },
-    trackItem:{
+    header:{
         backgroundColor:COLORS.Secondary,
-        marginBottom:20,
-        paddingTop:15,
-        paddingBottom:15,
+        marginBottom:1,
+        width:'auto',
+        padding:15,
+    },
+    title:{
+        textDecorationLine:'underline',
+        textAlign:'center',
+        fontSize:30,
+        color:"#000000"
     },
     text:{
         color:"#ffffff",
@@ -40,37 +37,83 @@ const styles = StyleSheet.create({
         marginLeft: 50,
         borderRadius:10
     },
+    addTrackButton:{
+        paddingTop:50,
+        alignSelf:'center'
+    },
+    headerText:{
+        color:"#FFFFFF"
+    }
 });
 
 export default class Menu extends React.Component{
+
+    constructor(props){
+        super(props);
+
+        this._renderContent = this._renderContent.bind(this);
+        this._renderHeader = this._renderHeader.bind(this);
+    }
+
     render(){
         return (
-           <View style={styles.container}>
-               <FlatList
-                   style={styles.flatList}
-                   data={this.props.userTracks}
-                   keyExtractor={item => item.id.toString()}
-                   renderItem={({ item }) => (
-                       <View>
-                           <TouchableNativeFeedback
-                               background={TouchableNativeFeedback.Ripple('white')}
-                               delayPressIn={0}>
-                               <View style={styles.trackItem}>
-                                   <Text style={styles.text}>
-                                       Track (has {item.beacons.length} beacons)
-                                   </Text>
-                               </View>
-                           </TouchableNativeFeedback>
-                       </View>
-                   )}>
-               </FlatList>
-               <Icon.Button
+            <View style={styles.container}>
+                <Text
+                    style={styles.title}>
+                    All tracks
+                </Text>
+                <Accordion
+                    sections={this.props.userTracks}
+                    style={styles.flatList}
+                    underlayColor="#f0f0f0"
+                    renderHeader={this._renderHeader}
+                    renderContent={this._renderContent}
+                />
+                <Icon.Button
                     name="plus"
-                    color={COLORS.Primary}
+                    color={COLORS.Secondary}
+                    style={styles.addTrackButton}
+                    underlayColor='#f0f0f0'
+                    onPress={this.props.onAddNewTrack}
                     backgroundColor='transparent'
                     background={TouchableNativeFeedback.Ripple('blue')}
                     delayPressIn={0}/>
-           </View>
+            </View>
         );
     }
+    _renderHeader(section) {
+        return (
+
+                <CardView
+                    style={styles.header}
+                    cardElevation={2}
+                    cardMaxElevation={2}
+                    cornerRadius={5}>
+                    <Text style={styles.headerText}>Track ({section.beacons.length} beacons set)</Text>
+                </CardView>
+
+        );
+    }
+
+    _renderContent(section) {
+        return (
+            <View style={{flex:1, flexDirection: 'row',justifyContent:'center'}}>
+                <Icon.Button
+                    name="pencil"
+                    color={COLORS.Secondary}
+                    backgroundColor='transparent'
+                    onPress={() => {this.props.onEditTrack(section)}}
+                    background={TouchableNativeFeedback.Ripple('blue')}
+                    delayPressIn={0}/>
+                <Icon.Button
+                    name="trash"
+                    color='#FF0017'
+                    backgroundColor='transparent'
+                    onPress={() => {this.props.onDeleteTrack(section)}}
+                    background={TouchableNativeFeedback.Ripple('blue')}
+                    delayPressIn={0}/>
+            </View>
+        );
+    }
+
 }

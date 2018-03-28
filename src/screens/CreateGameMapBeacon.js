@@ -6,7 +6,8 @@ import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation'
 import { View,StyleSheet } from 'react-native';
 import Menu from './CreateGameMapMenuDrawer'
 import {
-    dragBeacon, setupInitialMap,addBeacon, startTracking, touchBeacon
+    dragBeacon, setupInitialMap, addBeacon, startTracking, touchBeacon, addNewTrack, onCenterRegionChange,onDeleteTrack,
+    onEditTrack
 } from "../actions/actionsCreateGameMap";
 import {connect} from "react-redux";
 import {COLORS} from '../utils/constants'
@@ -33,7 +34,9 @@ class Screen extends React.Component {
         const menu = <Menu
             navigator={navigator}
             userTracks={this.props.tracks}
-            onItemSelected={() => {}}/>;
+            onAddNewTrack={() => {this.props.addNewTrack()}}
+            onEditTrack={(track) => {this.props.onEditTrack(track)}}
+            onDeleteTrack={(track) => {this.props.onDeleteTrack(track)}}/>;
         return(
             <SideMenu
                 menu={menu}
@@ -41,7 +44,9 @@ class Screen extends React.Component {
                 <View
                     style={styles.container}>
                     <MapView
-                        style={styles.map}>
+                        style={styles.map}
+                        region={this.props.centerRegion}
+                        onRegionChange={(evt) => {this.props.onCenterRegionChange(evt)}}>
                         {
                             this.props.currentTrack.beacons.map((beacon) => (
                                 <Marker
@@ -53,7 +58,7 @@ class Screen extends React.Component {
                             ))
                         }
                         <Polyline
-                            coordinates={this.props.currentPath}
+                            coordinates={this.props.currentTrack.path}
                             strokeColor={COLORS.Primary}
                             strokeWidth={6}
                         />
@@ -97,8 +102,6 @@ const mapStateToProps = (state, own) => {
         centerRegion : state.createGameMapReducer.centerRegion,
         currentTrack:state.createGameMapReducer.currentTrack,
         tracks: state.createGameMapReducer.tracks,
-        confirmedTracks:state.createGameMapReducer.confirmedTracks,
-        currentPath:state.createGameMapReducer.currentPath
     }
 };
 
@@ -109,7 +112,11 @@ function mapDispatchToProps(dispatch,own) {
         dragBeacon: (original,coord) => dispatch(dragBeacon(original,coord)),
         addNewBeacon:() => dispatch(addBeacon()),
         startTracking:(evt) => dispatch(startTracking(evt)),
-        touchBeacon:(evt,beacon) => dispatch(touchBeacon(evt,beacon))
+        touchBeacon:(evt,beacon) => dispatch(touchBeacon(evt,beacon)),
+        addNewTrack:() => dispatch(addNewTrack()),
+        onCenterRegionChange:(evt) => dispatch(onCenterRegionChange(evt)),
+        onDeleteTrack:(track)=> dispatch(onDeleteTrack(track)),
+        onEditTrack:(track) => dispatch(onEditTrack(track))
     }
 }
 
