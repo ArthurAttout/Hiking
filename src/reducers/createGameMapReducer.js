@@ -1,19 +1,22 @@
 import {
     DRAG_BEACON, SETUP_INITIAL_MAP, ADD_NEW_BEACON, TOGGLE_TRACKING,
     TOUCH_BEACON, ADD_NEW_TRACK,CENTER_REGION_CHANGED,DELETE_TRACK,
-    EDIT_TRACK, CONFIRM_PATH, CLEAR_PATH
+    EDIT_TRACK, CONFIRM_PATH, CLEAR_PATH, CLEAR_BEACONS, EDIT_TRACK_NAME,
+    TRACK_NAME_CHANGED, SUBMIT_TRACK_NAME
 } from "../actions/actionsCreateGameMap";
 import UUIDGenerator from 'react-native-uuid-generator';
 
 let dataState = {
     loading: true,
     currentTrack:{
+        id:undefined,
         beacons:[]
     },
     tracks: [],               //All the tracks the user made
     isTrackingMode: false,
     newCenteredRegion: undefined,
-    confirmLinkedBeacons:false
+    confirmLinkedBeacons:false,
+    sideMenuOpened: false
 };
 
 export default function createGameMapReducer(state = dataState, action){
@@ -225,7 +228,7 @@ export default function createGameMapReducer(state = dataState, action){
             return newState;
 
         case EDIT_TRACK:
-            let res = {
+            return {
                 ...state,
                 currentTrack:{
                     id: action.payload.id,
@@ -234,8 +237,35 @@ export default function createGameMapReducer(state = dataState, action){
                 },
                 isTrackingMode: false
             };
-            console.log(res.currentTrack);
-            return res;
+
+        case CLEAR_BEACONS:
+            newState = {
+                ...state,
+
+                tracks: state.tracks.map((item) => {
+                    if(item.id === action.payload.id){
+                        return{
+                            ...item,
+                            beacons:[],
+                            path:[],
+                            totalDistance: undefined
+                        }
+                    }
+                    return item;
+                })
+            };
+
+            if(newState.currentTrack.id === action.payload.id){
+                newState = {
+                    ...newState,
+                    currentTrack:{
+                        ...newState.currentTrack,
+                        beacons:[],
+                        path:[]
+                    }
+                }
+            }
+            return newState;
 
         case CONFIRM_PATH:
             return {
@@ -245,7 +275,8 @@ export default function createGameMapReducer(state = dataState, action){
                     if(track.id === state.currentTrack.id){
                         return {
                             ...track,
-                            path:state.currentTrack.path
+                            path:state.currentTrack.path,
+                            totalDistance: action.payload,
                         }
                     }
                     return track;
@@ -260,6 +291,52 @@ export default function createGameMapReducer(state = dataState, action){
                     ...state.currentTrack,
                     path:[]
                 }
+            };
+
+        case EDIT_TRACK_NAME:
+            return{
+                ...state,
+                sideMenuOpened: true,
+                tracks: state.tracks.map((item) => {
+                    if(item.id === action.payload.id){
+                        return {
+                            ...item,
+                            isNameEditable: true
+                        }
+                    }
+                    return item;
+                })
+            };
+
+        case TRACK_NAME_CHANGED:
+            console.log(action.payload);
+            return{
+                ...state,
+                sideMenuOpened: true,
+                tracks: state.tracks.map((item) => {
+                    if(item.id === action.payload.id){
+                        return {
+                            ...item,
+                            trackName: action.payload.newName
+                        }
+                    }
+                    return item;
+                })
+            };
+
+        case SUBMIT_TRACK_NAME:
+            return{
+                ...state,
+                sideMenuOpened:false,
+                tracks: state.tracks.map((item) => {
+                    if(item.id === action.payload.id){
+                        return {
+                            ...item,
+                            isNameEditable:false
+                        }
+                    }
+                    return item;
+                })
             };
 
         default:

@@ -7,7 +7,8 @@ import { View,StyleSheet } from 'react-native';
 import Menu from './CreateGameMapMenuDrawer'
 import {
     dragBeacon, setupInitialMap, addBeacon, startTracking, touchBeacon, addNewTrack, onCenterRegionChange,onDeleteTrack,
-    onEditTrack, onClearLinkedPath, onConfirmLinkedPath
+    onEditTrack,onClearBeacons, onClearLinkedPath, onConfirmLinkedPath, changeSideMenuOpened, onEditTrackName, trackNameChanged,
+    onSubmitTrackName
 } from "../actions/actionsCreateGameMap";
 import {connect} from "react-redux";
 import {COLORS} from '../utils/constants'
@@ -45,12 +46,19 @@ class Screen extends React.Component {
         const menu = <Menu
             navigator={navigator}
             userTracks={this.props.tracks}
+            currentTrackID={this.props.currentTrack.id}
             onAddNewTrack={() => {this.props.addNewTrack()}}
+            onEditTrackName={(track) => {this.props.onEditTrackName(track)}}
+            onTrackNameChanged={(track,newName) => {this.props.onTrackNameChanged(track,newName)}}
+            onSubmitTrackName={(track) => {this.props.onSubmitTrackName(track)}}
             onEditTrack={(track) => {this.props.onEditTrack(track)}}
+            onClearBeacons={(track) => {this.props.onClearBeacons(track)}}
             onDeleteTrack={(track) => {this.props.onDeleteTrack(track)}}/>;
         return(
             <SideMenu
                 menu={menu}
+                isOpen={this.props.sideMenuOpened}
+                onChange={(state) => {this.props.changeSideMenuOpened(state)}}
                 menuPosition='right'>
                 <View
                     style={styles.container}>
@@ -120,7 +128,7 @@ class Screen extends React.Component {
     }
 
     renderMarker(beacon,index,array){
-        if(index === 0 || array.length === 1){            //Starting point icon
+        if(index === 0 || array.length === 1){ //Starting point icon
             return(
                 <Marker
                     key={JSON.stringify(beacon.id)}
@@ -165,7 +173,8 @@ const mapStateToProps = (state, own) => {
         centerRegion : state.createGameMapReducer.centerRegion,
         currentTrack:state.createGameMapReducer.currentTrack,
         tracks: state.createGameMapReducer.tracks,
-        confirmLinkedBeacons:state.createGameMapReducer.confirmLinkedBeacons
+        confirmLinkedBeacons:state.createGameMapReducer.confirmLinkedBeacons,
+        sideMenuOpened:state.createGameMapReducer.sideMenuOpened
     }
 };
 
@@ -173,14 +182,22 @@ function mapDispatchToProps(dispatch,own) {
     return {
         ...own,
         setupInitialMap: () => dispatch(setupInitialMap()),
+        changeSideMenuOpened:(state) => dispatch(changeSideMenuOpened(state)),
+
         dragBeacon: (original,coord) => dispatch(dragBeacon(original,coord)),
         addNewBeacon:() => dispatch(addBeacon()),
         startTracking:(evt) => dispatch(startTracking(evt)),
         touchBeacon:(evt,beacon) => dispatch(touchBeacon(evt,beacon)),
         addNewTrack:() => dispatch(addNewTrack()),
         onCenterRegionChange:(evt) => dispatch(onCenterRegionChange(evt)),
+
         onDeleteTrack:(track)=> dispatch(onDeleteTrack(track)),
         onEditTrack:(track) => dispatch(onEditTrack(track)),
+        onEditTrackName:(track) => dispatch(onEditTrackName(track)),
+        onClearBeacons:(track) => dispatch(onClearBeacons(track)),
+        onTrackNameChanged:(track,newName) => dispatch(trackNameChanged(track,newName)),
+        onSubmitTrackName: (track) => dispatch(onSubmitTrackName(track)),
+
         clearLinkedPath:() => dispatch(onClearLinkedPath()),
         confirmLinkedPath:() => dispatch(onConfirmLinkedPath())
     }

@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {COLORS} from '../utils/constants'
 import Accordion from 'react-native-collapsible/Accordion';
-import Icon from 'react-native-vector-icons/Foundation';
+import IconFoundation from 'react-native-vector-icons/Foundation';
+import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import CardView from 'react-native-cardview'
-import {Dimensions,StyleSheet, ScrollView,
+import {Dimensions,StyleSheet, ScrollView, TextInput,
     View, Image, Text,FlatList, TouchableNativeFeedback} from 'react-native';
 
 const styles = StyleSheet.create({
@@ -14,15 +15,20 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
     },
     flatList:{
-        flex:1,
-        backgroundColor:'#f9f9f9',
+        backgroundColor:'#f3f3f3',
         width:'100%'
     },
     header:{
         backgroundColor:COLORS.Secondary,
         marginBottom:1,
         width:'auto',
-        padding:15,
+        padding:10,
+    },
+    headerCurrentTrack:{
+        backgroundColor:COLORS.Primary_accent,
+        marginBottom:1,
+        width:'auto',
+        padding:10,
     },
     title:{
         textDecorationLine:'underline',
@@ -44,6 +50,30 @@ const styles = StyleSheet.create({
     },
     headerText:{
         color:"#FFFFFF"
+    },
+    buttonViewStyle:{
+        width:'100%',
+        padding: 2
+    },
+    nativeFeedbackStyle: {
+        flex:1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        height: 50,
+        backgroundColor : "#c6c6c6",
+    },
+    textStyleBeacon:{
+        color:"#ffffff",
+        textAlignVertical:'center',
+        fontSize:18,
+        marginLeft: 50,
+        borderRadius:10
+    },
+    iconStyle:{
+        backgroundColor:'transparent',
+        flexGrow: 1,
+        justifyContent:'center',
+        alignItems: 'center'
     }
 });
 
@@ -70,7 +100,7 @@ export default class Menu extends React.Component{
                     renderHeader={this._renderHeader}
                     renderContent={this._renderContent}
                 />
-                <Icon.Button
+                <IconFoundation.Button
                     name="plus"
                     color={COLORS.Secondary}
                     style={styles.addTrackButton}
@@ -83,38 +113,114 @@ export default class Menu extends React.Component{
         );
     }
     _renderHeader(section) {
-        return (
-
-                <CardView
-                    style={styles.header}
-                    cardElevation={2}
-                    cardMaxElevation={2}
-                    cornerRadius={5}>
-                    <Text style={styles.headerText}>Track ({section.beacons.length} beacons set)</Text>
-                </CardView>
-
-        );
+        if(section.id === this.props.currentTrackID){
+            return (
+                <View style={styles.headerCurrentTrack}>
+                    <TextInput
+                        style={styles.headerText}
+                        onChangeText={(text) => this.props.onTrackNameChanged(section,text)}
+                        editable={section.isNameEditable === true}
+                        onSubmitEditing={() => {this.props.onSubmitTrackName(section)}}
+                        underlineColorAndroid='transparent'
+                        placeholderTextColor="#FFFFFF"
+                        value="Track"/>
+                </View>
+            );
+        }
+        else
+        {
+            return (
+                <View style={styles.header}>
+                    <TextInput
+                        style={styles.headerText}
+                        onChangeText={(text) => this.props.onTrackNameChanged(section,text)}
+                        editable={section.isNameEditable === true}
+                        onSubmitEditing={() => {this.props.onSubmitTrackName(section)}}
+                        underlineColorAndroid='transparent'
+                        placeholder="Track"
+                        placeholderTextColor="#FFFFFF"/>
+                </View>
+            );
+        }
     }
 
     _renderContent(section) {
         return (
-            <View style={{flex:1, flexDirection: 'row',justifyContent:'center'}}>
-                <Icon.Button
-                    name="pencil"
-                    color={COLORS.Secondary}
-                    backgroundColor='transparent'
-                    onPress={() => {this.props.onEditTrack(section)}}
-                    background={TouchableNativeFeedback.Ripple('blue')}
-                    delayPressIn={0}/>
-                <Icon.Button
-                    name="trash"
-                    color='#FF0017'
-                    backgroundColor='transparent'
-                    onPress={() => {this.props.onDeleteTrack(section)}}
-                    background={TouchableNativeFeedback.Ripple('blue')}
-                    delayPressIn={0}/>
+            <View style={{flex:1, flexDirection: 'column',justifyContent:'center',backgroundColor:"#f3f3f3"}}>
+                <Text>Number of beacons : {section.beacons.length}</Text>
+                {this._renderTrackLength(section.totalDistance)}
+                <View style={{flexDirection: 'row',justifyContent:'center'}}>
+                    <IconFoundation.Button
+                        name="pencil"
+                        color={COLORS.Secondary}
+                        backgroundColor='transparent'
+                        onPress={() => {this.props.onEditTrack(section)}}
+                        background={TouchableNativeFeedback.Ripple('blue')}
+                        delayPressIn={0}/>
+                    <IconFoundation.Button
+                        name="prohibited"
+                        color={COLORS.Secondary}
+                        backgroundColor='transparent'
+                        onPress={() => {this.props.onClearBeacons(section)}}
+                        background={TouchableNativeFeedback.Ripple('blue')}
+                        delayPressIn={0}/>
+                    <IconMaterial.Button
+                        name="cursor-text"
+                        color={COLORS.Secondary}
+                        backgroundColor='transparent'
+                        onPress={() => {this.props.onEditTrackName(section)}}
+                        background={TouchableNativeFeedback.Ripple('blue')}
+                        delayPressIn={0}/>
+                    <IconFoundation.Button
+                        name="trash"
+                        color='#FF0017'
+                        backgroundColor='transparent'
+                        onPress={() => {this.props.onDeleteTrack(section)}}
+                        background={TouchableNativeFeedback.Ripple('blue')}
+                        delayPressIn={0}/>
+                </View>
+                <FlatList
+                    data={section.beacons}
+                    style={styles.flatList}
+                    keyExtractor={item => JSON.stringify(item.id)}
+                    renderItem={({ item,index }) => (
+                        <View
+                            style={styles.buttonViewStyle}>
+                            <TouchableNativeFeedback
+                                background={TouchableNativeFeedback.Ripple('white')}
+                                onPress={() => {console.log("Touched")}}
+                                delayPressIn={0}>
+                                <View style={styles.nativeFeedbackStyle}>
+                                    <Text style={styles.textStyleBeacon}>
+                                        Beacon {index + 1}
+                                    </Text>
+                                    <IconFoundation.Button name="target-two"
+                                                 color="#000000"
+                                                 backgroundColor='transparent'
+                                                 onPress={() => console.log("Clicked" + index)}
+                                                 style={styles.iconStyle}
+                                                 background={TouchableNativeFeedback.Ripple('white')}
+                                                 delayPressIn={0}/>
+                                </View>
+                            </TouchableNativeFeedback>
+                        </View>
+                    )}/>
             </View>
         );
+    }
+
+    _renderTrackLength(length){
+        if(length !== undefined){
+            return(
+                <Text>Distance : {(length/1000).toFixed(3)} km</Text>
+            )
+        }
+        else
+        {
+            return(
+                <Text>Not yet traced</Text>
+            )
+        }
     }
 
 }
