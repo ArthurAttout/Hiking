@@ -1,12 +1,13 @@
 import React from 'react';
 import {
     Alert, AppRegistry, Text, View, StyleSheet, TouchableNativeFeedback,
-    FlatList
+    FlatList, StatusBar
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {getGameTeams} from "../config/FakeServer";
 import {connect} from "react-redux";
 import {joinTeam} from "../actions/actionsJoinGame";
+import {COLORS} from "../utils/constants";
 
 class TSScreen extends React.Component {
     // TODO override parent navigationOptions to display headers
@@ -34,6 +35,10 @@ class TSScreen extends React.Component {
         const { navigate } = this.props.navigation;
         return (
             <View style={styles.container}>
+                <StatusBar
+                    backgroundColor={COLORS.Primary_accent}
+                    barStyle="light-content"
+                />
                 <FlatList
                     data={this.state.teams}
                     style={styles.teamsList}

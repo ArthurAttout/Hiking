@@ -1,6 +1,7 @@
 import React from 'react';
 import {AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableOpacity} from 'react-native';
 import { connect } from "react-redux";
+import {COLORS} from "../utils/constants";
 
 class GNSScreen extends React.Component {
     static navigationOptions = {
@@ -17,15 +18,14 @@ class GNSScreen extends React.Component {
         return (
             <View style={styles.container}>
                 <StatusBar
-                    backgroundColor="#255d00"
+                    backgroundColor={COLORS.Primary_accent}
                     barStyle="light-content"
                 />
                 <View style={styles.topView}>
                     <TouchableOpacity
                         style={styles.topMessageView}
                         onPress={() => {
-                            const { navigate } = this.props.navigation;
-                            navigate('GameScreen');
+                            navigate('BeaconScreen');
                         }}>
                         <Text style={styles.topMessageText}>The game has not started yet !</Text>
                     </TouchableOpacity>

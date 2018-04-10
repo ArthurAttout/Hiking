@@ -52,7 +52,7 @@ class GScreen extends React.Component {
         return (
             <View style={styles.container}>
                 <StatusBar
-                    backgroundColor="#255d00"
+                    backgroundColor={COLORS.Primary_accent}
                     barStyle="light-content"
                 />
                 {this.renderMainView()}
@@ -64,9 +64,17 @@ class GScreen extends React.Component {
     renderMainView() {
         if(!this.state.mapViewVisible){
             return (
-                <View style={styles.map}>
-                    <FontAwesomeIcon size={200} color={COLORS.Primary} name="location-arrow"/>
-                </View>
+                <TouchableNativeFeedback
+                    background={TouchableNativeFeedback.Ripple('white')}
+                    onPress={() => {
+                        const { navigate } = this.props.navigation;
+                        navigate('EndGameScreen');
+                    }}
+                >
+                    <View style={styles.map}>
+                        <FontAwesomeIcon size={200} color={COLORS.Primary} name="location-arrow"/>
+                    </View>
+                </TouchableNativeFeedback>
             );
         } else {
             return (
