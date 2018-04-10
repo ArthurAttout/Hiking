@@ -10,6 +10,7 @@ import GameNotStartedScreen from "./src/screens/GameNotStartedScreen";
 import TeamSelectionScreen from "./src/screens/TeamSelectionScreen";
 import CreateGameSettingsScreen from "./src/screens/CreateGameSettingsScreen";
 import CreateGameMapBeacon from "./src/screens/CreateGameMapBeacon";
+import GameScreen from "./src/screens/GameScreen";
 
 const mapNavigationStateParamsToProps = (SomeComponent) => {
     return class extends Component {
@@ -35,6 +36,7 @@ const RootStack = StackNavigator(
         TeamSelectionScreen: {screen: mapNavigationStateParamsToProps(TeamSelectionScreen)},
         HelloScreen: {screen: mapNavigationStateParamsToProps(HelloScreen)},
         CreateGameMapBeaconScreen: {screen: mapNavigationStateParamsToProps(CreateGameMapBeacon)},
+        GameScreen: {screen: mapNavigationStateParamsToProps(GameScreen)}
     },
     {
         initialRouteName: 'HomeScreen',

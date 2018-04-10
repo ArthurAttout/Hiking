@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppRegistry, Text, View, StyleSheet, StatusBar, Image } from 'react-native';
+import {AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableOpacity} from 'react-native';
 import { connect } from "react-redux";
 
 class GNSScreen extends React.Component {
@@ -21,9 +21,14 @@ class GNSScreen extends React.Component {
                     barStyle="light-content"
                 />
                 <View style={styles.topView}>
-                    <View style={styles.topMessageView}>
+                    <TouchableOpacity
+                        style={styles.topMessageView}
+                        onPress={() => {
+                            const { navigate } = this.props.navigation;
+                            navigate('GameScreen');
+                        }}>
                         <Text style={styles.topMessageText}>The game has not started yet !</Text>
-                    </View>
+                    </TouchableOpacity>
                     <Image
                         style={styles.image}
                         source={require('../images/logo_512.png')}/>

@@ -18,7 +18,7 @@ registerAppListener();
 class JGScreen extends React.Component {
     static navigationOptions = {
         title: 'Joining Game',
-        header: null,
+        header: null
     };
 
     constructor(props) {

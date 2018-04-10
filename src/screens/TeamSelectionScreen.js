@@ -9,8 +9,9 @@ import {connect} from "react-redux";
 import {joinTeam} from "../actions/actionsJoinGame";
 
 class TSScreen extends React.Component {
+    // TODO override parent navigationOptions to display headers
     static navigationOptions = {
-        title: 'Choose your teamName',
+        title: 'Choose your Team',
         headerStyle: {
             backgroundColor: '#558b2f',
         },
