@@ -6,6 +6,7 @@ import com.facebook.react.ReactApplication;
 import com.reactlibrary.RNUUIDGeneratorPackage;
 import com.github.xinthink.rnmk.ReactMaterialKitPackage;
 import com.horcrux.svg.SvgPackage;
+import com.imagepicker.ImagePickerPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.kishanjvaghela.cardview.RNCardViewPackage;
 import com.facebook.react.ReactNativeHost;
@@ -30,6 +31,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ImagePickerPackage(),
             new RNUUIDGeneratorPackage(),
             new ReactMaterialKitPackage(),
             new SvgPackage(),

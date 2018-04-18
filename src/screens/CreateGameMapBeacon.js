@@ -6,10 +6,14 @@ import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation'
 import { View,StyleSheet } from 'react-native';
 import Menu from './CreateGameMapMenuDrawer'
 import {
-    dragBeacon, setupInitialMap, addBeacon, startTracking, touchBeacon, addNewTrack, onCenterRegionChange,onDeleteTrack,
-    onEditTrack,onClearBeacons, onClearLinkedPath, onConfirmLinkedPath, changeSideMenuOpened, onEditTrackName, trackNameChanged,
-    onSubmitTrackName
+    dragBeacon, setupInitialMap, addBeacon, startTracking, touchBeacon, onCenterRegionChange,
+    onClearLinkedPath, onConfirmLinkedPath, changeSideMenuOpened,
 } from "../actions/actionsCreateGameMap";
+
+import {onFocusOnBeacon,addNewTrack,onDeleteTrack,onEditTrack,onClearBeacons,
+        onEditTrackName,trackNameChanged,onSubmitTrackName,onCloseModal,onRequestModal
+} from "../actions/actionsCreateGameMapDrawer";
+
 import {connect} from "react-redux";
 import {COLORS} from '../utils/constants'
 import SideMenu from 'react-native-side-menu'
@@ -53,7 +57,11 @@ class Screen extends React.Component {
             onSubmitTrackName={(track) => {this.props.onSubmitTrackName(track)}}
             onEditTrack={(track) => {this.props.onEditTrack(track)}}
             onClearBeacons={(track) => {this.props.onClearBeacons(track)}}
-            onDeleteTrack={(track) => {this.props.onDeleteTrack(track)}}/>;
+            onFocusOnBeacon={(beacon) => {this.props.onFocusOnBeacon(beacon)}}
+            onDeleteTrack={(track) => {this.props.onDeleteTrack(track)}}
+            onCloseModal={() => {this.props.onCloseModal()}}
+            onRequestModal={()=>{this.props.onRequestModal()}}
+            modalVisible={this.props.modalVisible}/>;
         return(
             <SideMenu
                 menu={menu}
@@ -174,7 +182,8 @@ const mapStateToProps = (state, own) => {
         currentTrack:state.createGameMapReducer.currentTrack,
         tracks: state.createGameMapReducer.tracks,
         confirmLinkedBeacons:state.createGameMapReducer.confirmLinkedBeacons,
-        sideMenuOpened:state.createGameMapReducer.sideMenuOpened
+        sideMenuOpened:state.createGameMapReducer.sideMenuOpened,
+        modalVisible:state.createGameMapReducer.modalVisible
     }
 };
 
@@ -191,12 +200,16 @@ function mapDispatchToProps(dispatch,own) {
         addNewTrack:() => dispatch(addNewTrack()),
         onCenterRegionChange:(evt) => dispatch(onCenterRegionChange(evt)),
 
+        //Drawer
         onDeleteTrack:(track)=> dispatch(onDeleteTrack(track)),
         onEditTrack:(track) => dispatch(onEditTrack(track)),
         onEditTrackName:(track) => dispatch(onEditTrackName(track)),
         onClearBeacons:(track) => dispatch(onClearBeacons(track)),
         onTrackNameChanged:(track,newName) => dispatch(trackNameChanged(track,newName)),
         onSubmitTrackName: (track) => dispatch(onSubmitTrackName(track)),
+        onFocusOnBeacon: (beacon) => dispatch(onFocusOnBeacon(beacon)),
+        onCloseModal:() => dispatch(onCloseModal()),
+        onRequestModal:() => dispatch(onRequestModal()),
 
         clearLinkedPath:() => dispatch(onClearLinkedPath()),
         confirmLinkedPath:() => dispatch(onConfirmLinkedPath())

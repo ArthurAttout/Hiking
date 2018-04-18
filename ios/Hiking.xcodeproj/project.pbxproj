@@ -55,6 +55,7 @@
 		AE1578E122234F8CA61BEDFE /* libRNSVG-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 008801622EB547A69A1C1F6A /* libRNSVG-tvOS.a */; };
 		74A3E309853845029A5A196A /* libRCTMaterialKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D357573AD3D4246BE162F68 /* libRCTMaterialKit.a */; };
 		E9291043FDD642BDAD940A86 /* libRNUUIDGenerator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 807D80F04425452C88DA03B8 /* libRNUUIDGenerator.a */; };
+		F7A868992861430C94D85887 /* libRNImagePicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 996985E5D8A34836BD35CEB6 /* libRNImagePicker.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -330,6 +331,8 @@
 		4D357573AD3D4246BE162F68 /* libRCTMaterialKit.a */ = {isa = PBXFileReference; name = "libRCTMaterialKit.a"; path = "libRCTMaterialKit.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		82C6756555804416A5D04FEC /* RNUUIDGenerator.xcodeproj */ = {isa = PBXFileReference; name = "RNUUIDGenerator.xcodeproj"; path = "../node_modules/react-native-uuid-generator/ios/RNUUIDGenerator.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		807D80F04425452C88DA03B8 /* libRNUUIDGenerator.a */ = {isa = PBXFileReference; name = "libRNUUIDGenerator.a"; path = "libRNUUIDGenerator.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		04D22AA93739468E9FBDD4AD /* RNImagePicker.xcodeproj */ = {isa = PBXFileReference; name = "RNImagePicker.xcodeproj"; path = "../node_modules/react-native-image-picker/ios/RNImagePicker.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		996985E5D8A34836BD35CEB6 /* libRNImagePicker.a */ = {isa = PBXFileReference; name = "libRNImagePicker.a"; path = "libRNImagePicker.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -366,6 +369,7 @@
 				AE1578E122234F8CA61BEDFE /* libRNSVG-tvOS.a in Frameworks */,
 				74A3E309853845029A5A196A /* libRCTMaterialKit.a in Frameworks */,
 				E9291043FDD642BDAD940A86 /* libRNUUIDGenerator.a in Frameworks */,
+				F7A868992861430C94D85887 /* libRNImagePicker.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -550,6 +554,7 @@
 				72FCA4F33D3E47FDA057D662 /* RNSVG.xcodeproj */,
 				7B3B051D423D4A21B911B7B6 /* RCTMaterialKit.xcodeproj */,
 				82C6756555804416A5D04FEC /* RNUUIDGenerator.xcodeproj */,
+				04D22AA93739468E9FBDD4AD /* RNImagePicker.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1151,6 +1156,7 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Hiking.app/Hiking";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1161,6 +1167,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
 					"$(SRCROOT)\..\node_modules\react-native-uuid-generator\ios",
+					"$(SRCROOT)\..\node_modules\react-native-image-picker\ios",
 				);
 			};
 			name = Debug;
@@ -1181,6 +1188,7 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Hiking.app/Hiking";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1191,6 +1199,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
 					"$(SRCROOT)\..\node_modules\react-native-uuid-generator\ios",
+					"$(SRCROOT)\..\node_modules\react-native-image-picker\ios",
 				);
 			};
 			name = Release;
@@ -1219,6 +1228,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
 					"$(SRCROOT)\..\node_modules\react-native-uuid-generator\ios",
+					"$(SRCROOT)\..\node_modules\react-native-image-picker\ios",
 				);
 			};
 			name = Debug;
@@ -1246,6 +1256,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
 					"$(SRCROOT)\..\node_modules\react-native-uuid-generator\ios",
+					"$(SRCROOT)\..\node_modules\react-native-image-picker\ios",
 				);
 			};
 			name = Release;
@@ -1275,6 +1286,7 @@
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1285,6 +1297,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
 					"$(SRCROOT)\..\node_modules\react-native-uuid-generator\ios",
+					"$(SRCROOT)\..\node_modules\react-native-image-picker\ios",
 				);
 			};
 			name = Debug;
@@ -1314,6 +1327,7 @@
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1324,6 +1338,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-material-kit\iOS\RCTMaterialKit",
 					"$(SRCROOT)\..\node_modules\react-native-uuid-generator\ios",
+					"$(SRCROOT)\..\node_modules\react-native-image-picker\ios",
 				);
 			};
 			name = Release;
@@ -1348,6 +1363,7 @@
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 			};
 			name = Debug;
@@ -1372,6 +1388,7 @@
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 			};
 			name = Release;

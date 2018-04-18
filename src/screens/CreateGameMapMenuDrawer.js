@@ -4,9 +4,13 @@ import {COLORS} from '../utils/constants'
 import Accordion from 'react-native-collapsible/Accordion';
 import IconFoundation from 'react-native-vector-icons/Foundation';
 import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
-import CardView from 'react-native-cardview'
-import {Dimensions,StyleSheet, ScrollView, TextInput,
+import { createIconSetFromIcoMoon } from 'react-native-vector-icons';
+import icomoonConfig from '../config/selection.json';
+const IconCustom = createIconSetFromIcoMoon(icomoonConfig);
+import {StyleSheet, ScrollView, TextInput,
     View, Image, Text,FlatList, TouchableNativeFeedback} from 'react-native';
+import Modal from "react-native-modal";
+import ImagePicker from 'react-native-image-picker'
 
 const styles = StyleSheet.create({
     container: {
@@ -109,9 +113,11 @@ export default class Menu extends React.Component{
                     backgroundColor='transparent'
                     background={TouchableNativeFeedback.Ripple('blue')}
                     delayPressIn={0}/>
+
             </View>
         );
     }
+
     _renderHeader(section) {
         if(section.id === this.props.currentTrackID){
             return (
@@ -157,8 +163,8 @@ export default class Menu extends React.Component{
                         onPress={() => {this.props.onEditTrack(section)}}
                         background={TouchableNativeFeedback.Ripple('blue')}
                         delayPressIn={0}/>
-                    <IconFoundation.Button
-                        name="prohibited"
+                    <IconCustom.Button
+                        name="remove_all_drop"
                         color={COLORS.Secondary}
                         backgroundColor='transparent'
                         onPress={() => {this.props.onClearBeacons(section)}}
@@ -188,23 +194,40 @@ export default class Menu extends React.Component{
                             style={styles.buttonViewStyle}>
                             <TouchableNativeFeedback
                                 background={TouchableNativeFeedback.Ripple('white')}
-                                onPress={() => {console.log("Touched")}}
+                                onPress={() => {this.props.onRequestModal()}}
                                 delayPressIn={0}>
                                 <View style={styles.nativeFeedbackStyle}>
                                     <Text style={styles.textStyleBeacon}>
                                         Beacon {index + 1}
                                     </Text>
-                                    <IconFoundation.Button name="target-two"
-                                                 color="#000000"
-                                                 backgroundColor='transparent'
-                                                 onPress={() => console.log("Clicked" + index)}
-                                                 style={styles.iconStyle}
-                                                 background={TouchableNativeFeedback.Ripple('white')}
-                                                 delayPressIn={0}/>
                                 </View>
                             </TouchableNativeFeedback>
                         </View>
                     )}/>
+                <Modal
+                    onBackdropPress={() => {this.props.onCloseModal()}}
+                    style={{flex:1,justifyContent:'center',alignItems:'center'}}
+                    isVisible={this.props.modalVisible}>
+
+                    <View style={{ flex: 0,
+                        backgroundColor:'#ffffff',
+                        justifyContent: 'center',
+                        alignItems:'center',
+                        width:'100%',
+                        height:400 }}>
+                        <View>
+                            <TouchableNativeFeedback
+                                background={TouchableNativeFeedback.Ripple('grey')}
+                                onPress={() => {console.log("aaaaaaaaa")}}
+                                delayPressIn={0}>
+                                <Image
+                                    style={{width:80,height:80}}
+                                    source={require('../images/logo_512.png')}
+                                />
+                            </TouchableNativeFeedback>
+                        </View>
+                    </View>
+                </Modal>
             </View>
         );
     }

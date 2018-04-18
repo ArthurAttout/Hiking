@@ -7,23 +7,17 @@ export const SETUP_INITIAL_MAP = 'SETUP_INITIAL_MAP';
 export const ADD_NEW_BEACON = 'ADD_NEW_BEACON';
 export const TOGGLE_TRACKING = 'TOGGLE_TRACKING';
 export const TOUCH_BEACON = 'TOUCH_BEACON';
-export const ADD_NEW_TRACK = 'ADD_NEW_TRACK';
 export const CENTER_REGION_CHANGED = 'CENTER_REGION_CHANGED';
-export const DELETE_TRACK = 'DELETE_TRACK';
-export const EDIT_TRACK = 'EDIT_TRACK';
-export const CLEAR_BEACONS = 'CLEAR_BEACONS';
 export const CLEAR_PATH = 'CLEAR_PATH';
 export const CONFIRM_PATH = 'CONFIRM_PATH';
 export const CHANGE_SIDE_MENU_OPENED = 'CHANGE_SIDE_MENU_OPENED';
-export const EDIT_TRACK_NAME = 'EDIT_TRACK_NAME';
-export const TRACK_NAME_CHANGED = 'TRACK_NAME_CHANGED';
-export const SUBMIT_TRACK_NAME = 'SUBMIT_TRACK_NAME';
 
 export const dragBeacon = (original,coord) =>{
     return{
         type:DRAG_BEACON,
         draggedBeacon:original,
-        newCoordinates:coord
+        newCoordinates:coord,
+        totalDistance: calculateTotalDistance(store.getState().createGameMapReducer.currentTrack)
     }
 };
 
@@ -54,37 +48,10 @@ export const startTracking = () =>{
         type:TOGGLE_TRACKING
 }};
 
-export const addNewTrack = () =>{
-    return {
-        type:ADD_NEW_TRACK
-    }
-};
-
 export const onCenterRegionChange = (newRegion) =>{
     return{
         type:CENTER_REGION_CHANGED,
         payload:newRegion
-    }
-};
-
-export const onDeleteTrack = (track) =>{
-    return{
-        type:DELETE_TRACK,
-        payload:track
-    }
-};
-
-export const onEditTrack = (trackID) => {
-    return{
-        type:EDIT_TRACK,
-        payload:trackID
-    }
-};
-
-export const onClearBeacons = (track) => {
-    return{
-        type:CLEAR_BEACONS,
-        payload:track
     }
 };
 
@@ -108,26 +75,3 @@ export const changeSideMenuOpened = (isOpen) => {
     }
 };
 
-export const onEditTrackName = (track) =>{
-    return{
-        type:EDIT_TRACK_NAME,
-        payload: track
-    }
-};
-
-export const trackNameChanged = (track,newName) =>{
-    return{
-        type:TRACK_NAME_CHANGED,
-        payload:{
-            track:track,
-            newName:newName
-        }
-    }
-};
-
-export const onSubmitTrackName = (track) => {
-    return{
-        type:SUBMIT_TRACK_NAME,
-        payload:track
-    }
-};

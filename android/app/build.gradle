@@ -139,6 +139,7 @@ android {
 
 dependencies {
     compile project(':react-native-uuid-generator')
+    compile project(':react-native-image-picker')
 
 /**
 *

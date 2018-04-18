@@ -3999,7 +3999,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.10:
+prop-types@^15.5.10, prop-types@^15.6.1:
   version "15.6.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
   dependencies:
@@ -4123,6 +4123,12 @@ react-native-action-button@^2.8.4:
   dependencies:
     prop-types "^15.5.10"
 
+react-native-animatable@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/react-native-animatable/-/react-native-animatable-1.2.4.tgz#b5fb7657e8f6edadbc26697057a327fb920b3039"
+  dependencies:
+    prop-types "^15.5.10"
+
 react-native-cardview@^1.1.5:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/react-native-cardview/-/react-native-cardview-1.1.5.tgz#c068fa7bf57c3dcd35af4327cc5173cea51baa62"
@@ -4170,6 +4176,10 @@ react-native-fcm@^13.3.1:
   version "13.3.3"
   resolved "https://registry.yarnpkg.com/react-native-fcm/-/react-native-fcm-13.3.3.tgz#6380d3aec6eb748c36a58355fa68eb0774dc81f8"
 
+react-native-image-picker@^0.26.7:
+  version "0.26.7"
+  resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-0.26.7.tgz#ad2ee957f7f6cc01396893ea03d84cb2adb2e376"
+
 react-native-maps@^0.20.1:
   version "0.20.1"
   resolved "https://registry.yarnpkg.com/react-native-maps/-/react-native-maps-0.20.1.tgz#b5247a9a26446b2e1ffc3f680db8ba6ccc960096"
@@ -4187,6 +4197,13 @@ react-native-material-kit@^0.5.1:
   dependencies:
     prop-types "^15.5.10"
     ramda "^0.24.1"
+
+react-native-modal@^5.4.0:
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/react-native-modal/-/react-native-modal-5.4.0.tgz#95f70b5d68e08824951cd11038b9db2d6fdb9962"
+  dependencies:
+    prop-types "^15.6.1"
+    react-native-animatable "^1.2.4"
 
 react-native-safe-area-view@^0.7.0:
   version "0.7.0"

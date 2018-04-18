@@ -1,9 +1,12 @@
 import {
     DRAG_BEACON, SETUP_INITIAL_MAP, ADD_NEW_BEACON, TOGGLE_TRACKING,
-    TOUCH_BEACON, ADD_NEW_TRACK,CENTER_REGION_CHANGED,DELETE_TRACK,
-    EDIT_TRACK, CONFIRM_PATH, CLEAR_PATH, CLEAR_BEACONS, EDIT_TRACK_NAME,
-    TRACK_NAME_CHANGED, SUBMIT_TRACK_NAME
+    TOUCH_BEACON,CENTER_REGION_CHANGED, CONFIRM_PATH, CLEAR_PATH
 } from "../actions/actionsCreateGameMap";
+
+import {FOCUS_ON_BEACON,SUBMIT_TRACK_NAME,TRACK_NAME_CHANGED,EDIT_TRACK_NAME,
+    EDIT_TRACK,CLEAR_BEACONS,DELETE_TRACK,ADD_NEW_TRACK,CLOSE_MODAL,REQUEST_MODAL
+} from '../actions/actionsCreateGameMapDrawer'
+
 import UUIDGenerator from 'react-native-uuid-generator';
 
 let dataState = {
@@ -16,7 +19,9 @@ let dataState = {
     isTrackingMode: false,
     newCenteredRegion: undefined,
     confirmLinkedBeacons:false,
-    sideMenuOpened: false
+    sideMenuOpened: false,
+    regionFocus:undefined,
+    modalVisible:false
 };
 
 export default function createGameMapReducer(state = dataState, action){
@@ -164,7 +169,7 @@ export default function createGameMapReducer(state = dataState, action){
                     })},
 
                     tracks:state.tracks.map((track,index) => {
-                        return {
+                        let newTrack = {
                             ...track,
                             beacons : track.beacons.map((beacon,index) => {
                                 if(beacon.id === action.draggedBeacon.id){
@@ -190,6 +195,13 @@ export default function createGameMapReducer(state = dataState, action){
                                 return beacon;
                             })
                         };
+                        if(track.id === state.currentTrack.id){
+                            return {
+                                ...newTrack,
+                                totalDistance: action.totalDistance
+                            }
+                        }
+                        return newTrack;
                     })
                 };
 
@@ -309,7 +321,6 @@ export default function createGameMapReducer(state = dataState, action){
             };
 
         case TRACK_NAME_CHANGED:
-            console.log(action.payload);
             return{
                 ...state,
                 sideMenuOpened: true,
@@ -337,6 +348,32 @@ export default function createGameMapReducer(state = dataState, action){
                     }
                     return item;
                 })
+            };
+
+        case FOCUS_ON_BEACON:
+            let res = {
+                ...state,
+                regionFocus:{
+                    latitudeDelta: state.centerRegion.latitudeDelta,
+                    longitudeDelta: state.centerRegion.longitudeDelta,
+                    latitude: action.payload.coordinate.latitude,
+                    longitude: action.payload.coordinate.longitude,
+                },
+                centerRegion:undefined
+            };
+            console.log(res);
+            return res;
+
+        case CLOSE_MODAL:
+            return{
+                ...state,
+                modalVisible:false
+            };
+
+        case REQUEST_MODAL:
+            return{
+                ...state,
+                modalVisible:true
             };
 
         default:
