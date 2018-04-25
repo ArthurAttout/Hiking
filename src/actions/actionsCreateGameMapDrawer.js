@@ -10,6 +10,8 @@ export const CLOSE_MODAL = 'CLOSE_MODAL';
 export const REQUEST_MODAL = 'REQUEST_MODAL';
 export const SET_IMAGE_PATH = 'SET_IMAGE_PATH';
 export const CANCEL_CUSTOMIZE_BEACON = 'CANCEL_CUSTOMIZE_BEACON';
+export const SET_CURRENT_BEACON_NAME = 'SET_CURRENT_BEACON_NAME';
+export const CONFIRM_CUSTOMIZE_BEACON = 'CONFIRM_CUSTOMIZE_BEACON';
 
 export const onEditTrackName = (track) =>{
     return{
@@ -95,5 +97,18 @@ export const onCancelCustomizeBeacon = (beacon) => {
     return {
         type:CANCEL_CUSTOMIZE_BEACON,
         beacon: beacon
+    }
+};
+
+export const onConfirmCustomizeBeacon = ()=>{
+    return{
+        type:CONFIRM_CUSTOMIZE_BEACON
+    }
+};
+
+export const setCurrentBeaconName = (name) => {
+    return {
+        type:SET_CURRENT_BEACON_NAME,
+        name: name
     }
 };

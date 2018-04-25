@@ -12,7 +12,7 @@ import {
 
 import {onFocusOnBeacon,addNewTrack,onDeleteTrack,onEditTrack,onClearBeacons,
         onEditTrackName,trackNameChanged,onSubmitTrackName,onCloseModal,onRequestModal,
-        setImagePath,onCancelCustomizeBeacon
+        setImagePath,onCancelCustomizeBeacon,setCurrentBeaconName, onConfirmCustomizeBeacon
 } from "../actions/actionsCreateGameMapDrawer";
 
 import {connect} from "react-redux";
@@ -65,6 +65,8 @@ class Screen extends React.Component {
             onCancelCustomizeBeacon={(beacon) => {this.props.onCancelCustomizeBeacon(beacon)}}
             onRequestModal={(beacon)=>{this.props.onRequestModal(beacon)}}
             currentCustomizingBeacon={this.props.currentCustomizingBeacon}
+            onConfirmCustomizeBeacon={()=>{this.props.onConfirmCustomizeBeacon()}}
+            setCurrentBeaconName={(name)=>{this.props.setCurrentBeaconName(name)}}
             modalVisible={this.props.modalVisible}/>;
         return(
             <SideMenu
@@ -216,7 +218,9 @@ function mapDispatchToProps(dispatch,own) {
         onCloseModal:() => dispatch(onCloseModal()),
         onRequestModal:(beacon) => dispatch(onRequestModal(beacon)),
         setImagePath:(path) => dispatch(setImagePath(path)),
+        setCurrentBeaconName:(name) => dispatch(setCurrentBeaconName(name)),
         onCancelCustomizeBeacon:(beacon) => dispatch(onCancelCustomizeBeacon(beacon)),
+        onConfirmCustomizeBeacon:()=>dispatch(onConfirmCustomizeBeacon()),
 
         clearLinkedPath:() => dispatch(onClearLinkedPath()),
         confirmLinkedPath:() => dispatch(onConfirmLinkedPath())

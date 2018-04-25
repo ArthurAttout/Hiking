@@ -12,6 +12,7 @@ import {StyleSheet, ScrollView, TextInput,
     View, Image, Text,FlatList, TouchableNativeFeedback} from 'react-native';
 import Modal from "react-native-modal";
 import ImagePicker from 'react-native-image-picker'
+import TextInputLayout from "rn-textinputlayout/src/TextInputLayout";
 
 const styles = StyleSheet.create({
     container: {
@@ -276,9 +277,16 @@ export default class Menu extends React.Component{
                                 onPress={() => {this.props.onRequestModal(item)}}
                                 delayPressIn={0}>
                                 <View style={styles.nativeFeedbackStyle}>
-                                    <Text style={styles.textStyleBeacon}>
-                                        Beacon {index + 1}
-                                    </Text>
+                                    {
+                                        item.name === undefined ?
+                                            <Text style={styles.textStyleBeacon}>
+                                                Beacon {index + 1}
+                                            </Text>
+                                            :
+                                            <Text style={styles.textStyleBeacon}>
+                                                {item.name}
+                                            </Text>
+                                    }
                                 </View>
                             </TouchableNativeFeedback>
                         </View>
@@ -294,33 +302,37 @@ export default class Menu extends React.Component{
                         justifyContent: 'center',
                         alignItems:'center',
                         flexDirection:'column'}}>
-                        <View style={{width:'50%',height:'50%',justifyContent:'space-between'}}>
+                        <View style={{width:'100%',height:'100%',justifyContent:'space-between', padding:35}}>
 
                             <View
-                            style={{flex:1, justifyContent:'center',alignSelf:'center',width:70,height:70}}>
+                            style={{flex:1, justifyContent:'space-between',alignContent:'center',alignSelf:'center',flexDirection:"row",width:'100%',height:'100%'}}>
                                 <TouchableNativeFeedback
                                     background={TouchableNativeFeedback.Ripple('grey')}
                                     onPress={() => {this._showPicker()}}
-                                    style={{backgroundColor:'red',alignSelf:'center',width:50,height:50}}
                                     delayPressIn={0}>
                                     {
                                         this.props.currentCustomizingBeacon === undefined || this.props.currentCustomizingBeacon.imagePath === undefined ?
                                             <Image
-                                                style={{width:'100%',height:'100%',alignSelf:'center'}}
+                                                style={{width:80,height:80,alignSelf:'center'}}
                                                 source={require('../images/logo_254.png')}
                                             />
                                             :
                                             <Image
-                                                style={{width:'100%',height:'100%',alignSelf:'center'}}
+                                                style={{width:'50%',height:'50%',alignSelf:'center'}}
                                                 source={{uri:"file://" + this.props.currentCustomizingBeacon.imagePath}}
                                             />
                                     }
                                 </TouchableNativeFeedback>
-                                <View style={{flex:2}}></View>
+                                <TextInput
+                                    style={{width:200,height:60, alignSelf:'center'}}
+                                    placeholder={'Beacon name'}
+                                    value={this.props.currentCustomizingBeacon.name}
+                                    onChangeText={(name) => this.props.setCurrentBeaconName(name)}
+                                />
                             </View>
 
                             <View
-                                style={{flex:1,flexDirection:'row', justifyContent:'space-between',alignItems:'center'}}>
+                                style={{flex:1,flexDirection:'row', justifyContent:'flex-end',alignItems:'flex-end'}}>
 
                                 <TouchableNativeFeedback
                                     background={TouchableNativeFeedback.Ripple('grey')}
@@ -328,7 +340,8 @@ export default class Menu extends React.Component{
                                     onPress={() => {this.props.onCancelCustomizeBeacon(section)}}
                                     delayPressIn={0}>
                                         <Text style={{
-                                            fontSize:19
+                                            fontSize:19,
+                                            padding:15
                                         }}>
                                             Cancel
                                         </Text>
@@ -337,10 +350,11 @@ export default class Menu extends React.Component{
                                 <TouchableNativeFeedback
                                     background={TouchableNativeFeedback.Ripple('grey')}
                                     style={{flex:2}}
-                                    onPress={() => {this.props.onCloseModal()}}
+                                    onPress={() => {this.props.onConfirmCustomizeBeacon()}}
                                     delayPressIn={0}>
                                         <Text style={{
-                                            fontSize:19
+                                            fontSize:19,
+                                            padding:15
                                         }}>
                                             Confirm
                                         </Text>

@@ -3,8 +3,8 @@ import {
     TOUCH_BEACON,CENTER_REGION_CHANGED, CONFIRM_PATH, CLEAR_PATH
 } from "../actions/actionsCreateGameMap";
 
-import {FOCUS_ON_BEACON,SUBMIT_TRACK_NAME,TRACK_NAME_CHANGED,EDIT_TRACK_NAME,CANCEL_CUSTOMIZE_BEACON,
-    EDIT_TRACK,CLEAR_BEACONS,DELETE_TRACK,ADD_NEW_TRACK,CLOSE_MODAL,REQUEST_MODAL,SET_IMAGE_PATH
+import {FOCUS_ON_BEACON,SUBMIT_TRACK_NAME,TRACK_NAME_CHANGED,EDIT_TRACK_NAME,CANCEL_CUSTOMIZE_BEACON,CONFIRM_CUSTOMIZE_BEACON,
+    EDIT_TRACK,CLEAR_BEACONS,DELETE_TRACK,ADD_NEW_TRACK,CLOSE_MODAL,REQUEST_MODAL,SET_IMAGE_PATH,SET_CURRENT_BEACON_NAME
 } from '../actions/actionsCreateGameMapDrawer'
 
 import UUIDGenerator from 'react-native-uuid-generator';
@@ -22,7 +22,10 @@ let dataState = {
     sideMenuOpened: false,
     regionFocus:undefined,
     modalVisible:false,
-    currentCustomizingBeacon: undefined
+    currentCustomizingBeacon: {
+        name:undefined,
+        imagePath:undefined,
+    }
 };
 
 export default function createGameMapReducer(state = dataState, action){
@@ -379,11 +382,8 @@ export default function createGameMapReducer(state = dataState, action){
             };
 
         case SET_IMAGE_PATH:
-            console.log(action);
-            console.log("-----------");
-            let newres = {
+            return {
                 ...state,
-                isDefaultImagePathCustomizeBeacon: true,
                 modalVisible:false,
                 tracks : state.tracks.map((item,index) => {
                     if(item.id === state.currentTrack.id){
@@ -393,7 +393,8 @@ export default function createGameMapReducer(state = dataState, action){
                                 if(beacon.id === state.currentCustomizingBeacon.id){
                                     return{
                                         ...beacon,
-                                        imagePath: action.path
+                                        imagePath: action.path,
+                                        name: state.currentCustomizingBeacon.name,
                                     }
                                 }
                                 return beacon;
@@ -415,13 +416,11 @@ export default function createGameMapReducer(state = dataState, action){
                     })
                 }
             };
-            console.log(newres);
-            return newres;
 
         case CANCEL_CUSTOMIZE_BEACON:
             return{
                 ...state,
-                isDefaultImagePathCustomizeBeacon: true,
+
                 modalVisible:false,
                 tracks : state.tracks.map((item,index) => {
                     if(item.id === state.currentTrack.id){
@@ -451,6 +450,51 @@ export default function createGameMapReducer(state = dataState, action){
                         }
                         return beacon;
                     })
+                }
+            };
+
+        case CONFIRM_CUSTOMIZE_BEACON:
+            return{
+                ...state,
+                modalVisible:false,
+                tracks : state.tracks.map((item,index) => {
+                    if(item.id === state.currentTrack.id){
+                        return {
+                            ...item,
+                            beacons: item.beacons.map((beacon) => {
+                                if(beacon.id === state.currentCustomizingBeacon.id){
+                                    return{
+                                        ...beacon,
+                                        name: state.currentCustomizingBeacon.name,
+                                    }
+                                }
+                                return beacon;
+                            })
+                        }
+                    }
+                    return item;
+                }),
+                currentTrack:{
+                    ...state.currentTrack,
+                    beacons:state.currentTrack.beacons.map((beacon) => {
+                        if(beacon.id === state.currentCustomizingBeacon.id){
+                            return{
+                                ...beacon,
+                                name: state.currentCustomizingBeacon.name,
+                            }
+                        }
+                        return beacon;
+                    })
+                }
+            };
+
+
+        case SET_CURRENT_BEACON_NAME:
+            return{
+                ...state,
+                currentCustomizingBeacon:{
+                    ...state.currentCustomizingBeacon,
+                    name: action.name
                 }
             };
 
