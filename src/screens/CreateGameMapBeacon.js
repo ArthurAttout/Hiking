@@ -11,7 +11,8 @@ import {
 } from "../actions/actionsCreateGameMap";
 
 import {onFocusOnBeacon,addNewTrack,onDeleteTrack,onEditTrack,onClearBeacons,
-        onEditTrackName,trackNameChanged,onSubmitTrackName,onCloseModal,onRequestModal
+        onEditTrackName,trackNameChanged,onSubmitTrackName,onCloseModal,onRequestModal,
+        setImagePath,onCancelCustomizeBeacon
 } from "../actions/actionsCreateGameMapDrawer";
 
 import {connect} from "react-redux";
@@ -51,6 +52,7 @@ class Screen extends React.Component {
             navigator={navigator}
             userTracks={this.props.tracks}
             currentTrackID={this.props.currentTrack.id}
+            setImagePath={(path) => {this.props.setImagePath(path)}}
             onAddNewTrack={() => {this.props.addNewTrack()}}
             onEditTrackName={(track) => {this.props.onEditTrackName(track)}}
             onTrackNameChanged={(track,newName) => {this.props.onTrackNameChanged(track,newName)}}
@@ -60,7 +62,9 @@ class Screen extends React.Component {
             onFocusOnBeacon={(beacon) => {this.props.onFocusOnBeacon(beacon)}}
             onDeleteTrack={(track) => {this.props.onDeleteTrack(track)}}
             onCloseModal={() => {this.props.onCloseModal()}}
-            onRequestModal={()=>{this.props.onRequestModal()}}
+            onCancelCustomizeBeacon={(beacon) => {this.props.onCancelCustomizeBeacon(beacon)}}
+            onRequestModal={(beacon)=>{this.props.onRequestModal(beacon)}}
+            currentCustomizingBeacon={this.props.currentCustomizingBeacon}
             modalVisible={this.props.modalVisible}/>;
         return(
             <SideMenu
@@ -183,7 +187,8 @@ const mapStateToProps = (state, own) => {
         tracks: state.createGameMapReducer.tracks,
         confirmLinkedBeacons:state.createGameMapReducer.confirmLinkedBeacons,
         sideMenuOpened:state.createGameMapReducer.sideMenuOpened,
-        modalVisible:state.createGameMapReducer.modalVisible
+        modalVisible:state.createGameMapReducer.modalVisible,
+        currentCustomizingBeacon: state.createGameMapReducer.currentCustomizingBeacon
     }
 };
 
@@ -209,7 +214,9 @@ function mapDispatchToProps(dispatch,own) {
         onSubmitTrackName: (track) => dispatch(onSubmitTrackName(track)),
         onFocusOnBeacon: (beacon) => dispatch(onFocusOnBeacon(beacon)),
         onCloseModal:() => dispatch(onCloseModal()),
-        onRequestModal:() => dispatch(onRequestModal()),
+        onRequestModal:(beacon) => dispatch(onRequestModal(beacon)),
+        setImagePath:(path) => dispatch(setImagePath(path)),
+        onCancelCustomizeBeacon:(beacon) => dispatch(onCancelCustomizeBeacon(beacon)),
 
         clearLinkedPath:() => dispatch(onClearLinkedPath()),
         confirmLinkedPath:() => dispatch(onConfirmLinkedPath())

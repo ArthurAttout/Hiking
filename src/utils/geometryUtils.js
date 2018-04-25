@@ -34,3 +34,7 @@ export const calculateTotalDistance = (track) => {
     });
     return total;
 };
+
+export const calculateDeltaAltitude = (track) => {
+    return 150;
+};

@@ -3,8 +3,8 @@ import {
     TOUCH_BEACON,CENTER_REGION_CHANGED, CONFIRM_PATH, CLEAR_PATH
 } from "../actions/actionsCreateGameMap";
 
-import {FOCUS_ON_BEACON,SUBMIT_TRACK_NAME,TRACK_NAME_CHANGED,EDIT_TRACK_NAME,
-    EDIT_TRACK,CLEAR_BEACONS,DELETE_TRACK,ADD_NEW_TRACK,CLOSE_MODAL,REQUEST_MODAL
+import {FOCUS_ON_BEACON,SUBMIT_TRACK_NAME,TRACK_NAME_CHANGED,EDIT_TRACK_NAME,CANCEL_CUSTOMIZE_BEACON,
+    EDIT_TRACK,CLEAR_BEACONS,DELETE_TRACK,ADD_NEW_TRACK,CLOSE_MODAL,REQUEST_MODAL,SET_IMAGE_PATH
 } from '../actions/actionsCreateGameMapDrawer'
 
 import UUIDGenerator from 'react-native-uuid-generator';
@@ -21,7 +21,8 @@ let dataState = {
     confirmLinkedBeacons:false,
     sideMenuOpened: false,
     regionFocus:undefined,
-    modalVisible:false
+    modalVisible:false,
+    currentCustomizingBeacon: undefined
 };
 
 export default function createGameMapReducer(state = dataState, action){
@@ -88,7 +89,6 @@ export default function createGameMapReducer(state = dataState, action){
                             longitude: state.newCenteredRegion.longitude
                         }
                     }),
-
                 },
                 centerRegion:state.newCenteredRegion
             };
@@ -288,7 +288,8 @@ export default function createGameMapReducer(state = dataState, action){
                         return {
                             ...track,
                             path:state.currentTrack.path,
-                            totalDistance: action.payload,
+                            totalDistance: action.totalDistance,
+                            altitudeDelta: action.totalDelta
                         }
                     }
                     return track;
@@ -373,7 +374,84 @@ export default function createGameMapReducer(state = dataState, action){
         case REQUEST_MODAL:
             return{
                 ...state,
-                modalVisible:true
+                modalVisible:true,
+                currentCustomizingBeacon: action.beacon
+            };
+
+        case SET_IMAGE_PATH:
+            console.log(action);
+            console.log("-----------");
+            let newres = {
+                ...state,
+                isDefaultImagePathCustomizeBeacon: true,
+                modalVisible:false,
+                tracks : state.tracks.map((item,index) => {
+                    if(item.id === state.currentTrack.id){
+                        return {
+                            ...item,
+                            beacons: item.beacons.map((beacon) => {
+                                if(beacon.id === state.currentCustomizingBeacon.id){
+                                    return{
+                                        ...beacon,
+                                        imagePath: action.path
+                                    }
+                                }
+                                return beacon;
+                            })
+                        }
+                    }
+                    return item;
+                }),
+                currentTrack:{
+                    ...state.currentTrack,
+                    beacons:state.currentTrack.beacons.map((beacon) => {
+                        if(beacon.id === state.currentCustomizingBeacon.id){
+                            return{
+                                ...beacon,
+                                imagePath:action.path
+                            }
+                        }
+                        return beacon;
+                    })
+                }
+            };
+            console.log(newres);
+            return newres;
+
+        case CANCEL_CUSTOMIZE_BEACON:
+            return{
+                ...state,
+                isDefaultImagePathCustomizeBeacon: true,
+                modalVisible:false,
+                tracks : state.tracks.map((item,index) => {
+                    if(item.id === state.currentTrack.id){
+                        return {
+                            ...item,
+                            beacons: item.beacons.map((beacon) => {
+                                if(beacon.id === state.currentCustomizingBeacon.id){
+                                    return{
+                                        ...beacon,
+                                        imagePath: undefined
+                                    }
+                                }
+                                return beacon;
+                            })
+                        }
+                    }
+                    return item;
+                }),
+                currentTrack:{
+                    ...state.currentTrack,
+                    beacons:state.currentTrack.beacons.map((beacon) => {
+                        if(beacon.id === state.currentCustomizingBeacon.id){
+                            return{
+                                ...beacon,
+                                imagePath:undefined
+                            }
+                        }
+                        return beacon;
+                    })
+                }
             };
 
         default:

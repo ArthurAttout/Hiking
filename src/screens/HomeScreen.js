@@ -58,6 +58,7 @@ export default class HomeScreen extends React.Component {
 
     _onPressJoinGame() {
         const { navigate } = this.props.navigation;
+        FCM.subscribeToTopic('gameStart');
         navigate('JoinGameScreen');
     }
 

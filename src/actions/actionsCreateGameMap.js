@@ -1,5 +1,5 @@
 import UUIDGenerator from 'react-native-uuid-generator';
-import {calculateTotalDistance} from '../utils/geometryUtils'
+import {calculateTotalDistance,calculateDeltaAltitude} from '../utils/geometryUtils'
 import store from '../config/store'
 
 export const DRAG_BEACON = 'DRAG_BEACON';
@@ -64,7 +64,8 @@ export const onClearLinkedPath = () =>{
 export const onConfirmLinkedPath = () => {
     return{
         type:CONFIRM_PATH,
-        payload: calculateTotalDistance(store.getState().createGameMapReducer.currentTrack)
+        totalDistance: calculateTotalDistance(store.getState().createGameMapReducer.currentTrack),
+        totalDelta: calculateDeltaAltitude(store.getState().createGameMapReducer.currentTrack),
     }
 };
 

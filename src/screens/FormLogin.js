@@ -18,7 +18,6 @@ export default class FormLogin extends React.Component {
     super(props);
     this._onPressButton = this._onPressButton.bind(this);
     this.state = {username:'', password: ''};
-    FCM.subscribeToTopic('gameStart');
   }
 
   render() {

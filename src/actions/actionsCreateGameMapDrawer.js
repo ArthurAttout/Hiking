@@ -8,6 +8,8 @@ export const SUBMIT_TRACK_NAME = 'SUBMIT_TRACK_NAME';
 export const TRACK_NAME_CHANGED = 'TRACK_NAME_CHANGED';
 export const CLOSE_MODAL = 'CLOSE_MODAL';
 export const REQUEST_MODAL = 'REQUEST_MODAL';
+export const SET_IMAGE_PATH = 'SET_IMAGE_PATH';
+export const CANCEL_CUSTOMIZE_BEACON = 'CANCEL_CUSTOMIZE_BEACON';
 
 export const onEditTrackName = (track) =>{
     return{
@@ -75,8 +77,23 @@ export const onCloseModal = () => {
     }
 };
 
-export const onRequestModal = () => {
+export const onRequestModal = (beacon) => {
     return{
-        type: REQUEST_MODAL
+        type: REQUEST_MODAL,
+        beacon: beacon
+    }
+};
+
+export const setImagePath = (path) =>{
+    return{
+        type:SET_IMAGE_PATH,
+        path:path,
+    }
+};
+
+export const onCancelCustomizeBeacon = (beacon) => {
+    return {
+        type:CANCEL_CUSTOMIZE_BEACON,
+        beacon: beacon
     }
 };

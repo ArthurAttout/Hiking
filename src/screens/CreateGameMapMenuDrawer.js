@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {COLORS} from '../utils/constants'
 import Accordion from 'react-native-collapsible/Accordion';
 import IconFoundation from 'react-native-vector-icons/Foundation';
+import IconAwesome from 'react-native-vector-icons/FontAwesome';
 import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import { createIconSetFromIcoMoon } from 'react-native-vector-icons';
 import icomoonConfig from '../config/selection.json';
@@ -23,16 +24,20 @@ const styles = StyleSheet.create({
         width:'100%'
     },
     header:{
+        height:100,
+        justifyContent:'space-between',
+        alignItems:'center',
+        flexWrap:'wrap',
+        flexDirection:'row',
         backgroundColor:COLORS.Secondary,
-        marginBottom:1,
-        width:'auto',
-        padding:10,
     },
     headerCurrentTrack:{
+        height:100,
+        justifyContent:'space-between',
+        alignItems:'center',
+        flexWrap:'wrap',
+        flexDirection:'row',
         backgroundColor:COLORS.Primary_accent,
-        marginBottom:1,
-        width:'auto',
-        padding:10,
     },
     title:{
         textDecorationLine:'underline',
@@ -53,6 +58,8 @@ const styles = StyleSheet.create({
         alignSelf:'center'
     },
     headerText:{
+        height:50,
+        width:'100%',
         color:"#FFFFFF"
     },
     buttonViewStyle:{
@@ -130,6 +137,43 @@ export default class Menu extends React.Component{
                         underlineColorAndroid='transparent'
                         placeholderTextColor="#FFFFFF"
                         value="Track"/>
+
+                    <View style={{width:'15%'}}>
+                        <IconAwesome.Button
+                            name="arrows-h"
+                            color="#ffffff"
+                            backgroundColor='transparent'
+                            delayPressIn={0}/>
+                    </View>
+
+                    <View style={{width:'35%',paddingRight:5}}>
+                        <Text style={{ color:'#ffffff'}}>
+                            {
+                                section.totalDistance !== undefined ?
+                                section.totalDistance.toFixed(3) :
+                                0
+                            } m
+                        </Text>
+                    </View>
+
+                    <View style={{width:'15%'}}>
+                        <IconAwesome.Button
+                            name="arrows-v"
+                            color="#ffffff"
+                            backgroundColor='transparent'
+                            delayPressIn={0}/>
+                    </View>
+
+                    <View style={{width:'35%',paddingRight:5}}>
+                        <Text style={{ color:'#ffffff'}}>
+                        {
+                            section.altitudeDelta !== undefined ?
+                            section.altitudeDelta.toFixed(3) :
+                            0
+                        } m
+                        </Text>
+                    </View>
+
                 </View>
             );
         }
@@ -145,6 +189,42 @@ export default class Menu extends React.Component{
                         underlineColorAndroid='transparent'
                         placeholder="Track"
                         placeholderTextColor="#FFFFFF"/>
+
+                    <View style={{width:'15%'}}>
+                        <IconAwesome.Button
+                            name="arrows-h"
+                            color="#ffffff"
+                            backgroundColor='transparent'
+                            delayPressIn={0}/>
+                    </View>
+
+                    <View style={{width:'35%',paddingRight:5}}>
+                        <Text style={{ color:'#ffffff'}}>
+                            {
+                                section.totalDistance !== undefined ?
+                                section.totalDistance.toFixed(3) :
+                                0
+                            } m
+                        </Text>
+                    </View>
+
+                    <View style={{width:'15%'}}>
+                        <IconAwesome.Button
+                            name="arrows-v"
+                            color="#ffffff"
+                            backgroundColor='transparent'
+                            delayPressIn={0}/>
+                    </View>
+
+                    <View style={{width:'35%',paddingRight:5}}>
+                        <Text style={{ color:'#ffffff'}}>
+                            {
+                                section.altitudeDelta !== undefined ?
+                                section.altitudeDelta.toFixed(3) :
+                                0
+                            } m
+                        </Text>
+                    </View>
                 </View>
             );
         }
@@ -154,7 +234,6 @@ export default class Menu extends React.Component{
         return (
             <View style={{flex:1, flexDirection: 'column',justifyContent:'center',backgroundColor:"#f3f3f3"}}>
                 <Text>Number of beacons : {section.beacons.length}</Text>
-                {this._renderTrackLength(section.totalDistance)}
                 <View style={{flexDirection: 'row',justifyContent:'center'}}>
                     <IconFoundation.Button
                         name="pencil"
@@ -194,7 +273,7 @@ export default class Menu extends React.Component{
                             style={styles.buttonViewStyle}>
                             <TouchableNativeFeedback
                                 background={TouchableNativeFeedback.Ripple('white')}
-                                onPress={() => {this.props.onRequestModal()}}
+                                onPress={() => {this.props.onRequestModal(item)}}
                                 delayPressIn={0}>
                                 <View style={styles.nativeFeedbackStyle}>
                                     <Text style={styles.textStyleBeacon}>
@@ -204,46 +283,106 @@ export default class Menu extends React.Component{
                             </TouchableNativeFeedback>
                         </View>
                     )}/>
+
                 <Modal
                     onBackdropPress={() => {this.props.onCloseModal()}}
-                    style={{flex:1,justifyContent:'center',alignItems:'center'}}
                     isVisible={this.props.modalVisible}>
 
-                    <View style={{ flex: 0,
+                    <View style={{ width:'100%',
+                        height:'50%',
                         backgroundColor:'#ffffff',
                         justifyContent: 'center',
                         alignItems:'center',
-                        width:'100%',
-                        height:400 }}>
-                        <View>
-                            <TouchableNativeFeedback
-                                background={TouchableNativeFeedback.Ripple('grey')}
-                                onPress={() => {console.log("aaaaaaaaa")}}
-                                delayPressIn={0}>
-                                <Image
-                                    style={{width:80,height:80}}
-                                    source={require('../images/logo_512.png')}
-                                />
-                            </TouchableNativeFeedback>
+                        flexDirection:'column'}}>
+                        <View style={{width:'50%',height:'50%',justifyContent:'space-between'}}>
+
+                            <View
+                            style={{flex:1, justifyContent:'center',alignSelf:'center',width:70,height:70}}>
+                                <TouchableNativeFeedback
+                                    background={TouchableNativeFeedback.Ripple('grey')}
+                                    onPress={() => {this._showPicker()}}
+                                    style={{backgroundColor:'red',alignSelf:'center',width:50,height:50}}
+                                    delayPressIn={0}>
+                                    {
+                                        this.props.currentCustomizingBeacon === undefined || this.props.currentCustomizingBeacon.imagePath === undefined ?
+                                            <Image
+                                                style={{width:'100%',height:'100%',alignSelf:'center'}}
+                                                source={require('../images/logo_254.png')}
+                                            />
+                                            :
+                                            <Image
+                                                style={{width:'100%',height:'100%',alignSelf:'center'}}
+                                                source={{uri:"file://" + this.props.currentCustomizingBeacon.imagePath}}
+                                            />
+                                    }
+                                </TouchableNativeFeedback>
+                                <View style={{flex:2}}></View>
+                            </View>
+
+                            <View
+                                style={{flex:1,flexDirection:'row', justifyContent:'space-between',alignItems:'center'}}>
+
+                                <TouchableNativeFeedback
+                                    background={TouchableNativeFeedback.Ripple('grey')}
+                                    style={{flex:2}}
+                                    onPress={() => {this.props.onCancelCustomizeBeacon(section)}}
+                                    delayPressIn={0}>
+                                        <Text style={{
+                                            fontSize:19
+                                        }}>
+                                            Cancel
+                                        </Text>
+                                </TouchableNativeFeedback>
+
+                                <TouchableNativeFeedback
+                                    background={TouchableNativeFeedback.Ripple('grey')}
+                                    style={{flex:2}}
+                                    onPress={() => {this.props.onCloseModal()}}
+                                    delayPressIn={0}>
+                                        <Text style={{
+                                            fontSize:19
+                                        }}>
+                                            Confirm
+                                        </Text>
+                                </TouchableNativeFeedback>
+                            </View>
                         </View>
+
                     </View>
                 </Modal>
             </View>
         );
     }
 
-    _renderTrackLength(length){
-        if(length !== undefined){
-            return(
-                <Text>Distance : {(length/1000).toFixed(3)} km</Text>
-            )
-        }
-        else
-        {
-            return(
-                <Text>Not yet traced</Text>
-            )
-        }
+    _showPicker(){
+        var options = {
+            title: 'Select Avatar',
+            customButtons: [
+                {name: 'fb', title: 'Choose Photo from Facebook'},
+            ],
+            storageOptions: {
+                skipBackup: true,
+                path: 'images'
+            }
+        };
+
+        ImagePicker.showImagePicker(options, (response) => {
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            }
+            else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            }
+            else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            }
+            else {
+                let source = { uri: response.uri };
+                console.log(response.path);
+                this.props.setImagePath(response.path);
+            }
+        });
     }
+
 
 }
