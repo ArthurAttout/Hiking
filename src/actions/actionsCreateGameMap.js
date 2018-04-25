@@ -11,6 +11,8 @@ export const CENTER_REGION_CHANGED = 'CENTER_REGION_CHANGED';
 export const CLEAR_PATH = 'CLEAR_PATH';
 export const CONFIRM_PATH = 'CONFIRM_PATH';
 export const CHANGE_SIDE_MENU_OPENED = 'CHANGE_SIDE_MENU_OPENED';
+export const CALCULATING_PATH = 'CALCULATING_PATH';
+export const DONE_CALCULATING_PATH = 'DONE_CALCULATING_PATH';
 
 export const dragBeacon = (original,coord) =>{
     return{
@@ -62,10 +64,27 @@ export const onClearLinkedPath = () =>{
 };
 
 export const onConfirmLinkedPath = () => {
+    return dispatch => {
+        dispatch(fetchingDistances());
+        return calculateDeltaAltitude(store.getState().createGameMapReducer.currentTrack)
+            .then(function(res) {
+                dispatch(doneCalculatingDistances(res))
+            })
+            .catch(error => console.log("I fucked up : " + error));
+    };
+};
+
+export const fetchingDistances = () => {
     return{
-        type:CONFIRM_PATH,
+        type:CALCULATING_PATH
+    }
+};
+
+export const doneCalculatingDistances = (totalDelta) => {
+    return{
+        type:DONE_CALCULATING_PATH,
         totalDistance: calculateTotalDistance(store.getState().createGameMapReducer.currentTrack),
-        totalDelta: calculateDeltaAltitude(store.getState().createGameMapReducer.currentTrack),
+        totalDelta: totalDelta
     }
 };
 

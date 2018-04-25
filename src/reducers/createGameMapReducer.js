@@ -1,6 +1,6 @@
 import {
     DRAG_BEACON, SETUP_INITIAL_MAP, ADD_NEW_BEACON, TOGGLE_TRACKING,
-    TOUCH_BEACON,CENTER_REGION_CHANGED, CONFIRM_PATH, CLEAR_PATH
+    TOUCH_BEACON,CENTER_REGION_CHANGED, CONFIRM_PATH, CLEAR_PATH,CALCULATING_PATH,DONE_CALCULATING_PATH
 } from "../actions/actionsCreateGameMap";
 
 import {FOCUS_ON_BEACON,SUBMIT_TRACK_NAME,TRACK_NAME_CHANGED,EDIT_TRACK_NAME,CANCEL_CUSTOMIZE_BEACON,CONFIRM_CUSTOMIZE_BEACON,
@@ -282,7 +282,7 @@ export default function createGameMapReducer(state = dataState, action){
             }
             return newState;
 
-        case CONFIRM_PATH:
+        case DONE_CALCULATING_PATH:
             return {
                 ...state,
                 confirmLinkedBeacons: false,

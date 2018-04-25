@@ -272,7 +272,7 @@ class Screen extends React.Component {
 
     _onSubmit(){
         const { navigate } = this.props.navigation;
-        navigate('CreateGameMapBeaconScreen');
+        navigate('CreateGameMapBeaconScreen',{chosenMode:this.props.chosenMode});
     }
 }
 

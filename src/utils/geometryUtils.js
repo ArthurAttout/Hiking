@@ -1,3 +1,5 @@
+export const API_KEY = "AIzaSyAM6PvX6b0VwVoyrswa0OgOVNMQY-EYczY";
+
 export const calculateDistance = (pointA, pointB) => {
 
     // http://www.movable-type.co.uk/scripts/latlong.html
@@ -36,5 +38,31 @@ export const calculateTotalDistance = (track) => {
 };
 
 export const calculateDeltaAltitude = (track) => {
-    return 150;
+
+    let totalDistanceInMeters = calculateTotalDistance(track);
+
+    let first = track.path[0];
+    let last = track.path[track.path.length-1];
+    let samplesAmount = (totalDistanceInMeters / 100).toFixed(0); //Approximately one sample every 100 meters
+    
+    if(samplesAmount <= 10)
+        samplesAmount = 10;
+
+    if(samplesAmount > 250)
+        samplesAmount = 250;
+
+    let parameters = first.latitude + "," + first.longitude + "|" + last.latitude + "," + last.longitude + "&samples=" + samplesAmount + "&key=" + API_KEY;
+    let url = "https://maps.googleapis.com/maps/api/elevation/json?path=" + parameters;
+    console.log(url);
+    return fetch(url)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(result) {
+            console.log(result);
+            let maximum = Math.max.apply(Math,result.results.map(function(o){return o.elevation;}));
+            let minimum = Math.min.apply(Math,result.results.map(function(o){return o.elevation;}));
+
+            return maximum - minimum;
+    });
 };

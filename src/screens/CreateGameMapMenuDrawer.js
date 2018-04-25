@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {COLORS} from '../utils/constants'
+import {COLORS, GAME_MODES} from '../utils/constants'
 import Accordion from 'react-native-collapsible/Accordion';
 import IconFoundation from 'react-native-vector-icons/Foundation';
 import IconAwesome from 'react-native-vector-icons/FontAwesome';
@@ -12,7 +12,9 @@ import {StyleSheet, ScrollView, TextInput,
     View, Image, Text,FlatList, TouchableNativeFeedback} from 'react-native';
 import Modal from "react-native-modal";
 import ImagePicker from 'react-native-image-picker'
-import TextInputLayout from "rn-textinputlayout/src/TextInputLayout";
+import SimpleModal from './CustomizeBeaconModals/SimpleModal'
+import RiddleModal from "./CustomizeBeaconModals/RiddleModal";
+import RiddleAndCodeModal from "./CustomizeBeaconModals/RiddleAndCodeModal";
 
 const styles = StyleSheet.create({
     container: {
@@ -25,6 +27,7 @@ const styles = StyleSheet.create({
         width:'100%'
     },
     header:{
+        margin:3,
         height:100,
         justifyContent:'space-between',
         alignItems:'center',
@@ -33,6 +36,7 @@ const styles = StyleSheet.create({
         backgroundColor:COLORS.Secondary,
     },
     headerCurrentTrack:{
+        margin:3,
         height:100,
         justifyContent:'space-between',
         alignItems:'center',
@@ -96,6 +100,7 @@ export default class Menu extends React.Component{
 
         this._renderContent = this._renderContent.bind(this);
         this._renderHeader = this._renderHeader.bind(this);
+        this._renderModal = this._renderModal.bind(this);
     }
 
     render(){
@@ -291,81 +296,51 @@ export default class Menu extends React.Component{
                             </TouchableNativeFeedback>
                         </View>
                     )}/>
-
-                <Modal
-                    onBackdropPress={() => {this.props.onCloseModal()}}
-                    isVisible={this.props.modalVisible}>
-
-                    <View style={{ width:'100%',
-                        height:'50%',
-                        backgroundColor:'#ffffff',
-                        justifyContent: 'center',
-                        alignItems:'center',
-                        flexDirection:'column'}}>
-                        <View style={{width:'100%',height:'100%',justifyContent:'space-between', padding:35}}>
-
-                            <View
-                            style={{flex:1, justifyContent:'space-between',alignContent:'center',alignSelf:'center',flexDirection:"row",width:'100%',height:'100%'}}>
-                                <TouchableNativeFeedback
-                                    background={TouchableNativeFeedback.Ripple('grey')}
-                                    onPress={() => {this._showPicker()}}
-                                    delayPressIn={0}>
-                                    {
-                                        this.props.currentCustomizingBeacon === undefined || this.props.currentCustomizingBeacon.imagePath === undefined ?
-                                            <Image
-                                                style={{width:80,height:80,alignSelf:'center'}}
-                                                source={require('../images/logo_254.png')}
-                                            />
-                                            :
-                                            <Image
-                                                style={{width:'50%',height:'50%',alignSelf:'center'}}
-                                                source={{uri:"file://" + this.props.currentCustomizingBeacon.imagePath}}
-                                            />
-                                    }
-                                </TouchableNativeFeedback>
-                                <TextInput
-                                    style={{width:200,height:60, alignSelf:'center'}}
-                                    placeholder={'Beacon name'}
-                                    value={this.props.currentCustomizingBeacon.name}
-                                    onChangeText={(name) => this.props.setCurrentBeaconName(name)}
-                                />
-                            </View>
-
-                            <View
-                                style={{flex:1,flexDirection:'row', justifyContent:'flex-end',alignItems:'flex-end'}}>
-
-                                <TouchableNativeFeedback
-                                    background={TouchableNativeFeedback.Ripple('grey')}
-                                    style={{flex:2}}
-                                    onPress={() => {this.props.onCancelCustomizeBeacon(section)}}
-                                    delayPressIn={0}>
-                                        <Text style={{
-                                            fontSize:19,
-                                            padding:15
-                                        }}>
-                                            Cancel
-                                        </Text>
-                                </TouchableNativeFeedback>
-
-                                <TouchableNativeFeedback
-                                    background={TouchableNativeFeedback.Ripple('grey')}
-                                    style={{flex:2}}
-                                    onPress={() => {this.props.onConfirmCustomizeBeacon()}}
-                                    delayPressIn={0}>
-                                        <Text style={{
-                                            fontSize:19,
-                                            padding:15
-                                        }}>
-                                            Confirm
-                                        </Text>
-                                </TouchableNativeFeedback>
-                            </View>
-                        </View>
-
-                    </View>
-                </Modal>
+                {
+                    this._renderModal()
+                }
             </View>
         );
+    }
+
+    _renderModal(section){
+
+        switch(this.props.chosenMode.mode){
+            case GAME_MODES.NORMAL:
+               return(
+                   <SimpleModal
+                       modalVisible={this.props.modalVisible}
+                       onCancelCustomizeBeacon={this.props.onCancelCustomizeBeacon}
+                       currentCustomizingBeacon = {this.props.currentCustomizingBeacon}
+                       setCurrentBeaconName={this.props.setCurrentBeaconName}
+                       onConfirmCustomizeBeacon={this.props.onConfirmCustomizeBeacon}
+                       section={section}
+                       onCloseModal={this.props.onCloseModal}/>);
+
+            case GAME_MODES.RIDDLES:
+                return(
+                    <RiddleModal
+                        modalVisible={this.props.modalVisible}
+                        onCancelCustomizeBeacon={this.props.onCancelCustomizeBeacon}
+                        currentCustomizingBeacon = {this.props.currentCustomizingBeacon}
+                        setCurrentBeaconName={this.props.setCurrentBeaconName}
+                        onConfirmCustomizeBeacon={this.props.onConfirmCustomizeBeacon}
+                        section={section}
+                        onCloseModal={this.props.onCloseModal}/>);
+
+            case GAME_MODES.RIDDLES_AND_QR_CODE:
+                return(
+                    <RiddleAndCodeModal
+                        modalVisible={this.props.modalVisible}
+                        onCancelCustomizeBeacon={this.props.onCancelCustomizeBeacon}
+                        currentCustomizingBeacon = {this.props.currentCustomizingBeacon}
+                        setCurrentBeaconName={this.props.setCurrentBeaconName}
+                        onConfirmCustomizeBeacon={this.props.onConfirmCustomizeBeacon}
+                        section={section}
+                        onCloseModal={this.props.onCloseModal}/>);
+
+        }
+
     }
 
     _showPicker(){

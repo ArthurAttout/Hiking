@@ -49,24 +49,25 @@ class Screen extends React.Component {
 
     render(){
         const menu = <Menu
+            chosenMode={this.props.chosenMode}
             navigator={navigator}
             userTracks={this.props.tracks}
             currentTrackID={this.props.currentTrack.id}
-            setImagePath={(path) => {this.props.setImagePath(path)}}
-            onAddNewTrack={() => {this.props.addNewTrack()}}
-            onEditTrackName={(track) => {this.props.onEditTrackName(track)}}
-            onTrackNameChanged={(track,newName) => {this.props.onTrackNameChanged(track,newName)}}
-            onSubmitTrackName={(track) => {this.props.onSubmitTrackName(track)}}
-            onEditTrack={(track) => {this.props.onEditTrack(track)}}
-            onClearBeacons={(track) => {this.props.onClearBeacons(track)}}
-            onFocusOnBeacon={(beacon) => {this.props.onFocusOnBeacon(beacon)}}
-            onDeleteTrack={(track) => {this.props.onDeleteTrack(track)}}
-            onCloseModal={() => {this.props.onCloseModal()}}
-            onCancelCustomizeBeacon={(beacon) => {this.props.onCancelCustomizeBeacon(beacon)}}
-            onRequestModal={(beacon)=>{this.props.onRequestModal(beacon)}}
+            setImagePath={this.props.setImagePath}
+            onAddNewTrack={this.props.addNewTrack}
+            onEditTrackName={this.props.onEditTrackName}
+            onTrackNameChanged={this.props.onTrackNameChanged}
+            onSubmitTrackName={this.props.onSubmitTrackName}
+            onEditTrack={this.props.onEditTrack}
+            onClearBeacons={this.props.onClearBeacons}
+            onFocusOnBeacon={this.props.onFocusOnBeacon}
+            onDeleteTrack={this.props.onDeleteTrack}
+            onCloseModal={this.props.onCloseModal}
+            onCancelCustomizeBeacon={this.props.onCancelCustomizeBeacon}
+            onRequestModal={this.props.onRequestModal}
             currentCustomizingBeacon={this.props.currentCustomizingBeacon}
-            onConfirmCustomizeBeacon={()=>{this.props.onConfirmCustomizeBeacon()}}
-            setCurrentBeaconName={(name)=>{this.props.setCurrentBeaconName(name)}}
+            onConfirmCustomizeBeacon={this.props.onConfirmCustomizeBeacon}
+            setCurrentBeaconName={this.props.setCurrentBeaconName}
             modalVisible={this.props.modalVisible}/>;
         return(
             <SideMenu
