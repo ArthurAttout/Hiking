@@ -12,6 +12,16 @@ export const SET_IMAGE_PATH = 'SET_IMAGE_PATH';
 export const CANCEL_CUSTOMIZE_BEACON = 'CANCEL_CUSTOMIZE_BEACON';
 export const SET_CURRENT_BEACON_NAME = 'SET_CURRENT_BEACON_NAME';
 export const CONFIRM_CUSTOMIZE_BEACON = 'CONFIRM_CUSTOMIZE_BEACON';
+export const SHOW_MODAL_ADD_CUSTOM_RIDDLE = 'SHOW_MODAL_ADD_CUSTOM_RIDDLE';
+export const SHOW_MODAL_ADD_RANDOM_RIDDLE = 'SHOW_MODAL_ADD_RANDOM_RIDDLE';
+export const CLOSE_MODAL_ADD_CUSTOM_RIDDLE = 'CLOSE_MODAL_ADD_CUSTOM_RIDDLE';
+export const CLOSE_MODAL_ADD_RANDOM_RIDDLE = 'CLOSE_MODAL_ADD_RANDOM_RIDDLE';
+export const SET_CURRENT_BEACON_RIDDLE_ANSWER = 'SET_CURRENT_BEACON_RIDDLE_ANSWER';
+export const SET_CURRENT_BEACON_RIDDLE_STATEMENT = 'SET_CURRENT_BEACON_RIDDLE_STATEMENT';
+
+export const RANDOM_RIDDLE_LOADING = 'RANDOM_RIDDLE_LOADING';
+export const RANDOM_RIDDLE_LOADED = 'RANDOM_RIDDLE_LOADED';
+export const REQUEST_NEW_RANDOM_RIDDLE = 'REQUEST_NEW_RANDOM_RIDDLE';
 
 export const onEditTrackName = (track) =>{
     return{
@@ -112,3 +122,74 @@ export const setCurrentBeaconName = (name) => {
         name: name
     }
 };
+
+export const addCustomRiddle = () => {
+    return{
+        type:SHOW_MODAL_ADD_CUSTOM_RIDDLE
+    }
+};
+
+export const addRandomRiddle = () => {
+    return(dispatch) => {
+        dispatch(randomRiddleLoading());
+        fetch("http://jservice.io/api/random")
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                dispatch(randomRiddleLoaded(result[0]))
+            });
+    }
+};
+
+export const requestNewRandomRiddle = () => {
+    return(dispatch) => {
+        fetch("http://jservice.io/api/random")
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                dispatch(randomRiddleLoaded(result[0]))
+            });
+    }
+};
+
+export const randomRiddleLoading = () => {
+    return{
+        type:RANDOM_RIDDLE_LOADING
+    }
+};
+
+export const randomRiddleLoaded = (riddle) => {
+    return{
+        type: RANDOM_RIDDLE_LOADED,
+        riddle: riddle
+    }
+};
+
+export const submitCustomRiddle = () => {
+    return{
+        type:CLOSE_MODAL_ADD_CUSTOM_RIDDLE
+    }
+};
+
+export const submitRandomRiddle = () => {
+    return{
+        type:CLOSE_MODAL_ADD_RANDOM_RIDDLE
+    }
+};
+
+export const setCurrentBeaconRiddleAnswer = (answer) => {
+    return{
+        type:SET_CURRENT_BEACON_RIDDLE_ANSWER,
+        answer: answer
+    }
+};
+
+export const setCurrentBeaconRiddleStatement = (statement) => {
+    return{
+        type:SET_CURRENT_BEACON_RIDDLE_STATEMENT,
+        statement: statement
+    }
+};
+

@@ -1,10 +1,12 @@
 import {
     DRAG_BEACON, SETUP_INITIAL_MAP, ADD_NEW_BEACON, TOGGLE_TRACKING,
-    TOUCH_BEACON,CENTER_REGION_CHANGED, CONFIRM_PATH, CLEAR_PATH,CALCULATING_PATH,DONE_CALCULATING_PATH
+    TOUCH_BEACON,CENTER_REGION_CHANGED, CLEAR_PATH,CALCULATING_PATH,DONE_CALCULATING_PATH
 } from "../actions/actionsCreateGameMap";
 
 import {FOCUS_ON_BEACON,SUBMIT_TRACK_NAME,TRACK_NAME_CHANGED,EDIT_TRACK_NAME,CANCEL_CUSTOMIZE_BEACON,CONFIRM_CUSTOMIZE_BEACON,
-    EDIT_TRACK,CLEAR_BEACONS,DELETE_TRACK,ADD_NEW_TRACK,CLOSE_MODAL,REQUEST_MODAL,SET_IMAGE_PATH,SET_CURRENT_BEACON_NAME
+    EDIT_TRACK,CLEAR_BEACONS,DELETE_TRACK,ADD_NEW_TRACK,CLOSE_MODAL,REQUEST_MODAL,SET_IMAGE_PATH,SET_CURRENT_BEACON_NAME,
+    SHOW_MODAL_ADD_CUSTOM_RIDDLE,SHOW_MODAL_ADD_RANDOM_RIDDLE,CLOSE_MODAL_ADD_CUSTOM_RIDDLE,CLOSE_MODAL_ADD_RANDOM_RIDDLE,
+    SET_CURRENT_BEACON_RIDDLE_STATEMENT,SET_CURRENT_BEACON_RIDDLE_ANSWER,RANDOM_RIDDLE_LOADED,RANDOM_RIDDLE_LOADING
 } from '../actions/actionsCreateGameMapDrawer'
 
 import UUIDGenerator from 'react-native-uuid-generator';
@@ -25,6 +27,10 @@ let dataState = {
     currentCustomizingBeacon: {
         name:undefined,
         imagePath:undefined,
+        riddle:{
+            statement: undefined,
+            answer: undefined
+        }
     }
 };
 
@@ -378,7 +384,14 @@ export default function createGameMapReducer(state = dataState, action){
             return{
                 ...state,
                 modalVisible:true,
-                currentCustomizingBeacon: action.beacon
+                currentCustomizingBeacon: {
+                    ...state.currentCustomizingBeacon,
+                    id: action.beacon.id,
+                    name: action.beacon.name,
+                    riddle: {
+                        ...action.beacon.riddle,
+                    }
+                }
             };
 
         case SET_IMAGE_PATH:
@@ -457,6 +470,14 @@ export default function createGameMapReducer(state = dataState, action){
             return{
                 ...state,
                 modalVisible:false,
+                currentCustomizingBeacon:{
+                    ...state.currentCustomizingBeacon,
+                    riddle:{
+                        ...state.currentCustomizingBeacon.beacon,
+                        statement: undefined,
+                        answer: undefined,
+                    }
+                },
                 tracks : state.tracks.map((item,index) => {
                     if(item.id === state.currentTrack.id){
                         return {
@@ -488,7 +509,6 @@ export default function createGameMapReducer(state = dataState, action){
                 }
             };
 
-
         case SET_CURRENT_BEACON_NAME:
             return{
                 ...state,
@@ -498,7 +518,104 @@ export default function createGameMapReducer(state = dataState, action){
                 }
             };
 
+        case SHOW_MODAL_ADD_RANDOM_RIDDLE:
+            return{
+                ...state,
+                showModalRandomRiddle: true
+            };
+
+        case SHOW_MODAL_ADD_CUSTOM_RIDDLE:
+            return{
+                ...state,
+                showModalCustomRiddle: true
+            };
+
+        case CLOSE_MODAL_ADD_CUSTOM_RIDDLE:
+            return{
+                ...state,
+                showModalCustomRiddle: false
+            };
+
+        case CLOSE_MODAL_ADD_RANDOM_RIDDLE:
+            return{
+                ...state,
+                showModalRandomRiddle: false
+            };
+
+        case RANDOM_RIDDLE_LOADING:
+            return{
+                ...state,
+                showModalRandomRiddle: true,
+                currentCustomizingBeacon : {
+                    ...state.currentCustomizingBeacon,
+                    riddle:{
+                        ...state.currentCustomizingBeacon.riddle,
+                        answer: "Fetching it's answer ...",
+                        statement: "Fetching a random statement ..."
+                    }
+                },
+            };
+
+        case RANDOM_RIDDLE_LOADED:
+
+            return setCurrentRiddle(state,{
+                ... state.currentCustomizingBeacon.riddle,
+                statement: action.riddle.question,
+                answer: action.riddle.answer
+            });
+
+        case SET_CURRENT_BEACON_RIDDLE_ANSWER:
+            return setCurrentRiddle(state,{
+                ... state.currentCustomizingBeacon.riddle,
+                answer: action.statement,
+            });
+
+        case SET_CURRENT_BEACON_RIDDLE_STATEMENT:
+            return setCurrentRiddle(state,{
+                ... state.currentCustomizingBeacon.riddle,
+                statement: action.statement,
+            });
+
         default:
             return state;
     }
 };
+
+export function setCurrentRiddle(state,newRiddle){
+    return{
+        ...state,
+        currentCustomizingBeacon : {
+            ...state.currentCustomizingBeacon,
+            riddle: newRiddle
+        },
+        tracks : state.tracks.map((item,index) => {
+            if(item.id === state.currentTrack.id){
+                return {
+                    ...item,
+                    beacons: item.beacons.map((beacon) => {
+                        if(beacon.id === state.currentCustomizingBeacon.id){
+                            return{
+                                ...beacon,
+                                riddle: newRiddle
+                            }
+                        }
+                        return beacon;
+                    })
+                }
+            }
+            return item;
+        }),
+        currentTrack:{
+            ...state.currentTrack,
+            beacons:state.currentTrack.beacons.map((beacon) => {
+                if(beacon.id === state.currentCustomizingBeacon.id){
+                    return{
+                        ...beacon,
+                        riddle: newRiddle
+                    }
+                }
+                return beacon;
+            })
+        }
+    };
+}

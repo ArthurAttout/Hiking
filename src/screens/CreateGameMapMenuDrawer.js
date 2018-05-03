@@ -320,10 +320,19 @@ export default class Menu extends React.Component{
             case GAME_MODES.RIDDLES:
                 return(
                     <RiddleModal
+                        requestNewRandomRiddle={this.props.requestNewRandomRiddle}
                         modalVisible={this.props.modalVisible}
+                        showModalRandomRiddle={this.props.showModalRandomRiddle}
+                        showModalCustomRiddle={this.props.showModalCustomRiddle}
+                        addRandomRiddle={this.props.addRandomRiddle}
+                        addCustomRiddle={this.props.addCustomRiddle}
+                        submitRandomRiddle={this.props.submitRandomRiddle}
+                        submitCustomRiddle={this.props.submitCustomRiddle}
                         onCancelCustomizeBeacon={this.props.onCancelCustomizeBeacon}
                         currentCustomizingBeacon = {this.props.currentCustomizingBeacon}
                         setCurrentBeaconName={this.props.setCurrentBeaconName}
+                        setCurrentBeaconRiddleStatement={this.props.setCurrentBeaconRiddleStatement}
+                        setCurrentBeaconRiddleAnswer={this.props.setCurrentBeaconRiddleAnswer}
                         onConfirmCustomizeBeacon={this.props.onConfirmCustomizeBeacon}
                         section={section}
                         onCloseModal={this.props.onCloseModal}/>);

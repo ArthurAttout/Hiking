@@ -12,7 +12,9 @@ import {
 
 import {onFocusOnBeacon,addNewTrack,onDeleteTrack,onEditTrack,onClearBeacons,
         onEditTrackName,trackNameChanged,onSubmitTrackName,onCloseModal,onRequestModal,
-        setImagePath,onCancelCustomizeBeacon,setCurrentBeaconName, onConfirmCustomizeBeacon
+        setImagePath,onCancelCustomizeBeacon,setCurrentBeaconName, onConfirmCustomizeBeacon,
+        addCustomRiddle,addRandomRiddle,submitCustomRiddle,submitRandomRiddle,setCurrentBeaconRiddleAnswer,
+        setCurrentBeaconRiddleStatement,requestNewRandomRiddle
 } from "../actions/actionsCreateGameMapDrawer";
 
 import {connect} from "react-redux";
@@ -50,6 +52,16 @@ class Screen extends React.Component {
     render(){
         const menu = <Menu
             chosenMode={this.props.chosenMode}
+
+            addRandomRiddle={this.props.addRandomRiddle}
+            addCustomRiddle={this.props.addCustomRiddle}
+            submitCustomRiddle={this.props.submitCustomRiddle}
+            submitRandomRiddle={this.props.submitRandomRiddle}
+            setCurrentBeaconRiddleStatement={this.props.setCurrentBeaconRiddleStatement}
+            setCurrentBeaconRiddleAnswer={this.props.setCurrentBeaconRiddleAnswer}
+            showModalRandomRiddle={this.props.showModalRandomRiddle}
+            showModalCustomRiddle={this.props.showModalCustomRiddle}
+
             navigator={navigator}
             userTracks={this.props.tracks}
             currentTrackID={this.props.currentTrack.id}
@@ -68,6 +80,7 @@ class Screen extends React.Component {
             currentCustomizingBeacon={this.props.currentCustomizingBeacon}
             onConfirmCustomizeBeacon={this.props.onConfirmCustomizeBeacon}
             setCurrentBeaconName={this.props.setCurrentBeaconName}
+            requestNewRandomRiddle={this.props.requestNewRandomRiddle}
             modalVisible={this.props.modalVisible}/>;
         return(
             <SideMenu
@@ -190,8 +203,12 @@ const mapStateToProps = (state, own) => {
         tracks: state.createGameMapReducer.tracks,
         confirmLinkedBeacons:state.createGameMapReducer.confirmLinkedBeacons,
         sideMenuOpened:state.createGameMapReducer.sideMenuOpened,
+
+        //Drawer
         modalVisible:state.createGameMapReducer.modalVisible,
-        currentCustomizingBeacon: state.createGameMapReducer.currentCustomizingBeacon
+        currentCustomizingBeacon: state.createGameMapReducer.currentCustomizingBeacon,
+        showModalCustomRiddle: state.createGameMapReducer.showModalCustomRiddle,
+        showModalRandomRiddle: state.createGameMapReducer.showModalRandomRiddle
     }
 };
 
@@ -207,6 +224,8 @@ function mapDispatchToProps(dispatch,own) {
         touchBeacon:(evt,beacon) => dispatch(touchBeacon(evt,beacon)),
         addNewTrack:() => dispatch(addNewTrack()),
         onCenterRegionChange:(evt) => dispatch(onCenterRegionChange(evt)),
+        clearLinkedPath:() => dispatch(onClearLinkedPath()),
+        confirmLinkedPath:() => dispatch(onConfirmLinkedPath()),
 
         //Drawer
         onDeleteTrack:(track)=> dispatch(onDeleteTrack(track)),
@@ -223,8 +242,13 @@ function mapDispatchToProps(dispatch,own) {
         onCancelCustomizeBeacon:(beacon) => dispatch(onCancelCustomizeBeacon(beacon)),
         onConfirmCustomizeBeacon:()=>dispatch(onConfirmCustomizeBeacon()),
 
-        clearLinkedPath:() => dispatch(onClearLinkedPath()),
-        confirmLinkedPath:() => dispatch(onConfirmLinkedPath())
+        addRandomRiddle:()=>{dispatch(addRandomRiddle())},
+        addCustomRiddle:()=>{dispatch(addCustomRiddle())},
+        requestNewRandomRiddle:()=>{dispatch(requestNewRandomRiddle())},
+        submitCustomRiddle:()=>{dispatch(submitCustomRiddle())},
+        submitRandomRiddle:()=>{dispatch(submitRandomRiddle())},
+        setCurrentBeaconRiddleAnswer:(ans)=>{dispatch(setCurrentBeaconRiddleAnswer(ans))},
+        setCurrentBeaconRiddleStatement:(stat)=>{dispatch(setCurrentBeaconRiddleStatement(stat))},
     }
 }
 
