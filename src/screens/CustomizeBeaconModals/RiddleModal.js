@@ -6,6 +6,7 @@ const IconCustom = createIconSetFromIcoMoon(icomoonConfig);
 import {StyleSheet, ScrollView, TextInput,
     View, Image, Text,FlatList, TouchableNativeFeedback} from 'react-native';
 import Modal from "react-native-modal";
+import ImagePicker from "react-native-image-picker";
 
 
 const styles = StyleSheet.create({
@@ -28,6 +29,12 @@ const styles = StyleSheet.create({
 });
 
 export default class RiddleModal extends React.Component{
+
+    constructor(props){
+        super(props);
+        this._showPicker = this._showPicker.bind(this);
+    }
+
     render(){
         return(
             <View>
@@ -127,6 +134,7 @@ export default class RiddleModal extends React.Component{
                         </View>
                     </View>
                 </Modal>
+
                 <Modal
                     onBackdropPress={() => {this.props.submitCustomRiddle()}}
                     isVisible={this.props.showModalCustomRiddle}>
@@ -205,5 +213,35 @@ export default class RiddleModal extends React.Component{
                 </Modal>
             </View>
         )
+    }
+
+    _showPicker(){
+        let options = {
+            title: 'Select Avatar',
+            customButtons: [
+                {name: 'fb', title: 'Choose Photo from Facebook'},
+            ],
+            storageOptions: {
+                skipBackup: true,
+                path: 'images'
+            }
+        };
+
+        ImagePicker.showImagePicker(options, (response) => {
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            }
+            else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            }
+            else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            }
+            else {
+                let source = { uri: response.uri };
+                console.log(response.path);
+                this.props.setImagePath(response.path);
+            }
+        });
     }
 }

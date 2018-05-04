@@ -54,7 +54,7 @@ class Screen extends React.Component {
                         hintColor={COLORS.Primary}>
                         <TextInput
                             style={styles.textInput}
-                            placeholder={'Délai du shrink (mètres / min)'}
+                            placeholder={'Delay between each zone shrink (meters per minute)'}
                             keyboardType='numeric'
                             onChangeText={this.props.setShrinkDelay}
                         />
@@ -63,7 +63,7 @@ class Screen extends React.Component {
                     <View style={styles.switchContainer}>
                         <Text
                             style={styles.switchLabel}>
-                            Les participants peuvent voir la carte
+                            Players can see the map
                         </Text>
                         <Switch
                             style={styles.switch}
@@ -75,7 +75,7 @@ class Screen extends React.Component {
                     <View style={styles.switchContainer}>
                         <Text
                             style={styles.switchLabel}>
-                            Les participants peuvent voir l'emplacement de la prochaine balise
+                            Players can see the next beacon location
                         </Text>
                         <Switch
                             style={styles.switch}
@@ -113,7 +113,7 @@ class Screen extends React.Component {
                         hintColor={COLORS.Primary}>
                         <TextInput
                             style={styles.textInput}
-                            placeholder={'Délai du shrink (mètres / min)'}
+                            placeholder={'Delay between each zone shrink (meters per minute)'}
                             keyboardType='numeric'
                             onChangeText={this.props.setShrinkDelay}
                         />
@@ -122,7 +122,7 @@ class Screen extends React.Component {
                     <View style={styles.switchContainer}>
                         <Text
                             style={styles.switchLabel}>
-                            Les participants peuvent voir la carte
+                            Players can see the map
                         </Text>
                         <Switch
                             style={styles.switch}
@@ -134,7 +134,7 @@ class Screen extends React.Component {
                     <View style={styles.switchContainer}>
                         <Text
                             style={styles.switchLabel}>
-                            Les participants peuvent voir l'emplacement de la prochaine balise
+                            Players can see the next beacon location
                         </Text>
                         <Switch
                             style={styles.switch}
@@ -146,7 +146,7 @@ class Screen extends React.Component {
                     <View style={styles.switchContainer}>
                         <Text
                             style={styles.switchLabel}>
-                            Les participants peuvent voir la distance à parcourir pour atteindre un "Drop"
+                            Players can see the distance to reach a "drop"
                         </Text>
                         <Switch
                             style={styles.switch}
@@ -186,7 +186,7 @@ class Screen extends React.Component {
                         hintColor={COLORS.Primary}>
                         <TextInput
                             style={styles.textInput}
-                            placeholder={'Délai du shrink (mètres / min)'}
+                            placeholder={'Delay between each zone shrink (meters per minute)'}
                             keyboardType='numeric'
                             onChangeText={this.props.setShrinkDelay}
                         />
@@ -195,7 +195,7 @@ class Screen extends React.Component {
                     <View style={styles.switchContainer}>
                         <Text
                             style={styles.switchLabel}>
-                            Les participants peuvent voir la carte
+                            Players can see the map
                         </Text>
                         <Switch
                             style={styles.switch}
@@ -207,7 +207,7 @@ class Screen extends React.Component {
                     <View style={styles.switchContainer}>
                         <Text
                             style={styles.switchLabel}>
-                            Les participants peuvent voir l'emplacement de la prochaine balise
+                            Players can see the next beacon location
                         </Text>
                         <Switch
                             style={styles.switch}
@@ -219,7 +219,7 @@ class Screen extends React.Component {
                     <View style={styles.switchContainer}>
                         <Text
                             style={styles.switchLabel}>
-                            Les participants peuvent voir la distance à parcourir pour atteindre un "Drop"
+                            Players can see the distance to reach a "drop"
                         </Text>
                         <Switch
                             style={styles.switch}
@@ -234,7 +234,7 @@ class Screen extends React.Component {
                         hintColor={COLORS.Primary}>
                         <TextInput
                             style={styles.textInput}
-                            placeholder={'Nombre de vies'}
+                            placeholder={'Number of lives'}
                             keyboardType='numeric'
                             onChangeText={this.props.setLives}
                         />
@@ -246,7 +246,7 @@ class Screen extends React.Component {
                         hintColor={COLORS.Primary}>
                         <TextInput
                             style={styles.textInput}
-                            placeholder={'Temps maximum pour les énigmes'}
+                            placeholder={'Timeout for riddles'}
                             keyboardType='numeric'
                             onChangeText={this.props.setTimerMaxRiddle}
                         />

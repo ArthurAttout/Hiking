@@ -6,7 +6,8 @@ import {
 import {FOCUS_ON_BEACON,SUBMIT_TRACK_NAME,TRACK_NAME_CHANGED,EDIT_TRACK_NAME,CANCEL_CUSTOMIZE_BEACON,CONFIRM_CUSTOMIZE_BEACON,
     EDIT_TRACK,CLEAR_BEACONS,DELETE_TRACK,ADD_NEW_TRACK,CLOSE_MODAL,REQUEST_MODAL,SET_IMAGE_PATH,SET_CURRENT_BEACON_NAME,
     SHOW_MODAL_ADD_CUSTOM_RIDDLE,SHOW_MODAL_ADD_RANDOM_RIDDLE,CLOSE_MODAL_ADD_CUSTOM_RIDDLE,CLOSE_MODAL_ADD_RANDOM_RIDDLE,
-    SET_CURRENT_BEACON_RIDDLE_STATEMENT,SET_CURRENT_BEACON_RIDDLE_ANSWER,RANDOM_RIDDLE_LOADED,RANDOM_RIDDLE_LOADING
+    SET_CURRENT_BEACON_RIDDLE_STATEMENT,SET_CURRENT_BEACON_RIDDLE_ANSWER,RANDOM_RIDDLE_LOADED,RANDOM_RIDDLE_LOADING,
+    SHOW_QR_CODE_PICKER,CLOSE_QR_CODE_PICKER,SET_CURRENT_BEACON_QR_CODE,SHOW_MODAL_BEACON_ID,CLOSE_MODAL_BEACON_ID
 } from '../actions/actionsCreateGameMapDrawer'
 
 import UUIDGenerator from 'react-native-uuid-generator';
@@ -23,10 +24,13 @@ let dataState = {
     confirmLinkedBeacons:false,
     sideMenuOpened: false,
     regionFocus:undefined,
+    showQRCodePicker: false,
+    modalBeaconIDVisible: false,
     modalVisible:false,
     currentCustomizingBeacon: {
         name:undefined,
         imagePath:undefined,
+        qrCode:undefined,
         riddle:{
             statement: undefined,
             answer: undefined
@@ -36,6 +40,7 @@ let dataState = {
 
 export default function createGameMapReducer(state = dataState, action){
     switch (action.type) {
+
         case SETUP_INITIAL_MAP:
             let generatedUUID = UUIDGenerator.getRandomUUID();
             return {
@@ -388,6 +393,7 @@ export default function createGameMapReducer(state = dataState, action){
                     ...state.currentCustomizingBeacon,
                     id: action.beacon.id,
                     name: action.beacon.name,
+                    qrCode: action.beacon.qrCode,
                     riddle: {
                         ...action.beacon.riddle,
                     }
@@ -398,6 +404,10 @@ export default function createGameMapReducer(state = dataState, action){
             return {
                 ...state,
                 modalVisible:false,
+                currentCustomizingBeacon:{
+                    ...state.currentCustomizingBeacon,
+                    imagePath:action.path
+                },
                 tracks : state.tracks.map((item,index) => {
                     if(item.id === state.currentTrack.id){
                         return {
@@ -433,7 +443,6 @@ export default function createGameMapReducer(state = dataState, action){
         case CANCEL_CUSTOMIZE_BEACON:
             return{
                 ...state,
-
                 modalVisible:false,
                 tracks : state.tracks.map((item,index) => {
                     if(item.id === state.currentTrack.id){
@@ -476,6 +485,7 @@ export default function createGameMapReducer(state = dataState, action){
                         ...state.currentCustomizingBeacon.beacon,
                         statement: undefined,
                         answer: undefined,
+                        qrCode: undefined,
                     }
                 },
                 tracks : state.tracks.map((item,index) => {
@@ -575,6 +585,72 @@ export default function createGameMapReducer(state = dataState, action){
                 ... state.currentCustomizingBeacon.riddle,
                 statement: action.statement,
             });
+
+        case SHOW_QR_CODE_PICKER:
+            return{
+                ...state,
+                QRCodePickerVisible: true
+            };
+
+        case CLOSE_QR_CODE_PICKER:
+            return{
+                ...state,
+                QRCodePickerVisible: false,
+            };
+
+        case SET_CURRENT_BEACON_QR_CODE:{
+
+            return{
+                ...state,
+                showQRCodePicker: false,
+                currentCustomizingBeacon : {
+                    ...state.currentCustomizingBeacon,
+                    qrCode: action.code
+                },
+                tracks : state.tracks.map((item,index) => {
+                    if(item.id === state.currentTrack.id){
+                        return {
+                            ...item,
+                            beacons: item.beacons.map((beacon) => {
+                                if(beacon.id === state.currentCustomizingBeacon.id){
+                                    return{
+                                        ...beacon,
+                                        qrCode: action.code
+                                    }
+                                }
+                                return beacon;
+                            })
+                        }
+                    }
+                    return item;
+                }),
+                currentTrack:{
+                    ...state.currentTrack,
+                    beacons:state.currentTrack.beacons.map((beacon) => {
+                        if(beacon.id === state.currentCustomizingBeacon.id){
+                            return{
+                                ...beacon,
+                                qrCode: action.code
+                            }
+                        }
+                        return beacon;
+                    })
+                }
+            };
+
+        }
+
+        case SHOW_MODAL_BEACON_ID:
+            return{
+                ...state,
+                modalBeaconIDVisible: true
+            };
+
+        case CLOSE_MODAL_BEACON_ID:
+            return{
+                ...state,
+                modalBeaconIDVisible: false,
+            };
 
         default:
             return state;

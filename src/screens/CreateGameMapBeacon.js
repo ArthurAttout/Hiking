@@ -1,20 +1,24 @@
 import {Marker} from 'react-native-maps';
 import MapView,{Polyline} from 'react-native-maps';
+import { QRScannerView } from 'ac-qrcode';
 import React from "react";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation'
-import { View,StyleSheet } from 'react-native';
+import {View, StyleSheet, Text, TouchableNativeFeedback} from 'react-native';
+import IconAwesome from 'react-native-vector-icons/FontAwesome';
 import Menu from './CreateGameMapMenuDrawer'
 import {
     dragBeacon, setupInitialMap, addBeacon, startTracking, touchBeacon, onCenterRegionChange,
     onClearLinkedPath, onConfirmLinkedPath, changeSideMenuOpened,
 } from "../actions/actionsCreateGameMap";
 
-import {onFocusOnBeacon,addNewTrack,onDeleteTrack,onEditTrack,onClearBeacons,
-        onEditTrackName,trackNameChanged,onSubmitTrackName,onCloseModal,onRequestModal,
-        setImagePath,onCancelCustomizeBeacon,setCurrentBeaconName, onConfirmCustomizeBeacon,
-        addCustomRiddle,addRandomRiddle,submitCustomRiddle,submitRandomRiddle,setCurrentBeaconRiddleAnswer,
-        setCurrentBeaconRiddleStatement,requestNewRandomRiddle
+import {
+    onFocusOnBeacon, addNewTrack, onDeleteTrack, onEditTrack, onClearBeacons,
+    onEditTrackName, trackNameChanged, onSubmitTrackName, onCloseModal, onRequestModal,
+    setImagePath, onCancelCustomizeBeacon, setCurrentBeaconName, onConfirmCustomizeBeacon,
+    addCustomRiddle, addRandomRiddle, submitCustomRiddle, submitRandomRiddle, setCurrentBeaconRiddleAnswer,
+    setCurrentBeaconRiddleStatement, requestNewRandomRiddle, showQRCodePicker,closeQRCodePicker,setCurrentBeaconQRCode,
+    showModalBeaconID,closeModalBeaconID
 } from "../actions/actionsCreateGameMapDrawer";
 
 import {connect} from "react-redux";
@@ -52,6 +56,18 @@ class Screen extends React.Component {
     render(){
         const menu = <Menu
             chosenMode={this.props.chosenMode}
+            navigator={navigator}
+            userTracks={this.props.tracks}
+            currentTrackID={this.props.currentTrack.id}
+            setImagePath={this.props.setImagePath}
+
+            QRCodePickerVisible={this.props.QRCodePickerVisible}
+            showQRCodePicker={this.props.showQRCodePicker}
+            closeQRCodePicker={this.props.closeQRCodePicker}
+            setCurrentBeaconQRCode={this.props.setCurrentBeaconQRCode}
+            showModalBeaconID={this.props.showModalBeaconID}
+            closeModalBeaconID={this.props.closeModalBeaconID}
+            modalBeaconIDVisible={this.props.modalBeaconIDVisible}
 
             addRandomRiddle={this.props.addRandomRiddle}
             addCustomRiddle={this.props.addCustomRiddle}
@@ -61,52 +77,61 @@ class Screen extends React.Component {
             setCurrentBeaconRiddleAnswer={this.props.setCurrentBeaconRiddleAnswer}
             showModalRandomRiddle={this.props.showModalRandomRiddle}
             showModalCustomRiddle={this.props.showModalCustomRiddle}
+            requestNewRandomRiddle={this.props.requestNewRandomRiddle}
 
-            navigator={navigator}
-            userTracks={this.props.tracks}
-            currentTrackID={this.props.currentTrack.id}
-            setImagePath={this.props.setImagePath}
             onAddNewTrack={this.props.addNewTrack}
             onEditTrackName={this.props.onEditTrackName}
             onTrackNameChanged={this.props.onTrackNameChanged}
             onSubmitTrackName={this.props.onSubmitTrackName}
             onEditTrack={this.props.onEditTrack}
+            onDeleteTrack={this.props.onDeleteTrack}
+
             onClearBeacons={this.props.onClearBeacons}
             onFocusOnBeacon={this.props.onFocusOnBeacon}
-            onDeleteTrack={this.props.onDeleteTrack}
             onCloseModal={this.props.onCloseModal}
             onCancelCustomizeBeacon={this.props.onCancelCustomizeBeacon}
-            onRequestModal={this.props.onRequestModal}
             currentCustomizingBeacon={this.props.currentCustomizingBeacon}
             onConfirmCustomizeBeacon={this.props.onConfirmCustomizeBeacon}
             setCurrentBeaconName={this.props.setCurrentBeaconName}
-            requestNewRandomRiddle={this.props.requestNewRandomRiddle}
+
+            onRequestModal={this.props.onRequestModal}
             modalVisible={this.props.modalVisible}/>;
-        return(
-            <SideMenu
-                menu={menu}
-                isOpen={this.props.sideMenuOpened}
-                onChange={(state) => {this.props.changeSideMenuOpened(state)}}
-                menuPosition='right'>
-                <View
-                    style={styles.container}>
-                    <MapView
-                        style={styles.map}
-                        initialRegion={this.props.centerRegion}
-                        onRegionChange={(evt) => {this.props.onCenterRegionChange(evt)}}>
-                        {
-                            this.props.currentTrack.beacons.map((beacon,index,array) => this.renderMarker(beacon,index,array))
-                        }
-                        <Polyline
-                            coordinates={this.props.currentTrack.path}
-                            strokeColor={COLORS.Primary}
-                            strokeWidth={6}
-                        />
-                    </MapView>
-                    {this.renderBottomNavigation()}
-                </View>
-            </SideMenu>
-        );
+
+        if(this.props.QRCodePickerVisible){
+            return(<QRScannerView
+                hintText={"Scan your code"}
+                onScanResultReceived={this.barcodeReceived.bind(this)}
+                renderTopBarView={() => this._renderTitleBar()}
+                renderBottomMenuView={() => this._renderMenu()}
+            />)
+        }
+        else {
+            return(
+                <SideMenu
+                    menu={menu}
+                    isOpen={this.props.sideMenuOpened}
+                    onChange={(state) => {this.props.changeSideMenuOpened(state)}}
+                    menuPosition='right'>
+                    <View
+                        style={styles.container}>
+                        <MapView
+                            style={styles.map}
+                            initialRegion={this.props.centerRegion}
+                            onRegionChange={(evt) => {this.props.onCenterRegionChange(evt)}}>
+                            {
+                                this.props.currentTrack.beacons.map((beacon,index,array) => this.renderMarker(beacon,index,array))
+                            }
+                            <Polyline
+                                coordinates={this.props.currentTrack.path}
+                                strokeColor={COLORS.Primary}
+                                strokeWidth={6}
+                            />
+                        </MapView>
+                        {this.renderBottomNavigation()}
+                    </View>
+                </SideMenu>
+            );
+        }
     }
 
     renderBottomNavigation(){
@@ -194,6 +219,37 @@ class Screen extends React.Component {
     componentDidMount(){
         this.props.setupInitialMap();
     }
+
+    _renderTitleBar(){
+        return(
+            <IconAwesome.Button
+                name="close"
+                visible={false}
+                style={{width:'20%',height:'15%',margin:15,alignSelf:'center'}}
+                color="transparent"
+                onPress={()=>{console.log("aaaaaaaaaaaaa")}}
+                backgroundColor='transparent'
+                background={TouchableNativeFeedback.Ripple('blue')}
+                delayPressIn={0}/>
+        );
+    }
+
+    _renderMenu() {
+        return (
+            <IconAwesome.Button
+                name="close"
+                style={{width:'20%',height:'15%',margin:15,alignSelf:'center'}}
+                color="#ffffff"
+                onPress={this.props.closeQRCodePicker}
+                backgroundColor='transparent'
+                background={TouchableNativeFeedback.Ripple('blue')}
+                delayPressIn={0}/>
+        )
+    }
+
+    barcodeReceived(e) {
+        setCurrentBeaconQRCode(e.data);
+    }
 }
 const mapStateToProps = (state, own) => {
     return {
@@ -208,7 +264,9 @@ const mapStateToProps = (state, own) => {
         modalVisible:state.createGameMapReducer.modalVisible,
         currentCustomizingBeacon: state.createGameMapReducer.currentCustomizingBeacon,
         showModalCustomRiddle: state.createGameMapReducer.showModalCustomRiddle,
-        showModalRandomRiddle: state.createGameMapReducer.showModalRandomRiddle
+        showModalRandomRiddle: state.createGameMapReducer.showModalRandomRiddle,
+        modalBeaconIDVisible: state.createGameMapReducer.modalBeaconIDVisible,
+        QRCodePickerVisible: state.createGameMapReducer.QRCodePickerVisible
     }
 };
 
@@ -249,6 +307,12 @@ function mapDispatchToProps(dispatch,own) {
         submitRandomRiddle:()=>{dispatch(submitRandomRiddle())},
         setCurrentBeaconRiddleAnswer:(ans)=>{dispatch(setCurrentBeaconRiddleAnswer(ans))},
         setCurrentBeaconRiddleStatement:(stat)=>{dispatch(setCurrentBeaconRiddleStatement(stat))},
+        setCurrentBeaconQRCode:(code)=>{dispatch(setCurrentBeaconQRCode(code))},
+
+        closeQRCodePicker: () => {dispatch(closeQRCodePicker())},
+        showQRCodePicker: () => {dispatch(showQRCodePicker())},
+        showModalBeaconID: () => {dispatch(showModalBeaconID())},
+        closeModalBeaconID: () => {dispatch(closeModalBeaconID())},
     }
 }
 

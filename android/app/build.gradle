@@ -138,8 +138,9 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-uuid-generator')
-    compile project(':react-native-image-picker')
+    api project(':react-native-uuid-generator')
+    api project(':react-native-image-picker')
+    api project(':react-native-camera')
 
 /**
 *
@@ -176,37 +177,37 @@ dependencies {
 *
 *
 */
-    compile project(':react-native-cardview')
-    compile fileTree(dir: "libs", include: ["*.jar"])
-    compile "com.android.support:appcompat-v7:23.0.1"
-    compile "com.facebook.react:react-native:+"  // From node_modules
-    compile project(':RNMaterialKit')
-    compile project(':react-native-vector-icons')
-    compile(project(':react-native-svg')) {
+    api project(':react-native-cardview')
+    api fileTree(dir: "libs", include: ["*.jar"])
+    api "com.android.support:appcompat-v7:23.0.1"
+    api "com.facebook.react:react-native:+"  // From node_modules
+    api project(':RNMaterialKit')
+    api project(':react-native-vector-icons')
+    api(project(':react-native-svg')) {
         exclude group: "com.android.support", module: "appcompat-v7"
     }
 
-    compile (project(':react-native-maps')){
+    api (project(':react-native-maps')){
         exclude group: 'com.google.android.gms'
     }
-    compile (project(':react-native-fcm')){
+    api (project(':react-native-fcm')){
         exclude group: "com.google.firebase"
     }
-    compile 'com.google.firebase:firebase-core:10.0.1' //this decides your firebase SDK version
+    api 'com.google.firebase:firebase-core:12.0.1' //this decides your firebase SDK version
 
-    compile ("com.google.android.gms:play-services-base:10.0.1") {
+    api ("com.google.android.gms:play-services-base:12.0.1") {
         force = true;
     }
-    compile ("com.google.android.gms:play-services-maps:10.0.1") {
+    api ("com.google.android.gms:play-services-maps:12.0.1") {
         force = true;
     }
-    compile ("com.google.android.gms:play-services-gcm:10.0.1") {
+    api ("com.google.android.gms:play-services-gcm:12.0.1") {
         force = true;
     }
-    compile ('com.google.firebase:firebase-core:10.0.1') {
+    api ('com.google.firebase:firebase-core:12.0.1') {
         force = true;
     }
-    compile ('com.google.firebase:firebase-messaging:10.0.1') {
+    api ('com.google.firebase:firebase-messaging:12.0.1') {
         force = true;
 }
 

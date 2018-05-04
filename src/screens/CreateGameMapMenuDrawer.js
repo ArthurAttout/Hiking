@@ -15,6 +15,7 @@ import ImagePicker from 'react-native-image-picker'
 import SimpleModal from './CustomizeBeaconModals/SimpleModal'
 import RiddleModal from "./CustomizeBeaconModals/RiddleModal";
 import RiddleAndCodeModal from "./CustomizeBeaconModals/RiddleAndCodeModal";
+import {setCurrentBeaconQRCode} from "../actions/actionsCreateGameMapDrawer";
 
 const styles = StyleSheet.create({
     container: {
@@ -304,11 +305,11 @@ export default class Menu extends React.Component{
     }
 
     _renderModal(section){
-
         switch(this.props.chosenMode.mode){
             case GAME_MODES.NORMAL:
                return(
                    <SimpleModal
+                       setImagePath={this.props.setImagePath}
                        modalVisible={this.props.modalVisible}
                        onCancelCustomizeBeacon={this.props.onCancelCustomizeBeacon}
                        currentCustomizingBeacon = {this.props.currentCustomizingBeacon}
@@ -320,6 +321,7 @@ export default class Menu extends React.Component{
             case GAME_MODES.RIDDLES:
                 return(
                     <RiddleModal
+                        setImagePath={this.props.setImagePath}
                         requestNewRandomRiddle={this.props.requestNewRandomRiddle}
                         modalVisible={this.props.modalVisible}
                         showModalRandomRiddle={this.props.showModalRandomRiddle}
@@ -340,6 +342,18 @@ export default class Menu extends React.Component{
             case GAME_MODES.RIDDLES_AND_QR_CODE:
                 return(
                     <RiddleAndCodeModal
+                        showModalBeaconID={this.props.showModalBeaconID}
+                        closeModalBeaconID={this.props.closeModalBeaconID}
+                        modalBeaconIDVisible={this.props.modalBeaconIDVisible}
+                        setCurrentBeaconQRCode={this.props.setCurrentBeaconQRCode}
+                        submitCustomRiddle={this.props.submitCustomRiddle}
+                        showModalCustomRiddle={this.props.showModalCustomRiddle}
+                        setImagePath={this.props.setImagePath}
+                        addCustomRiddle={this.props.addCustomRiddle}
+                        QRCodePickerVisible={this.props.QRCodePickerVisible}
+                        showQRCodePicker={this.props.showQRCodePicker}
+                        closeQRCodePicker={this.props.closeQRCodePicker}
+                        requestNewRandomRiddle={this.props.requestNewRandomRiddle}
                         modalVisible={this.props.modalVisible}
                         onCancelCustomizeBeacon={this.props.onCancelCustomizeBeacon}
                         currentCustomizingBeacon = {this.props.currentCustomizingBeacon}
@@ -351,36 +365,4 @@ export default class Menu extends React.Component{
         }
 
     }
-
-    _showPicker(){
-        var options = {
-            title: 'Select Avatar',
-            customButtons: [
-                {name: 'fb', title: 'Choose Photo from Facebook'},
-            ],
-            storageOptions: {
-                skipBackup: true,
-                path: 'images'
-            }
-        };
-
-        ImagePicker.showImagePicker(options, (response) => {
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            }
-            else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            }
-            else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
-            }
-            else {
-                let source = { uri: response.uri };
-                console.log(response.path);
-                this.props.setImagePath(response.path);
-            }
-        });
-    }
-
-
 }

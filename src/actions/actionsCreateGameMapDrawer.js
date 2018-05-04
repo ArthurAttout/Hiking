@@ -18,6 +18,11 @@ export const CLOSE_MODAL_ADD_CUSTOM_RIDDLE = 'CLOSE_MODAL_ADD_CUSTOM_RIDDLE';
 export const CLOSE_MODAL_ADD_RANDOM_RIDDLE = 'CLOSE_MODAL_ADD_RANDOM_RIDDLE';
 export const SET_CURRENT_BEACON_RIDDLE_ANSWER = 'SET_CURRENT_BEACON_RIDDLE_ANSWER';
 export const SET_CURRENT_BEACON_RIDDLE_STATEMENT = 'SET_CURRENT_BEACON_RIDDLE_STATEMENT';
+export const SHOW_QR_CODE_PICKER = 'SHOW_QR_CODE_PICKER';
+export const CLOSE_QR_CODE_PICKER = 'CLOSE_QR_CODE_PICKER';
+export const SET_CURRENT_BEACON_QR_CODE = 'SET_CURRENT_BEACON_QR_CODE';
+export const SHOW_MODAL_BEACON_ID = 'SHOW_MODAL_BEACON_ID';
+export const CLOSE_MODAL_BEACON_ID = 'CLOSE_MODAL_BEACON_ID';
 
 export const RANDOM_RIDDLE_LOADING = 'RANDOM_RIDDLE_LOADING';
 export const RANDOM_RIDDLE_LOADED = 'RANDOM_RIDDLE_LOADED';
@@ -190,6 +195,39 @@ export const setCurrentBeaconRiddleStatement = (statement) => {
     return{
         type:SET_CURRENT_BEACON_RIDDLE_STATEMENT,
         statement: statement
+    }
+};
+
+export const showQRCodePicker = () => {
+    return{
+        type: SHOW_QR_CODE_PICKER
+    }
+};
+
+export const closeQRCodePicker = () => {
+    console.log("aaaaaaaa");
+    return{
+        type: CLOSE_QR_CODE_PICKER
+    }
+};
+
+export const setCurrentBeaconQRCode = (code) => {
+    console.log(code);
+    return{
+        type:SET_CURRENT_BEACON_QR_CODE,
+        code: code,
+    }
+};
+
+export const showModalBeaconID = () => {
+    return{
+        type:SHOW_MODAL_BEACON_ID,
+    }
+};
+
+export const closeModalBeaconID = () => {
+    return{
+        type:CLOSE_MODAL_BEACON_ID
     }
 };
 
