@@ -4,6 +4,7 @@ export const SWITCH_DROP_DISTANCE_VISIBLE = 'SWITCH_DROP_DISTANCE_VISIBLE';
 export const SET_TIMER_MAX_RIDDLE = 'SET_TIMER_MAX_RIDDLE';
 export const SET_NUMBER_LIVES = 'SET_NUMBER_LIVES';
 export const SET_SHRINK_DElAY = 'SET_SHRINK_DELAY';
+export const SET_CHOSEN_MODE = 'SET_CHOSEN_MODE';
 
 export const setShrinkDelay = (evt) => {
     return {
@@ -47,3 +48,9 @@ export const setTimerMaxRiddle = (evt) =>(
     }
 );
 
+export const setChosenMode = (mode)=>(
+    {
+        type:SET_CHOSEN_MODE,
+        mode:mode
+    }
+);

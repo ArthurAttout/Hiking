@@ -7,11 +7,13 @@ import {TextInputLayout} from 'rn-textinputlayout';
 import {MKCheckbox} from 'react-native-material-kit'
 import {GAME_MODES} from '../utils/constants'
 import {COLORS} from '../utils/constants'
-import {switchMapEnabled,
+import {
+    switchMapEnabled,
     switchNextBeaconVisibility,
     switchDropDistanceVisible,
-    setLives,setShrinkDelay,
-    setTimerMaxRiddle} from "../actions/actionsSettingsGame";
+    setLives, setShrinkDelay,
+    setTimerMaxRiddle, setChosenMode
+} from "../actions/actionsSettingsGame";
 import {connect} from "react-redux";
 import CardView from 'react-native-cardview';
 
@@ -54,7 +56,7 @@ class Screen extends React.Component {
                         hintColor={COLORS.Primary}>
                         <TextInput
                             style={styles.textInput}
-                            placeholder={'Delay between each zone shrink (meters per minute)'}
+                            placeholder={'Speed of the shrink (meters per minute)'}
                             keyboardType='numeric'
                             onChangeText={this.props.setShrinkDelay}
                         />
@@ -113,7 +115,7 @@ class Screen extends React.Component {
                         hintColor={COLORS.Primary}>
                         <TextInput
                             style={styles.textInput}
-                            placeholder={'Delay between each zone shrink (meters per minute)'}
+                            placeholder={'Speed of the shrink (meters per minute)'}
                             keyboardType='numeric'
                             onChangeText={this.props.setShrinkDelay}
                         />
@@ -186,7 +188,7 @@ class Screen extends React.Component {
                         hintColor={COLORS.Primary}>
                         <TextInput
                             style={styles.textInput}
-                            placeholder={'Delay between each zone shrink (meters per minute)'}
+                            placeholder={'Speed of the shrink (meters per minute)'}
                             keyboardType='numeric'
                             onChangeText={this.props.setShrinkDelay}
                         />
@@ -270,16 +272,19 @@ class Screen extends React.Component {
         );
     }
 
+    componentDidMount(){
+        this.props.setChosenMode(this.props.chosenMode);
+    }
+
     _onSubmit(){
         const { navigate } = this.props.navigation;
-        navigate('CreateGameMapBeaconScreen',{chosenMode:this.props.chosenMode});
+        navigate('CreateGameMapBeaconScreen');
     }
 }
 
 const mapStateToProps = (state, own) => {
     return {
         ...own,
-        chosenMode: state.gameModesReducer.chosenMode,
         viewMapEnabled:state.settingsReducer.viewMapEnabled,
         nextBeaconVisibilityEnabled:state.settingsReducer.nextBeaconVisibilityEnabled,
         dropDistanceVisibilityEnabled:state.settingsReducer.dropDistanceVisibilityEnabled,
@@ -297,7 +302,8 @@ function mapDispatchToProps(dispatch,own) {
         switchDropDistanceVisible: (evt) => dispatch(switchDropDistanceVisible(evt)),
         setLives: (evt) => dispatch(setLives(evt)),
         setTimerMaxRiddle: (evt) => dispatch(setTimerMaxRiddle(evt)),
-        setShrinkDelay: (evt) => dispatch(setShrinkDelay(evt))
+        setShrinkDelay: (evt) => dispatch(setShrinkDelay(evt)),
+        setChosenMode: (mode)=> dispatch(setChosenMode(mode)),
     }
 }
 

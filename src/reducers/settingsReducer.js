@@ -1,11 +1,11 @@
 import {
     SET_NUMBER_LIVES, SET_SHRINK_DElAY, SET_TIMER_MAX_RIDDLE, SWITCH_DROP_DISTANCE_VISIBLE, SWITCH_MAP_ENABLED,
-    SWITCH_NEXT_BEACON_VISIBLE
+    SWITCH_NEXT_BEACON_VISIBLE,SET_CHOSEN_MODE
 } from "../actions/actionsSettingsGame";
 import {DATA_AVAILABLE} from "../actions/actionsChooseMode";
 
 let dataState = {
-
+    chosenMode: undefined
 };
 
 export default function settingsReducer (state = dataState, action) {
@@ -44,6 +44,12 @@ export default function settingsReducer (state = dataState, action) {
             return{
                 ...state,
                 shrinkDelay:action.shrinkDelay
+            };
+
+        case SET_CHOSEN_MODE:
+            return{
+                ...state,
+                chosenMode: action.mode
             };
 
         default:

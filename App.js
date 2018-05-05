@@ -13,6 +13,7 @@ import CreateGameMapBeacon from "./src/screens/CreateGameMapBeacon";
 import GameScreen from "./src/screens/GameScreen";
 import CreateGameAssignTeams from "./src/screens/CreateGameAssignTeams";
 import BeaconScreen from "./src/screens/BeaconScreen";
+import RecapitulativeScreen from "./src/screens/RecapitulativeScreen"
 import EndGameScreen from "./src/screens/EndGameScreen";
 
 const mapNavigationStateParamsToProps = (SomeComponent) => {
@@ -35,6 +36,7 @@ const RootStack = StackNavigator(
         ChooseModeScreen: {screen: mapNavigationStateParamsToProps(ChooseModeScreen)},
         CreateGameSettingsScreen: {screen: mapNavigationStateParamsToProps(CreateGameSettingsScreen)},
         CreateGameAssignTeams:{screen: mapNavigationStateParamsToProps(CreateGameAssignTeams)},
+        RecapitulativeScreen:{screen: mapNavigationStateParamsToProps(RecapitulativeScreen)},
         JoinGameScreen: {screen: mapNavigationStateParamsToProps(JoinGameScreen)},
         GameNotStartedScreen: {screen: mapNavigationStateParamsToProps(GameNotStartedScreen)},
         TeamSelectionScreen: {screen: mapNavigationStateParamsToProps(TeamSelectionScreen)},

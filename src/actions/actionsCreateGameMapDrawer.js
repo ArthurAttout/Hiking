@@ -48,7 +48,7 @@ export const trackNameChanged = (track,newName) =>{
 export const onSubmitTrackName = (track) => {
     return{
         type:SUBMIT_TRACK_NAME,
-        payload:track
+        payload:track,
     }
 };
 

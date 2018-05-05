@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import {
     Text, View, FlatList, StyleSheet, TouchableNativeFeedback,
-    TextInput
+    TextInput, ScrollView
 } from 'react-native';
 import {connect} from "react-redux";
 import Modal from "react-native-modal";
 import store from '../config/store'
+import IconAwesome from 'react-native-vector-icons/FontAwesome';
 import { Dropdown } from 'react-native-material-dropdown';
 import {COLORS} from "../utils/constants";
 import IconFoundation from 'react-native-vector-icons/Foundation';
-import {addNewTeam,showModalTeamEditor,closeModalTeamEditor,populateDropdown} from '../actions/actionsAssignTeams'
+import {addNewTeam,showModalTeamEditor,closeModalTeamEditor,
+    populateDropdown,teamNameChanged,deleteTeam} from '../actions/actionsAssignTeams'
 
 class Screen extends React.Component {
 
@@ -24,7 +26,7 @@ class Screen extends React.Component {
     render() {
 
         return(
-            <View>
+            <ScrollView>
                 <FlatList
                     keyExtractor={item => JSON.stringify(item.id)}
                     data={this.props.teams}
@@ -32,17 +34,17 @@ class Screen extends React.Component {
                     renderItem={({ item,index }) => (
                         <TouchableNativeFeedback
                             background={TouchableNativeFeedback.Ripple('white')}
-                            onPress={this.props.showModalTeamEditor}
+                            onPress={() => {this.props.showModalTeamEditor(item)}}
                             delayPressIn={0}>
                             <View style={styles.nativeFeedbackStyle}>
                                 {
-                                    item.name === undefined ?
+                                    item.track === undefined ?
                                         <Text style={styles.textStyleBeacon}>
-                                            Beacon {index + 1}
+                                            {item.name}
                                         </Text>
                                         :
                                         <Text style={styles.textStyleBeacon}>
-                                            {item.name}
+                                            {item.name + " - " + item.track.trackName}
                                         </Text>
                                 }
                             </View>
@@ -58,13 +60,39 @@ class Screen extends React.Component {
                     background={TouchableNativeFeedback.Ripple('blue')}
                     delayPressIn={0}>Add a team</IconFoundation.Button>
 
+                {
+                    this.props.isValid ?
+                        <IconFoundation.Button
+                            name="check"
+                            color={COLORS.Secondary}
+                            style={{alignSelf:'flex-end'}}
+                            underlayColor='#f0f0f0'
+                            onPress={()=>{
+                                console.log(this.props.allSettings);
+                                const { navigate } = this.props.navigation;
+                                navigate('RecapitulativeScreen',{
+                                    teams: this.props.teams,
+                                    settings: this.props.allSettings,
+                                });
+                            }}
+                            backgroundColor='transparent'
+                            background={TouchableNativeFeedback.Ripple('blue')}
+                            delayPressIn={0}>Finish</IconFoundation.Button>
+
+                        :
+
+                        <View/>
+                }
+
                 <Modal
-                    onBackdropPress={this.props.closeModalTeamEditor}
+                    onBackdropPress={() => {
+                        let team = this._dropdown.selectedItem();
+                        this.props.closeModalTeamEditor(team)}}
                     isVisible={this.props.modalTeamEditorVisible}>
 
                     <View
                         style={{ width:'100%',
-                            height:'40%',
+                            height:'48%',
                             backgroundColor:'#ffffff',
                             justifyContent: 'center',
                             alignItems:'center',
@@ -72,15 +100,30 @@ class Screen extends React.Component {
                         <View style={{width:'100%',height:'100%',justifyContent:'space-between', padding:35}}>
                             <TextInput
                                 style={{width:'100%',height:80}}
+                                onChangeText={(text) => {this.props.teamNameChanged(text)}}
                                 placeholder={'Team name'}
                             />
                             <Dropdown
+                                ref={component => this._dropdown = component}
                                 label='Track'
+                                value={
+                                    this.props.currentEditingTeam === undefined || this.props.currentEditingTeam.track === undefined ?
+                                    undefined
+                                    :
+                                    this.props.currentEditingTeam.track.trackName}
                                 data={this.props.tracksDropdown}/>
+                            <IconAwesome.Button
+                                name="trash-o"
+                                style={{width:'20%',height:'15%',margin:15,alignSelf:'center'}}
+                                color="#000000"
+                                onPress={this.props.deleteTeam}
+                                backgroundColor='transparent'
+                                background={TouchableNativeFeedback.Ripple('blue')}
+                                delayPressIn={0}/>
                         </View>
                     </View>
                 </Modal>
-            </View>
+            </ScrollView>
         );
     }
 
@@ -92,6 +135,9 @@ const mapStateToProps = (state, own) => {
         teams: state.assignTeamsReducer.teams,
         tracksDropdown: state.assignTeamsReducer.tracksDropdown,
         modalTeamEditorVisible: state.assignTeamsReducer.modalTeamEditorVisible,
+        currentEditingTeam: state.assignTeamsReducer.currentEditingTeam,
+        allSettings: state.settingsReducer,
+        isValid: state.assignTeamsReducer.isValid,
     }
 };
 
@@ -100,8 +146,10 @@ function mapDispatchToProps(dispatch,own) {
         ...own,
         populateDropdown: () => {dispatch(populateDropdown())},
         addNewTeam: () => {dispatch(addNewTeam())},
-        showModalTeamEditor: () => {dispatch(showModalTeamEditor())},
-        closeModalTeamEditor: () => {dispatch(closeModalTeamEditor())}
+        showModalTeamEditor: (team) => {dispatch(showModalTeamEditor(team))},
+        closeModalTeamEditor: (track) => {dispatch(closeModalTeamEditor(track))},
+        teamNameChanged: (name) => {dispatch(teamNameChanged(name))},
+        deleteTeam: () => {dispatch(deleteTeam())},
     }
 }
 
@@ -124,7 +172,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         height: 50,
         margin:15,
-        backgroundColor : COLORS.Primary,
+        backgroundColor : COLORS.Secondary,
     },
     textStyleBeacon:{
         color:"#ffffff",

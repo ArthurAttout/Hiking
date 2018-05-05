@@ -338,33 +338,14 @@ export default function createGameMapReducer(state = dataState, action){
             };
 
         case TRACK_NAME_CHANGED:
-            return{
+            return {
                 ...state,
                 sideMenuOpened: true,
                 tracks: state.tracks.map((item) => {
-                    if(item.id === action.payload.id){
+                    if(item.id === action.payload.track.id){
                         return {
                             ...item,
                             trackName: action.payload.newName
-                        }
-                    }
-                    return item;
-                }),
-                currentTrack:{
-                    ...state.currentTrack,
-                    trackName: action.payload.newName,
-                }
-            };
-
-        case SUBMIT_TRACK_NAME:
-            return{
-                ...state,
-                sideMenuOpened:false,
-                tracks: state.tracks.map((item) => {
-                    if(item.id === action.payload.id){
-                        return {
-                            ...item,
-                            isNameEditable:false
                         }
                     }
                     return item;
@@ -372,7 +353,7 @@ export default function createGameMapReducer(state = dataState, action){
             };
 
         case FOCUS_ON_BEACON:
-            let res = {
+            return {
                 ...state,
                 regionFocus:{
                     latitudeDelta: state.centerRegion.latitudeDelta,
@@ -382,8 +363,6 @@ export default function createGameMapReducer(state = dataState, action){
                 },
                 centerRegion:undefined
             };
-            console.log(res);
-            return res;
 
         case CLOSE_MODAL:
             return{

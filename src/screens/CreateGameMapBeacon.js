@@ -256,6 +256,7 @@ const mapStateToProps = (state, own) => {
         ...own,
         centerRegion : state.createGameMapReducer.centerRegion,
         currentTrack:state.createGameMapReducer.currentTrack,
+        chosenMode: state.settingsReducer.chosenMode,
         tracks: state.createGameMapReducer.tracks,
         confirmLinkedBeacons:state.createGameMapReducer.confirmLinkedBeacons,
         sideMenuOpened:state.createGameMapReducer.sideMenuOpened,
