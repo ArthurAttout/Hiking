@@ -94,13 +94,13 @@ def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = false
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.1"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.1"
 
     defaultConfig {
         applicationId "com.hiking"
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 27
         multiDexEnabled true
         versionCode 1
         versionName "1.0"

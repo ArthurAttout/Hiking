@@ -106,7 +106,7 @@ export default class Menu extends React.Component{
 
     render(){
         return (
-            <View style={styles.container}>
+            <ScrollView style={styles.container}>
                 <Text
                     style={styles.title}>
                     All tracks
@@ -128,7 +128,20 @@ export default class Menu extends React.Component{
                     background={TouchableNativeFeedback.Ripple('blue')}
                     delayPressIn={0}/>
 
-            </View>
+                <IconFoundation.Button
+                    name="check"
+                    color={COLORS.Secondary}
+                    style={styles.addTrackButton}
+                    underlayColor='#f0f0f0'
+                    onPress={() => {
+                        const { navigate } = this.props.navigation;
+                        navigate('CreateGameAssignTeams');
+                    }}
+                    backgroundColor='transparent'
+                    background={TouchableNativeFeedback.Ripple('blue')}
+                    delayPressIn={0}>Finish</IconFoundation.Button>
+
+            </ScrollView>
         );
     }
 
@@ -143,7 +156,7 @@ export default class Menu extends React.Component{
                         onSubmitEditing={() => {this.props.onSubmitTrackName(section)}}
                         underlineColorAndroid='transparent'
                         placeholderTextColor="#FFFFFF"
-                        value="Track"/>
+                        placeholder={section.trackName}/>
 
                     <View style={{width:'15%'}}>
                         <IconAwesome.Button
@@ -194,7 +207,7 @@ export default class Menu extends React.Component{
                         editable={section.isNameEditable === true}
                         onSubmitEditing={() => {this.props.onSubmitTrackName(section)}}
                         underlineColorAndroid='transparent'
-                        placeholder="Track"
+                        placeholder={section.trackName}
                         placeholderTextColor="#FFFFFF"/>
 
                     <View style={{width:'15%'}}>

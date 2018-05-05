@@ -52,6 +52,7 @@ export default function createGameMapReducer(state = dataState, action){
                 },
                 tracks: [{
                     id: generatedUUID,
+                    trackName: "Track 1",
                     beacons: [],
                     path:[]
                 }],
@@ -223,6 +224,7 @@ export default function createGameMapReducer(state = dataState, action){
             return{
                 ...state,
                 tracks:state.tracks.concat({
+                    trackName: "Track " + (state.tracks.length + 1),
                     id: UUIDGenerator.getRandomUUID(),
                     beacons: [],
                     path:[]
@@ -347,7 +349,11 @@ export default function createGameMapReducer(state = dataState, action){
                         }
                     }
                     return item;
-                })
+                }),
+                currentTrack:{
+                    ...state.currentTrack,
+                    trackName: action.payload.newName,
+                }
             };
 
         case SUBMIT_TRACK_NAME:

@@ -280,12 +280,12 @@ const mapStateToProps = (state, own) => {
     return {
         ...own,
         chosenMode: state.gameModesReducer.chosenMode,
-        viewMapEnabled:state.gameModesReducer.viewMapEnabled,
-        nextBeaconVisibilityEnabled:state.gameModesReducer.nextBeaconVisibilityEnabled,
-        dropDistanceVisibilityEnabled:state.gameModesReducer.dropDistanceVisibilityEnabled,
-        numberLives:state.gameModesReducer.numberLives,
-        timerMaxRiddle:state.gameModesReducer.timerMaxRiddle,
-        shrinkDelay:state.gameModesReducer.shrinkDelay
+        viewMapEnabled:state.settingsReducer.viewMapEnabled,
+        nextBeaconVisibilityEnabled:state.settingsReducer.nextBeaconVisibilityEnabled,
+        dropDistanceVisibilityEnabled:state.settingsReducer.dropDistanceVisibilityEnabled,
+        numberLives:state.settingsReducer.numberLives,
+        timerMaxRiddle:state.settingsReducer.timerMaxRiddle,
+        shrinkDelay:state.settingsReducer.shrinkDelay
     }
 };
 

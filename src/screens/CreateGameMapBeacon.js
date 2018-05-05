@@ -56,7 +56,7 @@ class Screen extends React.Component {
     render(){
         const menu = <Menu
             chosenMode={this.props.chosenMode}
-            navigator={navigator}
+            navigation={this.props.navigation}
             userTracks={this.props.tracks}
             currentTrackID={this.props.currentTrack.id}
             setImagePath={this.props.setImagePath}
@@ -227,7 +227,7 @@ class Screen extends React.Component {
                 visible={false}
                 style={{width:'20%',height:'15%',margin:15,alignSelf:'center'}}
                 color="transparent"
-                onPress={()=>{console.log("aaaaaaaaaaaaa")}}
+                onPress={()=>{}}
                 backgroundColor='transparent'
                 background={TouchableNativeFeedback.Ripple('blue')}
                 delayPressIn={0}/>
