@@ -1,5 +1,6 @@
 import {ADD_NEW_TEAM,CLOSE_MODAL_TEAM_EDITOR,SHOW_MODAL_TEAM_EDITOR,
-    POPULATE_DROPDOWN,TEAM_NAME_CHANGED,DELETE_TEAM} from '../actions/actionsAssignTeams'
+    POPULATE_DROPDOWN,TEAM_NAME_CHANGED,DELETE_TEAM,SHOW_COLOR_PICKER,
+    CLOSE_COLOR_PICKER,TEAM_COLOR_CHANGE} from '../actions/actionsAssignTeams'
 
 let dataState = {
     teams: [
@@ -10,6 +11,7 @@ let dataState = {
 
     ],
     isValid: false,
+    colorPickerVisible: false,
     currentEditingTeam: undefined,
 };
 
@@ -78,6 +80,32 @@ export default function assignTeamsReducer (state = dataState, action) {
                 modalTeamEditorVisible: false,
                 teams: state.teams.filter((item) => item.id !== state.currentEditingTeam.id),
                 currentEditingTeam: undefined
+            };
+
+        case SHOW_COLOR_PICKER:
+            return{
+                ...state,
+                colorPickerVisible: true,
+            };
+
+        case CLOSE_COLOR_PICKER:
+            return{
+                ...state,
+                colorPickerVisible: false
+            };
+
+        case TEAM_COLOR_CHANGE:
+            return{
+                ...state,
+                teams: state.teams.map((item) => {
+                    if(item.id === state.currentEditingTeam.id){
+                        return{
+                            ...item,
+                            color: action.color
+                        }
+                    }
+                    return item;
+                }),
             };
 
         default:

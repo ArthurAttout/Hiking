@@ -7,15 +7,18 @@ import {
 import {connect} from "react-redux";
 import Modal from "react-native-modal";
 import store from '../config/store'
+import IconAwesome from 'react-native-vector-icons/FontAwesome';
 import { Dropdown } from 'react-native-material-dropdown';
 import {COLORS} from "../utils/constants";
 import IconFoundation from 'react-native-vector-icons/Foundation';
 import {addNewTeam,showModalTeamEditor,closeModalTeamEditor,populateDropdown,teamNameChanged} from '../actions/actionsAssignTeams'
+import GameCreatedScreen from "./GameCreatedScreen";
 
 class RecapitulativeScreen extends React.Component {
 
     constructor(props) {
         super(props);
+        this._onConfirm = this._onConfirm.bind(this);
     }
 
     render() {
@@ -51,7 +54,18 @@ class RecapitulativeScreen extends React.Component {
                     data={this.props.teams}
                     keyExtractor={item => JSON.stringify(item.id)}
                     renderItem={({item,index}) => (
-                        <Text style={styles.teamItemStyle}>{item.name + ' - ' + item.track.trackName}</Text>
+                        <View
+                            style={{flex:1,
+                                flexDirection: 'row',
+                                justifyContent: 'space-between'}}>
+                        <Text style={styles.teamItemStyle}>{item.name + ' - ' + item.track.trackName + " (" + (item.track.totalDistance/1000).toFixed(2) + "km)"}</Text>
+                        {
+                            item.color !== undefined ?
+                            <IconAwesome name="circle" size={30} color={item.color} style={{alignSelf:'center',marginRight:15}} />
+                            :
+                            <View/>
+                        }
+                        </View>
                     )}
                     />
                 <TouchableNativeFeedback
@@ -99,7 +113,9 @@ class RecapitulativeScreen extends React.Component {
     }
 
     _onConfirm(){
-
+        console.log(this.props.navigation);
+        const { navigate } = this.props.navigation;
+        navigate('GameCreatedScreen');
     }
 }
 

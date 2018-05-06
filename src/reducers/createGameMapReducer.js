@@ -27,6 +27,7 @@ let dataState = {
     showQRCodePicker: false,
     modalBeaconIDVisible: false,
     modalVisible:false,
+    userCanFinish: false,
     currentCustomizingBeacon: {
         name:undefined,
         imagePath:undefined,
@@ -223,6 +224,7 @@ export default function createGameMapReducer(state = dataState, action){
         case ADD_NEW_TRACK:
             return{
                 ...state,
+                userCanFinish: false,
                 tracks:state.tracks.concat({
                     trackName: "Track " + (state.tracks.length + 1),
                     id: UUIDGenerator.getRandomUUID(),
@@ -253,7 +255,10 @@ export default function createGameMapReducer(state = dataState, action){
                     }
                 }
             }
-            return newState;
+            return {
+                ...newState,
+                userCanFinish: !newState.tracks.some((t) => !t.finished)
+            };
 
         case EDIT_TRACK:
             return {
@@ -269,7 +274,7 @@ export default function createGameMapReducer(state = dataState, action){
         case CLEAR_BEACONS:
             newState = {
                 ...state,
-
+                userCanFinish: false,
                 tracks: state.tracks.map((item) => {
                     if(item.id === action.payload.id){
                         return{
@@ -296,13 +301,14 @@ export default function createGameMapReducer(state = dataState, action){
             return newState;
 
         case DONE_CALCULATING_PATH:
-            return {
+            newState =  {
                 ...state,
                 confirmLinkedBeacons: false,
                 tracks:state.tracks.map((track,index) => {
                     if(track.id === state.currentTrack.id){
                         return {
                             ...track,
+                            finished: true,
                             path:state.currentTrack.path,
                             totalDistance: action.totalDistance,
                             altitudeDelta: action.totalDelta
@@ -311,6 +317,13 @@ export default function createGameMapReducer(state = dataState, action){
                     return track;
                 })
             };
+            if(!newState.tracks.some((t) => !t.finished)){ //All the tracks are finished
+                return{
+                    ...newState,
+                    userCanFinish: true
+                }
+            }
+            return newState;
 
         case CLEAR_PATH:
             return {

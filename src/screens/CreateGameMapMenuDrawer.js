@@ -105,6 +105,23 @@ export default class Menu extends React.Component{
     }
 
     render(){
+
+        const buttonFinish = this.props.userCanFinish ?
+            (<IconFoundation.Button
+                name="check"
+                color={COLORS.Secondary}
+                style={styles.addTrackButton}
+                underlayColor='#f0f0f0'
+                onPress={() => {
+                    const { navigate } = this.props.navigation;
+                    navigate('CreateGameAssignTeams');
+                }}
+                backgroundColor='transparent'
+                background={TouchableNativeFeedback.Ripple('blue')}
+                delayPressIn={0}>Finish</IconFoundation.Button>)
+            :
+            (<View/>)
+
         return (
             <ScrollView style={styles.container}>
                 <Text
@@ -128,18 +145,7 @@ export default class Menu extends React.Component{
                     background={TouchableNativeFeedback.Ripple('blue')}
                     delayPressIn={0}/>
 
-                <IconFoundation.Button
-                    name="check"
-                    color={COLORS.Secondary}
-                    style={styles.addTrackButton}
-                    underlayColor='#f0f0f0'
-                    onPress={() => {
-                        const { navigate } = this.props.navigation;
-                        navigate('CreateGameAssignTeams');
-                    }}
-                    backgroundColor='transparent'
-                    background={TouchableNativeFeedback.Ripple('blue')}
-                    delayPressIn={0}>Finish</IconFoundation.Button>
+                {buttonFinish}
 
             </ScrollView>
         );

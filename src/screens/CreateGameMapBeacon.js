@@ -60,6 +60,7 @@ class Screen extends React.Component {
             userTracks={this.props.tracks}
             currentTrackID={this.props.currentTrack.id}
             setImagePath={this.props.setImagePath}
+            userCanFinish={this.props.userCanFinish}
 
             QRCodePickerVisible={this.props.QRCodePickerVisible}
             showQRCodePicker={this.props.showQRCodePicker}
@@ -257,6 +258,7 @@ const mapStateToProps = (state, own) => {
         centerRegion : state.createGameMapReducer.centerRegion,
         currentTrack:state.createGameMapReducer.currentTrack,
         chosenMode: state.settingsReducer.chosenMode,
+        userCanFinish: state.createGameMapReducer.userCanFinish,
         tracks: state.createGameMapReducer.tracks,
         confirmLinkedBeacons:state.createGameMapReducer.confirmLinkedBeacons,
         sideMenuOpened:state.createGameMapReducer.sideMenuOpened,
