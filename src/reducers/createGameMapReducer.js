@@ -72,7 +72,7 @@ export default function createGameMapReducer(state = dataState, action){
             };
 
         case ADD_NEW_BEACON:
-            if(state.isTrackingMode){
+            if(state.isTrackingMode || state.currentTrack === undefined){
                 return {
                     ...state,
                     isTrackingMode: false
@@ -391,6 +391,7 @@ export default function createGameMapReducer(state = dataState, action){
                     ...state.currentCustomizingBeacon,
                     id: action.beacon.id,
                     name: action.beacon.name,
+                    imagePath: action.beacon.imagePath,
                     qrCode: action.beacon.qrCode,
                     riddle: {
                         ...action.beacon.riddle,
@@ -401,7 +402,6 @@ export default function createGameMapReducer(state = dataState, action){
         case SET_IMAGE_PATH:
             return {
                 ...state,
-                modalVisible:false,
                 currentCustomizingBeacon:{
                     ...state.currentCustomizingBeacon,
                     imagePath:action.path
@@ -442,6 +442,7 @@ export default function createGameMapReducer(state = dataState, action){
             return{
                 ...state,
                 modalVisible:false,
+                currentCustomizingBeacon: undefined,
                 tracks : state.tracks.map((item,index) => {
                     if(item.id === state.currentTrack.id){
                         return {
@@ -477,15 +478,7 @@ export default function createGameMapReducer(state = dataState, action){
             return{
                 ...state,
                 modalVisible:false,
-                currentCustomizingBeacon:{
-                    ...state.currentCustomizingBeacon,
-                    riddle:{
-                        ...state.currentCustomizingBeacon.beacon,
-                        statement: undefined,
-                        answer: undefined,
-                        qrCode: undefined,
-                    }
-                },
+                currentCustomizingBeacon: undefined,
                 tracks : state.tracks.map((item,index) => {
                     if(item.id === state.currentTrack.id){
                         return {

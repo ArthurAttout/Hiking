@@ -72,7 +72,7 @@ export default class RiddleModal extends React.Component{
                                 <TextInput
                                     style={{width:200,height:60, alignSelf:'center'}}
                                     placeholder={'Beacon name'}
-                                    value={this.props.currentCustomizingBeacon.name}
+                                    value={this.props.currentCustomizingBeacon === undefined ? "" : this.props.currentCustomizingBeacon.name}
                                     onChangeText={(name) => this.props.setCurrentBeaconName(name)}
                                 />
                             </View>

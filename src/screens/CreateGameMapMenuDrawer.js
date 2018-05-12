@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     header:{
         margin:3,
         height:100,
-        justifyContent:'space-between',
+        //justifyContent:'space-between',
         alignItems:'center',
         flexWrap:'wrap',
         flexDirection:'row',
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     headerCurrentTrack:{
         margin:3,
         height:100,
-        justifyContent:'space-between',
+        //justifyContent:'space-between',
         alignItems:'center',
         flexWrap:'wrap',
         flexDirection:'row',
@@ -164,33 +164,37 @@ export default class Menu extends React.Component{
                         placeholderTextColor="#FFFFFF"
                         placeholder={section.trackName}/>
 
-                    <View style={{width:'15%'}}>
-                        <IconAwesome.Button
+
+                        <IconAwesome
                             name="arrows-h"
                             color="#ffffff"
-                            backgroundColor='transparent'
-                            delayPressIn={0}/>
-                    </View>
+                            size={17}
+                            backgroundColor='transparent'/>
 
-                    <View style={{width:'35%',paddingRight:5}}>
+
+                    <View style={{width:'35%',paddingRight:8, paddingLeft:5}}>
                         <Text style={{ color:'#ffffff'}}>
                             {
                                 section.totalDistance !== undefined ?
-                                section.totalDistance.toFixed(3) :
+                                    (section.totalDistance > 1000 ?
+                                        (section.totalDistance/1000).toFixed(3) + "km" :
+                                            section.totalDistance.toFixed(3) + "m")
+
+                                    :
                                 0
-                            } m
+                            }
                         </Text>
                     </View>
 
-                    <View style={{width:'15%'}}>
-                        <IconAwesome.Button
+
+                        <IconAwesome
                             name="arrows-v"
                             color="#ffffff"
-                            backgroundColor='transparent'
-                            delayPressIn={0}/>
-                    </View>
+                            size={17}
+                            backgroundColor='transparent'/>
 
-                    <View style={{width:'35%',paddingRight:5}}>
+
+                    <View style={{width:'31%',paddingLeft:5}}>
                         <Text style={{ color:'#ffffff'}}>
                         {
                             section.altitudeDelta !== undefined ?
@@ -216,33 +220,37 @@ export default class Menu extends React.Component{
                         placeholder={section.trackName}
                         placeholderTextColor="#FFFFFF"/>
 
-                    <View style={{width:'15%'}}>
-                        <IconAwesome.Button
+
+                        <IconAwesome
                             name="arrows-h"
                             color="#ffffff"
-                            backgroundColor='transparent'
-                            delayPressIn={0}/>
-                    </View>
+                            size={17}
+                            backgroundColor='transparent'/>
 
-                    <View style={{width:'35%',paddingRight:5}}>
+
+                    <View style={{width:'35%',paddingRight:5, paddingLeft:5}}>
                         <Text style={{ color:'#ffffff'}}>
                             {
                                 section.totalDistance !== undefined ?
-                                section.totalDistance.toFixed(3) :
-                                0
-                            } m
+                                    (section.totalDistance > 1000 ?
+                                        (section.totalDistance/1000).toFixed(3) + "km" :
+                                        section.totalDistance.toFixed(3) + "m")
+
+                                    :
+                                    0
+                            }
                         </Text>
                     </View>
 
-                    <View style={{width:'15%'}}>
-                        <IconAwesome.Button
-                            name="arrows-v"
-                            color="#ffffff"
-                            backgroundColor='transparent'
-                            delayPressIn={0}/>
-                    </View>
 
-                    <View style={{width:'35%',paddingRight:5}}>
+                    <IconAwesome
+                        name="arrows-v"
+                        color="#ffffff"
+                        size={17}
+                        backgroundColor='transparent'/>
+
+
+                    <View style={{width:'31%',paddingLeft:5}}>
                         <Text style={{ color:'#ffffff'}}>
                             {
                                 section.altitudeDelta !== undefined ?
@@ -324,6 +332,7 @@ export default class Menu extends React.Component{
     }
 
     _renderModal(section){
+        if(this.props.currentCustomizingBeacon === undefined) return (<View/>);
         switch(this.props.chosenMode.mode){
             case GAME_MODES.NORMAL:
                return(
