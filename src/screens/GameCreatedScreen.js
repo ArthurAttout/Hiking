@@ -30,14 +30,14 @@ class GameCreatedScreen extends React.Component {
                 <View style={styles.codesView}>
                     <View style={styles.button}>
                         <Text style={styles.textHeader}>Player code</Text>
-                        <Text style={styles.textCode}>ABCDE</Text>
+                        <Text style={styles.textCode}>{this.props.PlayerCode}</Text>
                     </View>
 
                     <View style={styles.separator}/>
 
                     <View style={styles.button}>
                         <Text style={styles.textHeader}>Game master code</Text>
-                        <Text style={styles.textCode}>ABCDE</Text>
+                        <Text style={styles.textCode}>{this.props.GameMasterCode}</Text>
                     </View>
 
                 </View>

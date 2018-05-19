@@ -54,6 +54,19 @@ class GScreen extends React.Component {
             },
             { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
         );
+                });
+            },
+            // TODO manage error when GPS is not activated
+            (error) => {
+                this.setState({
+                    latitude: 50.228411,
+                    longitude: 5.335913,
+                    accuracy: 0,
+                    error: error.message
+                })
+            },
+            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+        );
     }
 
     render() {
@@ -100,7 +113,6 @@ class GScreen extends React.Component {
                 latitudeDelta: 0.0,
                 longitudeDelta: 0.0
             };
-            console.log(beacon);
             return (
                 // TODO place next marker as well
                 <MapView
@@ -116,7 +128,6 @@ class GScreen extends React.Component {
 
     renderBottomNavigation() {
         if(this.props.gameData.mapViewEnabled){
-        //if(true){
             if(this.props.mapViewVisible) {
                 return (
                     <TouchableNativeFeedback

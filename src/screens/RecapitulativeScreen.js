@@ -13,6 +13,7 @@ import {COLORS} from "../utils/constants";
 import IconFoundation from 'react-native-vector-icons/Foundation';
 import {addNewTeam,showModalTeamEditor,closeModalTeamEditor,populateDropdown,teamNameChanged} from '../actions/actionsAssignTeams'
 import GameCreatedScreen from "./GameCreatedScreen";
+import {prepareRequest} from "../utils/constants";
 
 class RecapitulativeScreen extends React.Component {
 
@@ -58,16 +59,16 @@ class RecapitulativeScreen extends React.Component {
                             style={{flex:1,
                                 flexDirection: 'row',
                                 justifyContent: 'space-between'}}>
-                        <Text style={styles.teamItemStyle}>{item.name + ' - ' + item.track.trackName + " (" + (item.track.totalDistance/1000).toFixed(2) + "km)"}</Text>
-                        {
-                            item.color !== undefined ?
-                            <IconAwesome name="circle" size={30} color={item.color} style={{alignSelf:'center',marginRight:15}} />
-                            :
-                            <View/>
-                        }
+                            <Text style={styles.teamItemStyle}>{item.name + ' - ' + item.track.trackName + " (" + (item.track.totalDistance/1000).toFixed(2) + "km)"}</Text>
+                            {
+                                item.color !== undefined ?
+                                    <IconAwesome name="circle" size={30} color={item.color} style={{alignSelf:'center',marginRight:15}} />
+                                    :
+                                    <View/>
+                            }
                         </View>
                     )}
-                    />
+                />
                 <TouchableNativeFeedback
                     background={TouchableNativeFeedback.Ripple('white')}
                     delayPressIn={0}
@@ -84,11 +85,11 @@ class RecapitulativeScreen extends React.Component {
         switch(this.props.settings.chosenMode.mode){
             case GAME_MODES.NORMAL:
                 return(
-                <View>
-                    <Text style={styles.settingStyle}>Delay between each zone shrink (meters per minute) : {this.props.settings.shrinkDelay} </Text>
-                    <Text style={styles.settingStyle}>Players can see the map : {this.props.settings.viewMapEnabled ? "Yes" : "No"}</Text>
-                    <Text style={styles.settingStyle}>Players can see the next beacon location : {this.props.settings.nextBeaconVisibilityEnabled ? "Yes" : "No"}</Text>
-                </View>);
+                    <View>
+                        <Text style={styles.settingStyle}>Delay between each zone shrink (meters per minute) : {this.props.settings.shrinkDelay} </Text>
+                        <Text style={styles.settingStyle}>Players can see the map : {this.props.settings.viewMapEnabled ? "Yes" : "No"}</Text>
+                        <Text style={styles.settingStyle}>Players can see the next beacon location : {this.props.settings.nextBeaconVisibilityEnabled ? "Yes" : "No"}</Text>
+                    </View>);
 
             case GAME_MODES.RIDDLES:
                 return(
@@ -113,9 +114,19 @@ class RecapitulativeScreen extends React.Component {
     }
 
     _onConfirm(){
-        console.log(this.props.navigation);
-        const { navigate } = this.props.navigation;
-        navigate('GameCreatedScreen');
+        let url = "https://hikong.masi-henallux.be:5000/game";
+        let params = {};
+        let request = prepareRequest(params,"POST");
+
+        fetch('https://hikong.masi-henallux.be:5000/game',request)
+            .then ((response) => response.json())
+            .then ((json) => {
+                const { navigate } = this.props.navigation;
+                navigate('GameCreatedScreen',json);
+            })
+            .catch((error) => {
+                console.error("Error  : " + error);
+            });
     }
 }
 
