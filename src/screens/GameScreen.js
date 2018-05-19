@@ -54,25 +54,32 @@ class GScreen extends React.Component {
             },
             { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
         );
+
+        const nextBeacon = getNextBeacon(this.props.gameCode, this.props.teamName);
+        console.log(nextBeacon);
+        this.props.storeNextBeacon(nextBeacon);
+        console.log(this.props.nextBeacon)
     }
 
     render() {
         const { navigate } = this.props.navigation;
+        console.log(this.props.nextBeacon);
+        console.log(this.props.currentLocation);
         return (
             <View style={styles.container}>
                 <StatusBar
                     backgroundColor={COLORS.Primary_accent}
                     barStyle="light-content"
                 />
-                {this.renderMainView()}
-                {this.renderBottomNavigation()}
+                {this.renderMainView(this.props)}
+                {this.renderBottomNavigation(this.props)}
             </View>
         );
     }
 
     // TODO rotate arrow based on next beacon location
-    renderMainView() {
-        if(!this.props.mapViewVisible){
+    renderMainView(props) {
+        if(!props.mapViewVisible){
             return (
                 /* For testing only
                 <TouchableNativeFeedback
@@ -89,16 +96,16 @@ class GScreen extends React.Component {
             );
         } else {
             this.initialRegion = {
-                latitude: this.props.currentLocation.latitude,
-                longitude: this.props.currentLocation.longitude,
+                latitude: props.currentLocation.latitude,
+                longitude: props.currentLocation.longitude,
                 latitudeDelta: 0.0,
                 longitudeDelta: 0.0,
             };
             console.log(this.initialRegion);
-            console.log(this.props.nextBeacon);
+            //console.log(props.nextBeacon);
             const beacon = {
-                latitude: this.props.nextBeacon.latitude,
-                longitude: this.props.nextBeacon.longitude,
+                latitude: props.nextBeacon.latitude,
+                longitude: props.nextBeacon.longitude,
                 latitudeDelta: 0.0,
                 longitudeDelta: 0.0
             };
@@ -115,15 +122,15 @@ class GScreen extends React.Component {
         }
     }
 
-    renderBottomNavigation() {
+    renderBottomNavigation(props) {
         //if(this.props.gameData.mapViewEnabled){
         if(true){
-            if(this.props.mapViewVisible) {
+            if(props.mapViewVisible) {
                 return (
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('white')}
                         onPress={() => {
-                            this.props.setMapViewVisible(false);
+                            props.setMapViewVisible(false);
                         }}
                     >
                         <View style={styles.bottomView}>
@@ -137,7 +144,7 @@ class GScreen extends React.Component {
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('white')}
                         onPress={() => {
-                            this.props.setMapViewVisible(true);
+                            props.setMapViewVisible(true);
                         }}
                     >
                         <View style={styles.bottomView}>
@@ -168,6 +175,7 @@ const mapDispatchToProps = (dispatch) =>{
     return {
         storeCurrentLocation: (currentLocation) => dispatch(storeCurrentLocation(currentLocation)),
         setMapViewVisible: (mapViewVisible) => dispatch(setMapViewVisible(mapViewVisible)),
+        storeNextBeacon: (nextBeacon) => dispatch(storeNextBeacon(nextBeacon))
     }
 };
 

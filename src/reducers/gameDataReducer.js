@@ -18,7 +18,7 @@ let dataState = {
         iconUrl: "",
         qrCodeId: "",
         riddleId:  0,
-        riddleStatement: "Mon coup n'est pas fatal mais je fais parfois mal souvent je suis dressé et je sens bon la marée, qui suis je ?",
+        riddleStatement: "Mon coup n'est pas fatal mais je fais parfois mal souvent je suis dresse et je sens bon la maree, qui suis je ?",
         riddleAnswer: "Ma bite",
     },
     currentLocation: {
