@@ -29,7 +29,6 @@ export default function joinGameReducer (state = dataState, action) {
                 ...state,
                 gameReady:true
             };
-
         case SET_PLAYER_NAME:
             return{
                 ...state,

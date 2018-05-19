@@ -8,6 +8,9 @@ export const SET_PLAYER_NAME= 'SET_PLAYER_NAME';
 export const PLAYER_STATUS_FETCHED = 'PLAYER_STATUS_FETCHED';
 export const SET_GAME_CODE ='SET_GAME_CODE';
 export const FETCH_PLAYER_STATUS = 'FETCH_PLAYER_STATUS';
+export const INPUT_CODE = 'INPUT_CODE';
+export const JOIN_TEAM = 'JOIN_TEAM';
+export const TOGGLE_GAME_READY = 'TOGGLE_GAME_READY';
 
 export const submit = () =>{
     return dispatch => {
@@ -73,6 +76,36 @@ export const setGameCode = (value) => {
     }
 };
 
+export function getGameModes(){
+    return (dispatch) => {
+        setTimeout(() => {
+            const data  = [
+                {"title":"Team 1"},
+                {"title":"Team 2"},
+                {"title":"Team 3"},
+                {"title":"Team 4"},
+                {"title":"Team 5"},
+                {"title":"Team 6"},
+                {"title":"Team 7"},
+                {"title":"Team 8"},
+                {"title":"Team 9"},
+                {"title":"Team 10"},
+                {"title":"Team 11"},
+                {"title":"Team 12"}
+            ]
+            dispatch({type: DATA_AVAILABLE, data:data});
+        }, 2000);
+    };
+}
+
+export const inputCode = (gameCode,playerName) =>{
+    return{
+        type:INPUT_CODE,
+        gameCode:gameCode,
+        playerName:playerName
+    }
+};
+
 export const joinTeam = (team) =>{
     return{
         type:JOIN_TEAM,
@@ -85,3 +118,4 @@ export const toggleGameReady = () =>{
         type:TOGGLE_GAME_READY
     }
 };
+

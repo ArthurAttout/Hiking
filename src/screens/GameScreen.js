@@ -7,6 +7,8 @@ import {COLORS} from "../utils/constants";
 import MapView, { Marker } from 'react-native-maps'
 import {getNextBeacon} from "../config/FakeServer";
 import store from "../config/store";
+import {joinTeam} from "../actions/actionsJoinGame";
+import {setMapViewVisible, storeCurrentLocation, storeNextBeacon} from "../actions/actionsGameData";
 
 class GScreen extends React.Component {
     static navigationOptions = {
@@ -25,25 +27,33 @@ class GScreen extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            teamName: 'TeamName',
-            mapViewVisible: false,
-            latitude: 0.0,
-            longitude: 0.0,
-            accuracy: null,
-            error: null,
-            nextBeacon: null,
-        };
+        this.renderBottomNavigation = this.renderBottomNavigation.bind(this);
+        this.renderMainView = this.renderMainView.bind(this);
     }
 
     componentDidMount() {
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                this.setState({
+                const currentPosition = {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
                     accuracy: position.coords.accuracy,
                     error: null,
+                };
+                this.props.storeCurrentLocation(currentPosition);
+            },
+            // TODO manage error when GPS is not activated
+            (error) => {
+                const currentPosition = {
+                    latitude: 50.228411,
+                    longitude: 5.335913,
+                    accuracy: 0,
+                    error: error.message,
+                };
+                this.props.storeCurrentLocation(currentPosition);
+            },
+            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+        );
                 });
             },
             // TODO manage error when GPS is not activated
@@ -57,12 +67,6 @@ class GScreen extends React.Component {
             },
             { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
         );
-
-        // TODO get initial next beacon and store it in the state
-        /*this.setState(() => {
-            return { nextBeacon: this.props.nextBeacon};
-        });*/
-
     }
 
     render() {
@@ -81,9 +85,9 @@ class GScreen extends React.Component {
 
     // TODO rotate arrow based on next beacon location
     renderMainView() {
-        if(!this.state.mapViewVisible){
+        if(!this.props.mapViewVisible){
             return (
-                /* For testing only
+                /*For testing only
                 <TouchableNativeFeedback
                     background={TouchableNativeFeedback.Ripple('white')}
                     onPress={() => {
@@ -97,41 +101,39 @@ class GScreen extends React.Component {
                 //</TouchableNativeFeedback>
             );
         } else {
-            this.initialRegion = {
-                latitude: 50.223777,
-                longitude: 5.335017,
-                latitudeDelta: 0.015,
-                longitudeDelta: 0.0121,
+            const initialRegion = {
+                latitude: this.props.currentLocation.latitude,
+                longitude: this.props.currentLocation.longitude,
+                latitudeDelta: 0.0,
+                longitudeDelta: 0.0,
             };
-            console.log(this.initialRegion);
+            const beacon = {
+                latitude: this.props.nextBeacon.latitude,
+                longitude: this.props.nextBeacon.longitude,
+                latitudeDelta: 0.0,
+                longitudeDelta: 0.0
+            };
             return (
                 // TODO place next marker as well
                 <MapView
                     style={styles.map}
-                    initialRegion={this.initialRegion}
-                />
-                    /*<Marker coordinate={{
-                            latitude: this.state.nextBeacon.latitude,
-                            longitude: this.state.nextBeacon.longitude
-                            latitude: 0,
-                            longitude: 0
-                        }} />*/
-                //</MapView>
+                    initialRegion={initialRegion}
+                >
+                    <Marker coordinate={initialRegion}/>
+                    <Marker coordinate={beacon}/>
+                </MapView>
             );
         }
     }
 
     renderBottomNavigation() {
-        //if(this.props.gameData.mapViewEnabled){
-        if(true){
-            if(this.state.mapViewVisible) {
+        if(this.props.gameData.mapViewEnabled){
+            if(this.props.mapViewVisible) {
                 return (
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('white')}
                         onPress={() => {
-                            this.setState({
-                                mapViewVisible: false
-                            });
+                            this.props.setMapViewVisible(false);
                         }}
                     >
                         <View style={styles.bottomView}>
@@ -145,9 +147,7 @@ class GScreen extends React.Component {
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('white')}
                         onPress={() => {
-                            this.setState({
-                                mapViewVisible: true
-                            });
+                            this.props.setMapViewVisible(true);
                         }}
                     >
                         <View style={styles.bottomView}>
@@ -162,18 +162,30 @@ class GScreen extends React.Component {
 }
 
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, own) => {
     return {
+        ...own,
         playerName: state.joinGameReducer.playerName,
         gameCode: state.joinGameReducer.gameCode,
         teamName: state.joinGameReducer.teamName,
         gameData: state.gameDataReducer.gameData,
         nextBeacon: state.gameDataReducer.nextBeacon,
+        currentLocation: state.gameDataReducer.currentLocation,
+        mapViewVisible: state.gameDataReducer.mapViewVisible
+    }
+};
+
+function mapDispatchToProps(dispatch, own) {
+    return {
+        ...own,
+        storeCurrentLocation: (currentLocation) => dispatch(storeCurrentLocation(currentLocation)),
+        setMapViewVisible: (mapViewVisible) => dispatch(setMapViewVisible(mapViewVisible)),
+        storeNextBeacon: (nextBeacon) => dispatch(storeNextBeacon(nextBeacon))
     }
 };
 
 //Connect everything
-export default GameScreen = connect(mapStateToProps)(GScreen);
+export default GameScreen = connect(mapStateToProps, mapDispatchToProps)(GScreen);
 
 const styles = StyleSheet.create({
     container: {

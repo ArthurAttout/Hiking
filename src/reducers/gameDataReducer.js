@@ -1,4 +1,4 @@
-import { STORE_SERVER_DATA, STORE_NEXT_BEACON } from '../actions/actionsGameData';
+import { STORE_SERVER_DATA, STORE_NEXT_BEACON, STORE_CURRENT_LOCATION, SET_MAP_VIEW_VISIBLE } from '../actions/actionsGameData';
 
 let dataState = {
     gameData: {
@@ -18,9 +18,16 @@ let dataState = {
         iconUrl: "",
         qrCodeId: "",
         riddleId:  0,
-        riddleStatement: "Mon coup n'est pas fatal mais je fais parfois mal souvent je suis dressé et je sens bon la marée, qui suis je ?",
+        riddleStatement: "Mon coup n'est pas fatal mais je fais parfois mal souvent je suis dresse et je sens bon la maree, qui suis je ?",
         riddleAnswer: "Ma bite",
-    }
+    },
+    currentLocation: {
+        latitude: 0.0,
+        longitude: 0.0,
+        accuracy: 0.0,
+        error: null,
+    },
+    mapViewVisible: false,
 };
 
 export default function gameDataReducer (state = dataState, action) {
@@ -53,6 +60,21 @@ export default function gameDataReducer (state = dataState, action) {
                     riddleStatement: action.riddleStatement,
                     riddleAnswer: action.riddleAnswer,
                 }
+            };
+        case STORE_CURRENT_LOCATION:
+            return {
+                ...state,
+                currentLocation: {
+                    latitude: action.latitude,
+                    longitude: action.longitude,
+                    accuracy: action.accuracy,
+                    error: action.error,
+                }
+            };
+        case SET_MAP_VIEW_VISIBLE:
+            return {
+                ...state,
+                mapViewVisible: action.mapViewVisible
             };
         default:
             return state;

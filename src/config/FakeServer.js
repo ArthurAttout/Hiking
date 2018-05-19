@@ -47,8 +47,7 @@ export function sendClientDataToServer(gameCode, playerName, teamNam) {
 }
 
 export function getDataFromServer(gameCode) {
-    return [
-        {
+    return {
             "gameMode": 1,
             "shrinkSpeed": 5,
             "mapViewEnabled": true,
@@ -57,12 +56,10 @@ export function getDataFromServer(gameCode) {
             "lives": 0,
             "timerRiddle": 0,
         }
-    ]
 }
 
 export function getNextBeacon(gameCode, teamName) {
-    return [
-        {
+    return {
             "id": 0,
             "latitude": 50.228820,
             "longitude": 5.335657,
@@ -73,5 +70,4 @@ export function getNextBeacon(gameCode, teamName) {
             "riddleStatement": "Mon coup n'est pas fatal mais je fais parfois mal souvent je suis dressé et je sens bon la marée, qui suis je ?",
             "riddleAnswer": "Ma bite",
         }
-    ]
 }

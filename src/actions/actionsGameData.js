@@ -1,5 +1,7 @@
 export const STORE_SERVER_DATA = 'STORE_SERVER_DATA';
 export const STORE_NEXT_BEACON = 'STORE_NEXT_BEACON';
+export const STORE_CURRENT_LOCATION = 'STORE_CURRENT_LOCATION';
+export const SET_MAP_VIEW_VISIBLE = 'SET_MAP_VIEW_VISIBLE';
 
 // TODO view what to store
 export const storeServerData = (gameData) =>{
@@ -28,5 +30,22 @@ export const storeNextBeacon = (nextBeacon) =>{
         riddleId:  nextBeacon.riddleId,
         riddleStatement: nextBeacon.riddleStatement,
         riddleAnswer: nextBeacon.riddleAnswer,
+    }
+};
+
+export const storeCurrentLocation = (currentLocation) =>{
+    return{
+        type:STORE_CURRENT_LOCATION,
+        latitude: currentLocation.latitude,
+        longitude: currentLocation.longitude,
+        accuracy: currentLocation.accuracy,
+        error: currentLocation.error,
+    }
+};
+
+export const setMapViewVisible = (mapViewVisible) =>{
+    return{
+        type:SET_MAP_VIEW_VISIBLE,
+        mapViewVisible: mapViewVisible,
     }
 };
