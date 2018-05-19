@@ -22,13 +22,9 @@ class GNSScreen extends React.Component {
                     barStyle="light-content"
                 />
                 <View style={styles.topView}>
-                    <TouchableOpacity
-                        style={styles.topMessageView}
-                        onPress={() => {
-                            navigate('BeaconScreen');
-                        }}>
+                    <View style={styles.topMessageView}>
                         <Text style={styles.topMessageText}>The game has not started yet !</Text>
-                    </TouchableOpacity>
+                    </View>
                     <Image
                         style={styles.image}
                         source={require('../images/logo_512.png')}/>

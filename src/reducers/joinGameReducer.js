@@ -7,7 +7,7 @@ let dataState = {
     teamName: 'AtBoLo'
 };
 
-export default function gameModesReducer (state = dataState, action) {
+export default function joinGameReducer (state = dataState, action) {
     switch (action.type) {
         case INPUT_CODE:
             return {

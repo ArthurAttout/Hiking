@@ -11,6 +11,7 @@ import {COLORS} from '../utils/constants'
 import {addBeacon, dragBeacon, setupInitialMap, startTracking, touchBeacon} from "../actions/actionsCreateGameMap";
 import {connect} from "react-redux";
 import {inputCode} from "../actions/actionsJoinGame";
+import {isCodePlayer} from "../config/FakeServer";
 
 registerKilledListener();
 registerAppListener();
@@ -36,8 +37,14 @@ class JGScreen extends React.Component {
         const gameCode = this.state.gameCode;
         const playerName = this.state.playerName;
         this.props.inputCode(gameCode, playerName);
-        const { navigate } = this.props.navigation;
-        navigate('TeamSelectionScreen');
+        if(isCodePlayer(gameCode)){
+            const { navigate } = this.props.navigation;
+            navigate('TeamSelectionScreen');
+        } else {
+            // TODO replace with GM screen
+            const { navigate } = this.props.navigation;
+            navigate('TeamSelectionScreen');
+        }
     }
 
     render() {
@@ -87,19 +94,11 @@ class JGScreen extends React.Component {
     }
 }
 
-/*const mapStateToProps = (state, own) => {
-    return {
-        ...own,
-        gameCode: state.joinGameReducer.gameCode,
-        playerName: state.joinGameReducer.playerName
-    }
-};*/
-
 const mapDispatchToProps = (dispatch) =>{
     return {
         inputCode: (gameCode, playerName) => dispatch(inputCode(gameCode, playerName)),
     }
-}
+};
 
 //Connect everything
 export default JoinGameScreen = connect(null, mapDispatchToProps)(JGScreen);

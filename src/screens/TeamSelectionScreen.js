@@ -7,7 +7,12 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {getGameTeams} from "../config/FakeServer";
 import {connect} from "react-redux";
 import {joinTeam} from "../actions/actionsJoinGame";
+import {storeServerData, storeNextBeacon} from "../actions/actionsGameData";
 import {COLORS} from "../utils/constants";
+import {isGameReady, getDataFromServer, getNextBeacon, sendClientDataToServer} from "../config/FakeServer";
+
+// TODO disable the back button
+// TODO automatically remove keyboard if player left it
 
 class TSScreen extends React.Component {
     // TODO override parent navigationOptions to display headers
@@ -59,7 +64,6 @@ class TSScreen extends React.Component {
                                     </Text>
                                 </View>
                             </TouchableNativeFeedback>
-
                     )}
                 />
             </View>
@@ -75,8 +79,30 @@ class TSScreen extends React.Component {
                 {text: 'OK', onPress: () => {
                         const teamTitle = item.title;
                         this.props.joinTeam(teamTitle);
-                        const { navigate } = this.props.navigation;
-                        navigate('GameNotStartedScreen');
+
+                        // TODO send data to server
+                        sendClientDataToServer(this.props.gameCode,
+                                                this.props.playerName,
+                                                this.props.teamName);
+
+                        // TODO get data from server
+                        const gameData = getDataFromServer(this.props.gameCode);
+                        this.props.storeServerData(gameData);
+
+                        // TODO get first beacon from server
+                        const nextBeacon = getNextBeacon(this.props.gameCode,
+                                                            this.props.teamName);
+                        this.props.storeNextBeacon(nextBeacon);
+
+                        const {navigate} = this.props.navigation;
+                        //TODO check how to get notification game is ready
+                        if(isGameReady(this.props.gameCode)){
+                            // True
+                            navigate('GameScreen');
+                        } else {
+                            // False
+                            navigate('GameNotStartedScreen');
+                        }
                     }
                 }
             ],
@@ -86,22 +112,22 @@ class TSScreen extends React.Component {
 }
 
 
-/*const mapStateToProps = (state, own) => {
+const mapStateToProps = (state) => {
     return {
-        ...own,
         gameCode: state.joinGameReducer.gameCode,
-        playerName: state.joinGameReducer.playerName
     }
-};*/
+};
 
 const mapDispatchToProps = (dispatch) =>{
     return {
         joinTeam: (team) => dispatch(joinTeam(team)),
+        storeServerData: (gameData) => dispatch(storeServerData(gameData)),
+        storeNextBeacon: (nextBeacon) => dispatch(storeNextBeacon(nextBeacon))
     }
 };
 
 //Connect everything
-export default TeamSelectionScreen = connect(null, mapDispatchToProps)(TSScreen);
+export default TeamSelectionScreen = connect(mapStateToProps, mapDispatchToProps)(TSScreen);
 
 const styles = StyleSheet.create({
     container: {

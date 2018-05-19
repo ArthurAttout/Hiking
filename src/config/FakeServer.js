@@ -24,3 +24,54 @@ export function getGameTeams(gameCode){
         {"title":"Team 12"}
     ]
 }
+
+export function isCodePlayer(gameCode) {
+    // TODO replace with contact to server
+    if(gameCode.toLowerCase() === ("GM").toLowerCase()) {
+        return false
+    } else {
+        return true
+    }
+}
+
+export function isGameReady(gameCode) {
+    if(gameCode.toLowerCase() === ("ABCD").toLowerCase()) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+export function sendClientDataToServer(gameCode, playerName, teamNam) {
+
+}
+
+export function getDataFromServer(gameCode) {
+    return [
+        {
+            "gameMode": 1,
+            "shrinkSpeed": 5,
+            "mapViewEnabled": true,
+            "nextBeaconVisible": true,
+            "displayDropDistance": false,
+            "lives": 0,
+            "timerRiddle": 0,
+        }
+    ]
+}
+
+export function getNextBeacon(gameCode, teamName) {
+    return [
+        {
+            "id": 0,
+            "latitude": 50.228820,
+            "longitude": 5.335657,
+            "name": "NextBeacon",
+            "iconUrl": "",
+            "qrCodeId": "",
+            "riddleId":  0,
+            "riddleStatement": "Mon coup n'est pas fatal mais je fais parfois mal souvent je suis dressé et je sens bon la marée, qui suis je ?",
+            "riddleAnswer": "Ma bite",
+        }
+    ]
+}
