@@ -90,10 +90,9 @@ class TSScreen extends React.Component {
                         this.props.storeServerData(gameData);
 
                         // TODO get first beacon from server
-                        /*const nextBeacon = getNextBeacon(this.props.gameCode,
+                        const nextBeacon = getNextBeacon(this.props.gameCode,
                                                             this.props.teamName);
-                        console.log(nextBeacon);
-                        this.props.storeNextBeacon(nextBeacon);*/
+                        this.props.storeNextBeacon(nextBeacon);
 
                         const {navigate} = this.props.navigation;
                         //TODO check how to get notification game is ready

@@ -54,9 +54,6 @@ class GScreen extends React.Component {
             },
             { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
         );
-
-        //const nextBeacon = getNextBeacon(this.props.gameCode, this.props.teamName);
-        this.props.storeNextBeacon(getNextBeacon(this.props.gameCode, this.props.teamName));
     }
 
     render() {
@@ -67,43 +64,39 @@ class GScreen extends React.Component {
                     backgroundColor={COLORS.Primary_accent}
                     barStyle="light-content"
                 />
-                {this.renderMainView(this.props)}
-                {this.renderBottomNavigation(this.props)}
+                {this.renderMainView()}
+                {this.renderBottomNavigation()}
             </View>
         );
     }
 
     // TODO rotate arrow based on next beacon location
-    renderMainView(props) {
-        if(!props.mapViewVisible){
+    renderMainView() {
+        if(!this.props.mapViewVisible){
             return (
-                //For testing only
+                /*For testing only
                 <TouchableNativeFeedback
                     background={TouchableNativeFeedback.Ripple('white')}
                     onPress={() => {
-                        /*const { navigate } = this.props.navigation;
-                        navigate('EndGameScreen');*/
-                        console.log(this.props.nextBeacon);
-                        console.log(this.props.currentLocation);
+                        const { navigate } = this.props.navigation;
+                        navigate('EndGameScreen');
                     }}
-                >
+                >*/
                 <View style={styles.map}>
                     <FontAwesomeIcon size={200} color={COLORS.Primary} name="location-arrow"/>
                 </View>
-                </TouchableNativeFeedback>
+                //</TouchableNativeFeedback>
             );
         } else {
-            this.initialRegion = {
-                latitude: props.currentLocation.latitude,
-                longitude: props.currentLocation.longitude,
+            const initialRegion = {
+                latitude: this.props.currentLocation.latitude,
+                longitude: this.props.currentLocation.longitude,
                 latitudeDelta: 0.0,
                 longitudeDelta: 0.0,
             };
-            console.log(this.initialRegion);
-            //console.log(props.nextBeacon);
             const beacon = {
-                latitude: props.nextBeacon.latitude,
-                longitude: props.nextBeacon.longitude,
+                latitude: this.props.nextBeacon.latitude,
+                longitude: this.props.nextBeacon.longitude,
                 latitudeDelta: 0.0,
                 longitudeDelta: 0.0
             };
@@ -112,23 +105,24 @@ class GScreen extends React.Component {
                 // TODO place next marker as well
                 <MapView
                     style={styles.map}
-                    initialRegion={this.initialRegion}
+                    initialRegion={initialRegion}
                 >
-                    <Marker coordinate={beacon} />
+                    <Marker coordinate={initialRegion}/>
+                    <Marker coordinate={beacon}/>
                 </MapView>
             );
         }
     }
 
-    renderBottomNavigation(props) {
-        //if(this.props.gameData.mapViewEnabled){
-        if(true){
-            if(props.mapViewVisible) {
+    renderBottomNavigation() {
+        if(this.props.gameData.mapViewEnabled){
+        //if(true){
+            if(this.props.mapViewVisible) {
                 return (
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('white')}
                         onPress={() => {
-                            props.setMapViewVisible(false);
+                            this.props.setMapViewVisible(false);
                         }}
                     >
                         <View style={styles.bottomView}>
@@ -142,7 +136,7 @@ class GScreen extends React.Component {
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('white')}
                         onPress={() => {
-                            props.setMapViewVisible(true);
+                            this.props.setMapViewVisible(true);
                         }}
                     >
                         <View style={styles.bottomView}>
