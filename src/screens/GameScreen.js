@@ -8,7 +8,7 @@ import MapView, { Marker } from 'react-native-maps'
 import {getNextBeacon} from "../config/FakeServer";
 import store from "../config/store";
 import {joinTeam} from "../actions/actionsJoinGame";
-import {setMapViewVisible, storeCurrentLocation, storeNextBeacon, storeServerData} from "../actions/actionsGameData";
+import {setMapViewVisible, storeCurrentLocation, storeNextBeacon} from "../actions/actionsGameData";
 
 class GScreen extends React.Component {
     static navigationOptions = {
@@ -55,16 +55,12 @@ class GScreen extends React.Component {
             { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
         );
 
-        const nextBeacon = getNextBeacon(this.props.gameCode, this.props.teamName);
-        console.log(nextBeacon);
-        this.props.storeNextBeacon(nextBeacon);
-        console.log(this.props.nextBeacon)
+        //const nextBeacon = getNextBeacon(this.props.gameCode, this.props.teamName);
+        this.props.storeNextBeacon(getNextBeacon(this.props.gameCode, this.props.teamName));
     }
 
     render() {
         const { navigate } = this.props.navigation;
-        console.log(this.props.nextBeacon);
-        console.log(this.props.currentLocation);
         return (
             <View style={styles.container}>
                 <StatusBar
@@ -81,18 +77,20 @@ class GScreen extends React.Component {
     renderMainView(props) {
         if(!props.mapViewVisible){
             return (
-                /* For testing only
+                //For testing only
                 <TouchableNativeFeedback
                     background={TouchableNativeFeedback.Ripple('white')}
                     onPress={() => {
-                        const { navigate } = this.props.navigation;
-                        navigate('EndGameScreen');
+                        /*const { navigate } = this.props.navigation;
+                        navigate('EndGameScreen');*/
+                        console.log(this.props.nextBeacon);
+                        console.log(this.props.currentLocation);
                     }}
-                >*/
+                >
                 <View style={styles.map}>
                     <FontAwesomeIcon size={200} color={COLORS.Primary} name="location-arrow"/>
                 </View>
-                //</TouchableNativeFeedback>
+                </TouchableNativeFeedback>
             );
         } else {
             this.initialRegion = {
@@ -159,8 +157,9 @@ class GScreen extends React.Component {
 }
 
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, own) => {
     return {
+        ...own,
         playerName: state.joinGameReducer.playerName,
         gameCode: state.joinGameReducer.gameCode,
         teamName: state.joinGameReducer.teamName,
@@ -171,8 +170,9 @@ const mapStateToProps = state => {
     }
 };
 
-const mapDispatchToProps = (dispatch) =>{
+function mapDispatchToProps(dispatch, own) {
     return {
+        ...own,
         storeCurrentLocation: (currentLocation) => dispatch(storeCurrentLocation(currentLocation)),
         setMapViewVisible: (mapViewVisible) => dispatch(setMapViewVisible(mapViewVisible)),
         storeNextBeacon: (nextBeacon) => dispatch(storeNextBeacon(nextBeacon))
