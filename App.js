@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import {StackNavigator} from 'react-navigation';
-import HelloScreen from './src/screens/HelloScreen'
-import HomeScreen from './src/screens/HomeScreen'
+import HelloScreen from './src/screens/HelloScreen';
+import HomeScreen from './src/screens/HomeScreen';
 import store from './src/config/store'; //Import the store
 import { Provider } from 'react-redux';
-import ChooseModeScreen from './src/screens/ChooseModeScreen'
-import JoinGameScreen from './src/screens/JoinGameScreen'
+import ChooseModeScreen from './src/screens/ChooseModeScreen';
+import JoinGameScreen from './src/screens/JoinGameScreen';
+import GameMasterScreen from './src/screens/GameMasterScreen';
 import GameNotStartedScreen from "./src/screens/GameNotStartedScreen";
 import TeamSelectionScreen from "./src/screens/TeamSelectionScreen";
 import GameCreatedScreen from './src/screens/GameCreatedScreen';
@@ -56,12 +57,15 @@ const RootStack = StackNavigator(
     }
 );
 
-
+export let navigatorRef;
 export default class App extends React.Component {
+    componentDidMount() {
+        navigatorRef = this.navigator;
+    }
     render() {
         return(
             <Provider store={store}>
-                <RootStack />
+                <RootStack ref={nav => { this.navigator = nav; }}  />
             </Provider>
         )
     }

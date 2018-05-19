@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import {COLORS} from "../utils/constants";
 
-class GameCreatedScreen extends React.Component {
+class GameMasterScreen extends React.Component {
 
     constructor(props) {
         super(props);
@@ -20,30 +20,7 @@ class GameCreatedScreen extends React.Component {
 
         return (
             <View style={styles.container}>
-                <StatusBar
-                    backgroundColor="#558b2f"
-                    barStyle="light-content"
-                />
-                <Image
-                    style={{height: '50%', resizeMode: 'contain'}}
-                    source={require('../images/logo_512.png')}/>
-                <View style={styles.codesView}>
-                    <View style={styles.button}>
-                        <Text style={styles.textHeader}>Player code</Text>
-                        <Text style={styles.textCode}>{this.props.PlayerCode}</Text>
-                    </View>
-
-                    <View style={styles.separator}/>
-
-                    <View style={styles.button}>
-                        <Text style={styles.textHeader}>Game master code</Text>
-                        <Text style={styles.textCode}>{this.props.GameMasterCode}</Text>
-                    </View>
-
-                </View>
-                <View style={styles.copyrightView}>
-                    <Text style={styles.copyrightText}>COPYRIGHT AtBoLo Team 2018</Text>
-                </View>
+                <Text>Game mfefzefaster</Text>
             </View>
         );
     }
@@ -51,7 +28,8 @@ class GameCreatedScreen extends React.Component {
 }
 
 //Connect everything
-export default GameCreatedScreen;
+export default GameMasterScreen;
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,

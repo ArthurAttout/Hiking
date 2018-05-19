@@ -1,47 +1,34 @@
 import React from 'react';
 import {
     AppRegistry, Text, TextInput, View, StyleSheet, TouchableNativeFeedback,
-    StatusBar, Image
+    StatusBar, Image,ActivityIndicator
 } from 'react-native';
 import { registerKilledListener, registerAppListener } from "../config/firebase/Listeners";
 import FCM from "react-native-fcm";
 import { TextInputLayout } from "rn-textinputlayout";
 import TeamSelectionScreen from "./TeamSelectionScreen";
 import {COLORS} from '../utils/constants'
-import {addBeacon, dragBeacon, setupInitialMap, startTracking, touchBeacon} from "../actions/actionsCreateGameMap";
 import {connect} from "react-redux";
-import {inputCode} from "../actions/actionsJoinGame";
-import {isCodePlayer} from "../config/FakeServer";
+import {submit,setGameCode,setPlayerName} from "../actions/actionsJoinGame";
+import {NavigationActions} from 'react-navigation';
+import {navigatorRef} from "../../App";
 
 registerKilledListener();
 registerAppListener();
 
 class JGScreen extends React.Component {
-    static navigationOptions = {
-        title: 'Joining Game',
-        header: null
-    };
-
     constructor(props) {
         super(props);
-
-        this.state = {
-            gameCode: "",
-            playerName:""
-        };
-
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleSubmit() {
-        const gameCode = this.state.gameCode;
-        const playerName = this.state.playerName;
-        this.props.inputCode(gameCode, playerName);
-        if(isCodePlayer(gameCode)){
+        if(this.props.isGameMaster){
             const { navigate } = this.props.navigation;
-            navigate('TeamSelectionScreen');
-        } else {
-            // TODO replace with GM screen
+            navigate('GameMasterScreen');
+        }
+        else
+        {
             const { navigate } = this.props.navigation;
             navigate('TeamSelectionScreen');
         }
@@ -66,8 +53,8 @@ class JGScreen extends React.Component {
                             style={styles.textInput}
                             placeholder={'Game code'}
                             id={'gameCode'}
-                            value={this.state.gameCode}
-                            onChangeText={(gameCode) => this.setState({gameCode})}
+                            value={this.props.gameCode}
+                            onChangeText={this.props.setGameCode}
                         />
                     </TextInputLayout>
                     <TextInputLayout
@@ -77,31 +64,51 @@ class JGScreen extends React.Component {
                             style={styles.textInput}
                             placeholder={'Player name'}
                             id={'playerName'}
-                            value={this.state.playerName}
-                            onChangeText={(playerName) => this.setState({playerName})}
+                            value={this.props.playerName}
+                            onChangeText={this.props.setPlayerName}
                         />
                     </TextInputLayout>
                 </View>
-                <TouchableNativeFeedback
-                    background={TouchableNativeFeedback.Ripple('white')}
-                    onPress={this.handleSubmit}>
-                    <View style={styles.button}>
-                        <Text style={styles.buttonText}>NEXT</Text>
-                    </View>
-                </TouchableNativeFeedback>
+                {
+                    this.props.showProgressStatus ?
+                        <ActivityIndicator/>
+
+
+                        :
+
+                        <TouchableNativeFeedback
+                            background={TouchableNativeFeedback.Ripple('white')}
+                            onPress={this.props.submit}>
+                            <View style={styles.button}>
+                                <Text style={styles.buttonText}>NEXT</Text>
+                            </View>
+                        </TouchableNativeFeedback>
+                }
             </View>
         );
     }
 }
 
+const mapStateToProps = (state, own) => {
+    return {
+        ...own,
+        isGameMaster: state.joinGameReducer.isGameMaster,
+        gameCode: state.joinGameReducer.gameCode,
+        playerName: state.joinGameReducer.playerName,
+        showProgressStatus: state.joinGameReducer.showProgressStatus,
+    }
+};
+
 const mapDispatchToProps = (dispatch) =>{
     return {
-        inputCode: (gameCode, playerName) => dispatch(inputCode(gameCode, playerName)),
+        submit: () => dispatch(submit()),
+        setGameCode: (value) => dispatch(setGameCode(value)),
+        setPlayerName: (value) => dispatch(setPlayerName(value)),
     }
 };
 
 //Connect everything
-export default JoinGameScreen = connect(null, mapDispatchToProps)(JGScreen);
+export default JoinGameScreen = connect(mapStateToProps, mapDispatchToProps)(JGScreen);
 
 const styles = StyleSheet.create({
     image: {
