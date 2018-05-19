@@ -10,4 +10,6 @@ stacktrace.init(function onError(err, isFatal) {
             .catch(reject);
     });
 });
+
+
 AppRegistry.registerComponent('Hiking', () => App);

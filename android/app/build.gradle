@@ -94,13 +94,13 @@ def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = false
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.1"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.1"
 
     defaultConfig {
         applicationId "com.hiking"
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 27
         multiDexEnabled true
         versionCode 1
         versionName "1.0"
@@ -138,16 +138,79 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-cardview')
-    compile fileTree(dir: "libs", include: ["*.jar"])
-    compile "com.android.support:appcompat-v7:23.0.1"
-    compile "com.facebook.react:react-native:+"  // From node_modules
-    compile project(':react-native-fcm')
-    compile project(':react-native-vector-icons')
-    compile 'com.google.firebase:firebase-core:10.0.1' //this decides your firebase SDK version
-    compile(project(':react-native-svg')) {
-            exclude group: "com.android.support", module: "appcompat-v7"
-        }
+    api project(':react-native-uuid-generator')
+    api project(':react-native-image-picker')
+    api project(':react-native-camera')
+
+/**
+*
+*   _____     ____      _   _    ____    _______
+*  |  __ \   / __ \    | \ | |  / __ \  |__   __|
+*  | |  | | | |  | |   |  \| | | |  | |    | |
+*  | |  | | | |  | |   | . ` | | |  | |    | |
+*  | |__| | | |__| |   | |\  | | |__| |    | |
+*  |_____/   \____/    |_| \_|  \____/     |_|
+*
+*
+*   ______  __      __  ______   _____      _______    ____    _    _    _____   _    _
+*  |  ____| \ \    / / |  ____| |  __ \    |__   __|  / __ \  | |  | |  / ____| | |  | |
+*  | |__     \ \  / /  | |__    | |__) |      | |    | |  | | | |  | | | |      | |__| |
+*  |  __|     \ \/ /   |  __|   |  _  /       | |    | |  | | | |  | | | |      |  __  |
+*  | |____     \  /    | |____  | | \ \       | |    | |__| | | |__| | | |____  | |  | |
+*  |______|     \/     |______| |_|  \_\      |_|     \____/   \____/   \_____| |_|  |_|
+*
+*
+*   _______   _    _   _____    _____
+*  |__   __| | |  | | |_   _|  / ____|
+*     | |    | |__| |   | |   | (___
+*     | |    |  __  |   | |    \___ \
+*     | |    | |  | |  _| |_   ____) |  _
+*     |_|    |_|  |_| |_____| |_____/  (_)
+*
+*
+*  __     __   ____    _    _    __          __  _____   _        _          ____    _____    ______              _  __    _____   _______
+*  \ \   / /  / __ \  | |  | |   \ \        / / |_   _| | |      | |        |  _ \  |  __ \  |  ____|     /\     | |/ /   |_   _| |__   __|
+*   \ \_/ /  | |  | | | |  | |    \ \  /\  / /    | |   | |      | |        | |_) | | |__) | | |__       /  \    | ' /      | |      | |
+*    \   /   | |  | | | |  | |     \ \/  \/ /     | |   | |      | |        |  _ <  |  _  /  |  __|     / /\ \   |  <       | |      | |
+*     | |    | |__| | | |__| |      \  /\  /     _| |_  | |____  | |____    | |_) | | | \ \  | |____   / ____ \  | . \     _| |_     | |
+*     |_|     \____/   \____/        \/  \/     |_____| |______| |______|   |____/  |_|  \_\ |______| /_/    \_\ |_|\_\   |_____|    |_|
+*
+*
+*/
+    api project(':react-native-cardview')
+    api fileTree(dir: "libs", include: ["*.jar"])
+    api "com.android.support:appcompat-v7:23.0.1"
+    api "com.facebook.react:react-native:+"  // From node_modules
+    api project(':RNMaterialKit')
+    api project(':react-native-vector-icons')
+    api(project(':react-native-svg')) {
+        exclude group: "com.android.support", module: "appcompat-v7"
+    }
+
+    api (project(':react-native-maps')){
+        exclude group: 'com.google.android.gms'
+    }
+    api (project(':react-native-fcm')){
+        exclude group: "com.google.firebase"
+    }
+    api 'com.google.firebase:firebase-core:12.0.1' //this decides your firebase SDK version
+
+    api ("com.google.android.gms:play-services-base:12.0.1") {
+        force = true;
+    }
+    api ("com.google.android.gms:play-services-maps:12.0.1") {
+        force = true;
+    }
+    api ("com.google.android.gms:play-services-gcm:12.0.1") {
+        force = true;
+    }
+    api ('com.google.firebase:firebase-core:12.0.1') {
+        force = true;
+    }
+    api ('com.google.firebase:firebase-messaging:12.0.1') {
+        force = true;
+}
+
 }
 
 // Run this once to be able to run the application with BUCK
