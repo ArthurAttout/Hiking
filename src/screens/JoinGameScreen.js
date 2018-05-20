@@ -3,7 +3,6 @@ import {
     AppRegistry, Text, TextInput, View, StyleSheet, TouchableNativeFeedback,
     StatusBar, Image,ActivityIndicator
 } from 'react-native';
-import { registerKilledListener, registerAppListener } from "../config/firebase/Listeners";
 import FCM from "react-native-fcm";
 import { TextInputLayout } from "rn-textinputlayout";
 import TeamSelectionScreen from "./TeamSelectionScreen";
@@ -12,9 +11,6 @@ import {connect} from "react-redux";
 import {submit,setGameCode,setPlayerName} from "../actions/actionsJoinGame";
 import {NavigationActions} from 'react-navigation';
 import {navigatorRef} from "../../App";
-
-registerKilledListener();
-registerAppListener();
 
 class JGScreen extends React.Component {
     constructor(props) {
