@@ -1,11 +1,13 @@
 import store from "../config/store";
-import {calculateBearing} from "../utils/geometryUtils";
+import {calculateBearing, calculateDistance} from "../utils/geometryUtils";
+import {fetchPlayerStatus} from "./actionsJoinGame";
 
 export const STORE_SERVER_DATA = 'STORE_SERVER_DATA';
 export const STORE_NEXT_BEACON = 'STORE_NEXT_BEACON';
 export const STORE_CURRENT_LOCATION = 'STORE_CURRENT_LOCATION';
 export const SET_MAP_VIEW_VISIBLE = 'SET_MAP_VIEW_VISIBLE';
 export const STORE_BEARING = 'STORE_BEARING';
+export const PLAYER_INSIDE_BEACON = 'PLAYER_INSIDE_BEACON';
 
 // TODO view what to store
 export const storeServerData = (gameData) =>{
@@ -38,6 +40,8 @@ export const storeNextBeacon = (nextBeacon) =>{
 };
 
 export const storeCurrentLocation = (currentLocation) =>{
+
+
     return{
         type:STORE_CURRENT_LOCATION,
         latitude: currentLocation.latitude,
@@ -50,6 +54,22 @@ export const storeCurrentLocation = (currentLocation) =>{
     }
 };
 
+export const checkPlayerInsideBeacon = () => {
+    // TODO test is current position is within 5m of the nextBeacon
+    if(calculateDistance(store.getState().gameDataReducer.currentLocation,
+            store.getState().gameDataReducer.nextBeacon) < 5){
+        return{
+            type:PLAYER_INSIDE_BEACON,
+            isPlayerInsideBeacon: true
+        }
+    } else {
+        return{
+            type:PLAYER_INSIDE_BEACON,
+            isPlayerInsideBeacon: false
+        }
+    }
+};
+
 export const storeBearing = () => {
     //TODO manage arrow directions
     var bearing = 0;
@@ -59,7 +79,8 @@ export const storeBearing = () => {
     /*console.log(store.getState().gameDataReducer.currentLocation);
     console.log(store.getState().gameDataReducer.nextBeacon);
     console.log(bearing);*/
-    // TODO calculate the difference between calculated bearing and the GPS heading value
+
+    //calculate the difference between calculated bearing and the GPS heading value
     if(store.getState().gameDataReducer.currentLocation.heading != null &&
         !isNaN(parseFloat(store.getState().gameDataReducer.currentLocation.heading)))
     {
@@ -71,6 +92,7 @@ export const storeBearing = () => {
         console.log("Current location heading not valid, using absoluteBearing");
         bearing = absoluteBearing;
     }
+
     return{
         type:STORE_BEARING,
         bearing: bearing

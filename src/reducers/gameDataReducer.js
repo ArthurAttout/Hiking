@@ -1,5 +1,5 @@
 import { STORE_SERVER_DATA, STORE_NEXT_BEACON, STORE_CURRENT_LOCATION, SET_MAP_VIEW_VISIBLE,
-    STORE_BEARING} from '../actions/actionsGameData';
+    STORE_BEARING, PLAYER_INSIDE_BEACON} from '../actions/actionsGameData';
 
 let dataState = {
     gameData: {
@@ -37,7 +37,8 @@ let dataState = {
         error: null,
     },
     mapViewVisible: false,
-    bearing: 0
+    bearing: 0,
+    isPlayerInsideBeacon: false,
 };
 
 export default function gameDataReducer (state = dataState, action) {
@@ -93,6 +94,11 @@ export default function gameDataReducer (state = dataState, action) {
             return {
                 ...state,
                 bearing: action.bearing
+            };
+        case PLAYER_INSIDE_BEACON:
+            return {
+                ...state,
+                isPlayerInsideBeacon: action.isPlayerInsideBeacon
             };
         default:
             return state;

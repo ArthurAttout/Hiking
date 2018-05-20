@@ -9,7 +9,7 @@ import {connect} from "react-redux";
 import {joinTeam} from "../actions/actionsJoinGame";
 import {storeServerData, storeNextBeacon} from "../actions/actionsGameData";
 import {COLORS} from "../utils/constants";
-import {isGameReady, getDataFromServer, getNextBeacon, sendClientDataToServer} from "../config/FakeServer";
+import {isGameReady, getDataFromServer, getNextBeacon1, sendClientDataToServer} from "../config/FakeServer";
 
 // TODO disable the back button
 // TODO automatically remove keyboard if player left it
@@ -90,8 +90,9 @@ class TSScreen extends React.Component {
                         this.props.storeServerData(gameData);
 
                         // TODO get first beacon from server
-                        const nextBeacon = getNextBeacon(this.props.gameCode,
+                        const nextBeacon = getNextBeacon1(this.props.gameCode,
                                                             this.props.teamName);
+                        console.log(nextBeacon);
                         this.props.storeNextBeacon(nextBeacon);
 
                         const {navigate} = this.props.navigation;

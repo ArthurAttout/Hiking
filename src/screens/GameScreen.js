@@ -5,7 +5,10 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { connect } from "react-redux";
 import {COLORS} from "../utils/constants";
 import MapView, { Marker } from 'react-native-maps'
-import {setMapViewVisible, storeCurrentLocation, storeNextBeacon, storeBearing} from "../actions/actionsGameData";
+import {
+    setMapViewVisible, storeCurrentLocation, storeNextBeacon, storeBearing,
+    checkPlayerInsideBeacon
+} from "../actions/actionsGameData";
 
 class GScreen extends React.Component {
     static navigationOptions = {
@@ -75,6 +78,13 @@ class GScreen extends React.Component {
                 };
                 this.props.storeCurrentLocation(updatedLocation);
                 this.props.storeBearing();
+                this.props.checkPlayerInsideBeacon();
+                console.log(this.props.isPlayerInsideBeacon);
+                // TODO when true launch beacon screen (based on game mode) and get the next beacon
+                if(this.props.isPlayerInsideBeacon === true){
+                    const { navigate } = this.props.navigation;
+                    navigate('BeaconScreen');
+                }
             },
             (error) => {
                 const currentPosition = {
@@ -148,7 +158,6 @@ class GScreen extends React.Component {
                             longitudeDelta: 0.0,
                         }
                     }
-                    //showsUserLocation={true}
                     followUserLocation={true}
                     showsMyLocationButton={true}
                 >
@@ -214,6 +223,7 @@ const mapStateToProps = (state, own) => {
         currentLocation: state.gameDataReducer.currentLocation,
         mapViewVisible: state.gameDataReducer.mapViewVisible,
         bearing: state.gameDataReducer.bearing,
+        isPlayerInsideBeacon: state.gameDataReducer.isPlayerInsideBeacon
     }
 };
 
@@ -223,7 +233,8 @@ function mapDispatchToProps(dispatch, own) {
         storeCurrentLocation: (currentLocation) => dispatch(storeCurrentLocation(currentLocation)),
         setMapViewVisible: (mapViewVisible) => dispatch(setMapViewVisible(mapViewVisible)),
         storeNextBeacon: (nextBeacon) => dispatch(storeNextBeacon(nextBeacon)),
-        storeBearing: () => dispatch(storeBearing())
+        storeBearing: () => dispatch(storeBearing()),
+        checkPlayerInsideBeacon: () => dispatch(checkPlayerInsideBeacon())
     }
 }
 
