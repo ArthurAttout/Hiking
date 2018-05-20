@@ -3,7 +3,10 @@ import { AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableNativeF
 import { connect } from "react-redux";
 import {COLORS} from "../utils/constants";
 import {getNextBeacon2} from "../config/FakeServer";
-import {storeNextBeacon} from "../actions/actionsGameData";
+import {
+    onCloseModal, onConfirmRiddleSolving, onRequestModal, setCurrentAnswer, storeEndGameStats,
+    storeNextBeacon, submitButtonPressed
+} from "../actions/actionsGameData";
 import SolveRiddleModal from "./PlayerBeaconModals/SolveRiddleModal";
 
 class BScreen extends React.Component {
@@ -25,15 +28,17 @@ class BScreen extends React.Component {
     }
 
     render() {
-        const { navigate } = this.props.navigation;
         // TODO manage beacon text for the different modes
-        // todo fix image size to dynamic (45% seems good)
+        // TODO fix image size to dynamic (45% seems good)
         return (
             <View style={styles.container}>
                 <StatusBar
                     backgroundColor={COLORS.Primary_accent}
                     barStyle="light-content"
                 />
+                <View style={styles.topMessageView}>
+                    <Text style={styles.topMessageText}>{this.props.nextBeacon.name}</Text>
+                </View>
                 <View style={styles.body}>
                     <Text style={styles.titleText}>Congrats!</Text>
                     <Image
@@ -46,7 +51,6 @@ class BScreen extends React.Component {
                             :
                             this.props.nextBeacon.riddleStatement}</Text>
                 </View>
-
                 <TouchableNativeFeedback
                     background={TouchableNativeFeedback.Ripple('white')}
                     onPress={() => {this.handleOnPress()}}
@@ -55,6 +59,7 @@ class BScreen extends React.Component {
                         <Text style={styles.bottomText}>{(this.props.gameData.gameMode === 1) ? "NEXT BEACON" : "SOLVE" }</Text>
                     </View>
                 </TouchableNativeFeedback>
+                {this._renderModal()}
             </View>
         );
     }
@@ -70,8 +75,22 @@ class BScreen extends React.Component {
             navigate('GameScreen');
         } else {
             // TODO manage solving riddles
-            //<SolveRiddleModal/>
+            this.props.onRequestModal();
         }
+    }
+
+    _renderModal(){
+        return(
+        <SolveRiddleModal
+            modalVisible={this.props.modalVisible}
+            currentAnswer = {this.props.currentAnswer}
+            correctAnswer = {this.props.correctAnswer}
+            isSubmitButtonPressed = {this.props.isSubmitButtonPressed}
+            submitButtonPressed = {this.props.submitButtonPressed}
+            setCurrentAnswer={this.props.setCurrentAnswer}
+            onConfirmRiddleSolving={this.props.onConfirmRiddleSolving}
+            onCloseModal={this.props.onCloseModal}/>
+        );
     }
 }
 
@@ -81,13 +100,22 @@ const mapStateToProps = (state, own) => {
         ...own,
         gameData: state.gameDataReducer.gameData,
         nextBeacon: state.gameDataReducer.nextBeacon,
+        modalVisible: state.gameDataReducer.modalVisible,
+        currentAnswer: state.gameDataReducer.currentAnswer,
+        correctAnswer: state.gameDataReducer.correctAnswer,
+        isSubmitButtonPressed: state.gameDataReducer.isSubmitButtonPressed
     }
 };
 
 function mapDispatchToProps(dispatch, own) {
     return {
         ...own,
-        storeNextBeacon: (nextBeacon) => dispatch(storeNextBeacon(nextBeacon))
+        storeNextBeacon: (nextBeacon) => dispatch(storeNextBeacon(nextBeacon)),
+        onCloseModal: () => dispatch(onCloseModal()),
+        onRequestModal: () => dispatch(onRequestModal()),
+        onConfirmRiddleSolving: () => dispatch(onConfirmRiddleSolving()),
+        setCurrentAnswer: (answer) => dispatch(setCurrentAnswer(answer)),
+        submitButtonPressed: () => dispatch(submitButtonPressed()),
     }
 }
 
@@ -101,6 +129,17 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'center',
         backgroundColor: '#ffffff',
+    },
+    topMessageView: {
+        backgroundColor: '#558b2f',
+        padding: 10,
+        width: '100%'
+    },
+    topMessageText: {
+        color: '#ffffff',
+        fontSize: 35,
+        fontWeight: 'bold',
+        textAlign: 'center'
     },
     bottomView:{
         height: 56,
@@ -118,7 +157,6 @@ const styles = StyleSheet.create({
     bottomText:{
         color: 'white',
         fontSize: 20,
-
     },
     body: {
         flex: 1,
@@ -133,7 +171,7 @@ const styles = StyleSheet.create({
     titleText: {
         fontSize: 30,
         fontWeight: 'bold',
-        margin: 30
+        margin: 10
     },
     beaconText: {
         fontSize: 17

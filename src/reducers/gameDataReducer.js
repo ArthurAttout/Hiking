@@ -1,5 +1,9 @@
-import { STORE_SERVER_DATA, STORE_NEXT_BEACON, STORE_CURRENT_LOCATION, SET_MAP_VIEW_VISIBLE,
-    STORE_BEARING, PLAYER_INSIDE_BEACON} from '../actions/actionsGameData';
+import {
+    STORE_SERVER_DATA, STORE_NEXT_BEACON, STORE_CURRENT_LOCATION, SET_MAP_VIEW_VISIBLE,
+    STORE_BEARING, PLAYER_INSIDE_BEACON, RIDDLE_SOLVING_CLOSE_MODAL, RIDDLE_SOLVING_REQUEST_MODAL, SET_CURRENT_ANSWER,
+    CONFIRM_RIDDLE_SOLVING, storeNextBeacon, RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED, STORE_END_GAME_STATS
+} from '../actions/actionsGameData';
+import {getNextBeacon2} from "../config/FakeServer";
 
 let dataState = {
     gameData: {
@@ -21,6 +25,7 @@ let dataState = {
         riddleId:  0,
         riddleStatement: "Mon coup n'est pas fatal mais je fais parfois mal souvent je suis dresse et je sens bon la maree, qui suis je ?",
         riddleAnswer: "Ma bite",
+        lastBeacon: false
     },
     currentLocation: {
         latitude: 0.0,
@@ -39,6 +44,16 @@ let dataState = {
     mapViewVisible: false,
     bearing: 0,
     isPlayerInsideBeacon: false,
+    modalVisible: false,
+    currentAnswer: "",
+    correctAnswer: false,
+    isSubmitButtonPressed: false,
+    gameStats: {
+        time: "0:00",
+        score: 0,
+        position: 99,
+        totalTeams: 99
+    }
 };
 
 export default function gameDataReducer (state = dataState, action) {
@@ -70,6 +85,7 @@ export default function gameDataReducer (state = dataState, action) {
                     riddleId: action.riddleId,
                     riddleStatement: action.riddleStatement,
                     riddleAnswer: action.riddleAnswer,
+                    lastBeacon: action.lastBeacon
                 }
             };
         case STORE_CURRENT_LOCATION:
@@ -99,6 +115,44 @@ export default function gameDataReducer (state = dataState, action) {
             return {
                 ...state,
                 isPlayerInsideBeacon: action.isPlayerInsideBeacon
+            };
+        case RIDDLE_SOLVING_CLOSE_MODAL:
+            return{
+                ...state,
+                modalVisible: false,
+            };
+        case RIDDLE_SOLVING_REQUEST_MODAL:
+            return{
+                ...state,
+                modalVisible: true,
+            };
+        case SET_CURRENT_ANSWER:
+            return{
+                ...state,
+                currentAnswer: action.currentAnswer,
+                isSubmitButtonPressed: action.isSubmitButtonPressed
+            };
+        case CONFIRM_RIDDLE_SOLVING:
+            return{
+                ...state,
+                correctAnswer: action.correctAnswer,
+                modalVisible: action.modalVisible,
+                currentAnswer: action.currentAnswer
+            };
+        case RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED:
+            return{
+                ...state,
+                isSubmitButtonPressed: action.isSubmitButtonPressed
+            };
+        case STORE_END_GAME_STATS:
+            return {
+                ...state,
+                gameStats: {
+                    time: action.time,
+                    score: action.score,
+                    position: action.position,
+                    totalTeams: action.totalTeams,
+                }
             };
         default:
             return state;

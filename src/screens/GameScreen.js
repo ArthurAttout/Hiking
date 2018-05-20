@@ -7,8 +7,9 @@ import {COLORS} from "../utils/constants";
 import MapView, { Marker } from 'react-native-maps'
 import {
     setMapViewVisible, storeCurrentLocation, storeNextBeacon, storeBearing,
-    checkPlayerInsideBeacon
+    checkPlayerInsideBeacon, storeEndGameStats
 } from "../actions/actionsGameData";
+import {getGameStats, getNextBeacon1} from "../config/FakeServer";
 
 class GScreen extends React.Component {
     static navigationOptions = {
@@ -79,11 +80,18 @@ class GScreen extends React.Component {
                 this.props.storeCurrentLocation(updatedLocation);
                 this.props.storeBearing();
                 this.props.checkPlayerInsideBeacon();
-                console.log(this.props.isPlayerInsideBeacon);
-                // TODO when true launch beacon screen (based on game mode) and get the next beacon
                 if(this.props.isPlayerInsideBeacon === true){
-                    const { navigate } = this.props.navigation;
-                    navigate('BeaconScreen');
+                    const {navigate} = this.props.navigation;
+                    console.log(this.props.nextBeacon.lastBeacon);
+                    if(this.props.nextBeacon.lastBeacon === true){
+                        //TODO get track stat from server
+                        const gameStats = getGameStats(this.props.gameCode, this.props.teamName);
+                        console.log(gameStats);
+                        this.props.storeEndGameState(gameStats);
+                        navigate('EndGameScreen');
+                    } else {
+                        navigate('BeaconScreen');
+                    }
                 }
             },
             (error) => {
@@ -147,7 +155,6 @@ class GScreen extends React.Component {
                 longitudeDelta: 0.0
             };
             return (
-                // TODO place next marker as well
                 <MapView
                     style={styles.map}
                     region={
@@ -170,7 +177,13 @@ class GScreen extends React.Component {
                         }}
                         image={require('../images/ic_directions_walk_black.png')}
                     />
-                    <Marker coordinate={beacon}/>
+                    {(this.props.nextBeacon.lastBeacon) ?
+                        <Marker
+                            coordinate={beacon}
+                            image={require('../images/finish.png')}/>
+                        :
+                        <Marker coordinate={beacon}/>
+                    }
                 </MapView>
             );
         }
@@ -234,7 +247,8 @@ function mapDispatchToProps(dispatch, own) {
         setMapViewVisible: (mapViewVisible) => dispatch(setMapViewVisible(mapViewVisible)),
         storeNextBeacon: (nextBeacon) => dispatch(storeNextBeacon(nextBeacon)),
         storeBearing: () => dispatch(storeBearing()),
-        checkPlayerInsideBeacon: () => dispatch(checkPlayerInsideBeacon())
+        checkPlayerInsideBeacon: () => dispatch(checkPlayerInsideBeacon()),
+        storeEndGameState: (gameStats) => dispatch(storeEndGameStats(gameStats))
     }
 }
 

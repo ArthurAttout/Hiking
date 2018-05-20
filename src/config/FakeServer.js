@@ -48,7 +48,7 @@ export function sendClientDataToServer(gameCode, playerName, teamNam) {
 
 export function getDataFromServer(gameCode) {
     return {
-            "gameMode": 1,
+            "gameMode": 2,
             "shrinkSpeed": 5,
             "mapViewEnabled": true,
             "nextBeaconVisible": true,
@@ -69,19 +69,30 @@ export function getNextBeacon1(gameCode, teamName) {
         "riddleId": 0,
         "riddleStatement": "Mon coup n'est pas fatal mais je fais parfois mal souvent je suis dressé et je sens bon la marée, qui suis je ?",
         "riddleAnswer": "Ma bite",
+        "lastBeacon": false
     }
 }
 
 export function getNextBeacon2(gameCode, teamName) {
     return {
-            "id": 1,
-            "latitude": 50.229155,
-            "longitude": 5.337019,
-            "name": "Beacon2",
-            "iconUrl": "https://www.longree.be/data/beacon2.png",
-            "qrCodeId": "",
-            "riddleId":  1,
-            "riddleStatement": "We're five little items of an everyday sort; you'll find us all in 'a tennis court'",
-            "riddleAnswer": "Vowels",
-        }
+        "id": 1,
+        "latitude": 50.229155,
+        "longitude": 5.337019,
+        "name": "Beacon2",
+        "iconUrl": "https://www.longree.be/data/beacon2.png",
+        "qrCodeId": "",
+        "riddleId":  1,
+        "riddleStatement": "We're five little items of an everyday sort; you'll find us all in 'a tennis court'",
+        "riddleAnswer": "Vowels",
+        "lastBeacon": true
+    }
+}
+
+export function getGameStats(gameCode, teamName) {
+    return {
+        "time": "5:45",
+        "score": 1234,
+        "position": 3,
+        "totalTeams": 14
+    }
 }

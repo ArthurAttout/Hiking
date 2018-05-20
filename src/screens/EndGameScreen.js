@@ -12,17 +12,11 @@ class BScreen extends React.Component {
 
     constructor(props) {
         super(props);
-
-        this.state = {
-            time: '5:45',
-            score: 1234,
-            position: 3,
-            totalParticipants: 14
-        }
     }
 
+    // TODO replace with team icon
     render() {
-        const { navigate } = this.props.navigation;
+        console.log(this.props.gameStats);
         return (
             <View style={styles.container}>
                 <StatusBar
@@ -41,9 +35,9 @@ class BScreen extends React.Component {
                             <Text style={styles.resultsPromptsText}>Position :</Text>
                         </View>
                         <View style={styles.results}>
-                            <Text style={styles.resultsText}>{this.state.time} min</Text>
-                            <Text style={styles.resultsText}>{this.state.score} pts</Text>
-                            <Text style={styles.resultsText}>{this.state.position}/{this.state.totalParticipants}</Text>
+                            <Text style={styles.resultsText}>{this.props.gameStats.time} min</Text>
+                            <Text style={styles.resultsText}>{this.props.gameStats.score} pts</Text>
+                            <Text style={styles.resultsText}>{this.props.gameStats.position}/{this.props.gameStats.totalTeams}</Text>
                         </View>
                     </View>
                 </View>
@@ -66,6 +60,7 @@ class BScreen extends React.Component {
 
 const mapStateToProps = state => {
     return {
+        gameStats: state.gameDataReducer.gameStats,
     }
 };
 
