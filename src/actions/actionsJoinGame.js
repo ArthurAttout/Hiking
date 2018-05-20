@@ -2,8 +2,6 @@ import {navigatorRef} from "../../App";
 import {NavigationActions} from 'react-navigation';
 import store from '../config/store'
 export const SUBMIT = 'SUBMIT';
-export const JOIN_TEAM = 'JOIN_TEAM';
-export const TOGGLE_GAME_READY = 'TOGGLE_GAME_READY';
 export const SET_PLAYER_NAME= 'SET_PLAYER_NAME';
 export const PLAYER_STATUS_FETCHED = 'PLAYER_STATUS_FETCHED';
 export const SET_GAME_CODE ='SET_GAME_CODE';
@@ -30,19 +28,19 @@ export const submit = () =>{
                 console.error("Error  : " + error);
             });*/
         setTimeout(function(){
-            if(store.getState().joinGameReducer.isGameMaster){
-                navigatorRef.dispatch(NavigationActions.reset({ // this is react-navigation's dispatch
+            if(!store.getState().joinGameReducer.isGameMaster){
+                navigatorRef.dispatch(NavigationActions.reset({
                     index: 0,
-                    actions: [NavigationActions.navigate({routeName: 'GameScreen'})],
+                    actions: [NavigationActions.navigate({routeName: 'GameMasterScreen'})],
                 }));
             }
             else {
-                navigatorRef.dispatch(NavigationActions.reset({ // this is react-navigation's dispatch
+                navigatorRef.dispatch(NavigationActions.reset({
                     index: 0,
                     actions: [NavigationActions.navigate({routeName: 'TeamSelectionScreen'})],
                 }));
             }
-        }, 5000);
+        }, 100);
         dispatch(fetchPlayerStatus());
     };
 };

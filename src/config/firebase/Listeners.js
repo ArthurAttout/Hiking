@@ -8,7 +8,7 @@ AsyncStorage.getItem('lastNotification').then(data=>{
         console.log('last notification', JSON.parse(data));
         AsyncStorage.removeItem('lastNotification');
     }
-})
+});
 
 AsyncStorage.getItem('lastMessage').then(data=>{
     if(data){
@@ -16,11 +16,11 @@ AsyncStorage.getItem('lastMessage').then(data=>{
         console.log('last message', JSON.parse(data));
         AsyncStorage.removeItem('lastMessage');
     }
-})
+});
 
 export function registerKilledListener(){
     // these callback will be triggered even when src is killed
-    FCM.on(FCMEvent.Notification, notif => {
+    /*FCM.on(FCMEvent.Notification, notif => {
         AsyncStorage.setItem('lastNotification', JSON.stringify(notif));
         if(notif.opened_from_tray){
             if(notif._actionIdentifier === 'com.myidentifi.fcm.text.reply'){
@@ -37,7 +37,7 @@ export function registerKilledListener(){
                 alert("User clicked Dismiss");
             }
         }
-    });
+    });*/
 }
 
 // these callback will be triggered only when src is foreground or background
@@ -49,7 +49,7 @@ export function registerAppListener(){
             body: notif.fcm.body,
             show_in_foreground: true});
     });
-
+/*
     FCM.on(FCMEvent.RefreshToken, token => {
         console.log("TOKEN (refreshUnsubscribe)", token);
     });
@@ -60,6 +60,6 @@ export function registerAppListener(){
     });
     setTimeout(function() {
         FCM.isDirectChannelEstablished().then(d => console.log(d));
-    }, 1000);
+    }, 1000);*/
 }
 

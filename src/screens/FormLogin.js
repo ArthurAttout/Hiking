@@ -2,12 +2,6 @@ import React, { Component } from 'react';
 import { Alert,AppRegistry, Text, TextInput, View,StyleSheet,Button } from 'react-native';
 import {TextInputLayout} from 'rn-textinputlayout';
 import CardView from 'react-native-cardview';
-import {registerKilledListener, registerAppListener} from "../config/firebase/Listeners";
-import FCM from "react-native-fcm";
-
-
-registerKilledListener();
-registerAppListener();
 
 export default class FormLogin extends React.Component {
   static navigationOptions = {

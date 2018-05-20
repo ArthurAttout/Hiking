@@ -42,6 +42,7 @@ const RootStack = StackNavigator(
         JoinGameScreen: {screen: mapNavigationStateParamsToProps(JoinGameScreen)},
         GameCreatedScreen:{screen: mapNavigationStateParamsToProps(GameCreatedScreen)},
         GameNotStartedScreen: {screen: mapNavigationStateParamsToProps(GameNotStartedScreen)},
+        GameMasterScreen:{screen:mapNavigationStateParamsToProps(GameMasterScreen)},
         TeamSelectionScreen: {screen: mapNavigationStateParamsToProps(TeamSelectionScreen)},
         HelloScreen: {screen: mapNavigationStateParamsToProps(HelloScreen)},
         CreateGameMapBeaconScreen: {screen: mapNavigationStateParamsToProps(CreateGameMapBeacon)},
