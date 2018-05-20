@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import {connect} from "react-redux";
 import Menu from './GameMasterSideMenu'
-import MapView,{Polyline} from 'react-native-maps';
+import MapView,{Marker} from 'react-native-maps';
 import SideMenu from 'react-native-side-menu'
 import {changeSideMenuOpened,forceRefresh,setContinuousRefresh,updatePositions,
         setIntervalID} from "../actions/actionsGameMasterScreen";
@@ -45,7 +45,15 @@ class Screen extends React.Component {
                     style={styles.container}>
                     <MapView
                         style={styles.map}
-                        initialRegion={this.props.centerRegion}/>
+                        initialRegion={this.props.centerRegion}>
+                        {
+                            this.props.teams.map((team) =>
+                                <Marker
+                                    pinColor={team.color}
+                                    key={JSON.stringify(team.id)}
+                                    coordinate={team.coordinate}/>)
+                        }
+                    </MapView>
                 </View>
             </SideMenu>
         );

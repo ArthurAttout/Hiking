@@ -1,8 +1,12 @@
+import {randomRiddleLoaded} from "./actionsCreateGameMapDrawer";
+import store from '../config/store'
 export const FORCE_REFRESH= 'FORCE_REFRESH';
 export const CHANGE_GAMEMASTER_SIDE_MENU_OPENED = 'CHANGE_GAMEMASTER_SIDE_MENU_OPENED';
 export const SET_CONTINUOUS_REFRESH = 'SET_CONTINUOUS_REFRESH';
 export const UPDATE_POSITIONS = 'UPDATE_POSITIONS';
+export const FETCHING_NEW_POSITIONS  = 'FETCHING_NEW_POSITIONS';
 export const SET_INTERVAL_ID = "SET_INTERVAL_ID";
+export const FETCHED_NEW_POSITIONS= 'FETCHED_NEW_POSITIONS';
 
 export const changeSideMenuOpened = (isOpen) => {
     return{
@@ -25,9 +29,25 @@ export const setContinuousRefresh = (value) => {
 };
 
 export const updatePositions = () => {
-    console.log("updated positions");
-    return{
-        type:UPDATE_POSITIONS
+    return dispatch => {
+        dispatch(fetchingNewPositions());
+        fetch("http://jservice.io/api/random")
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                dispatch(newPositionsFetched({
+                    teams:store.getState().gameMasterScreenReducer.teams.map((team) => {
+                        return{
+                            ...team,
+                            coordinate:{
+                                latitude: team.coordinate.latitude + 0.0001,
+                                longitude: team.coordinate.longitude + 0.0001,
+                            }
+                        }
+                    })
+                }))
+        });
     }
 };
 
@@ -36,4 +56,17 @@ export const setIntervalID = (id) => {
         type:SET_INTERVAL_ID,
         id: id
     }
-}
+};
+
+export const fetchingNewPositions = () => {
+    return{
+        type: FETCHING_NEW_POSITIONS,
+    }
+};
+
+export const newPositionsFetched = (positions) => {
+    return{
+        type: FETCHED_NEW_POSITIONS,
+        newPositions: positions.teams,
+    }
+};
