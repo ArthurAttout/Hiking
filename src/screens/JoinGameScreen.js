@@ -99,8 +99,9 @@ const mapStateToProps = (state, own) => {
     }
 };
 
-const mapDispatchToProps = (dispatch) =>{
+function mapDispatchToProps(dispatch, own) {
     return {
+        ...own,
         submit: () => dispatch(submit()),
         setGameCode: (value) => dispatch(setGameCode(value)),
         setPlayerName: (value) => dispatch(setPlayerName(value)),
@@ -155,6 +156,4 @@ const styles = StyleSheet.create({
         //marginBottom: 15,
     },
 });
-
-AppRegistry.registerComponent('Hiking', () => JoinGameScreen);
 

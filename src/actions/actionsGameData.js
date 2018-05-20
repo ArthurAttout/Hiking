@@ -1,7 +1,11 @@
+import store from "../config/store";
+import {calculateBearing} from "../utils/geometryUtils";
+
 export const STORE_SERVER_DATA = 'STORE_SERVER_DATA';
 export const STORE_NEXT_BEACON = 'STORE_NEXT_BEACON';
 export const STORE_CURRENT_LOCATION = 'STORE_CURRENT_LOCATION';
 export const SET_MAP_VIEW_VISIBLE = 'SET_MAP_VIEW_VISIBLE';
+export const STORE_BEARING = 'STORE_BEARING';
 
 // TODO view what to store
 export const storeServerData = (gameData) =>{
@@ -38,8 +42,38 @@ export const storeCurrentLocation = (currentLocation) =>{
         type:STORE_CURRENT_LOCATION,
         latitude: currentLocation.latitude,
         longitude: currentLocation.longitude,
+        altitude: currentLocation.altitude,
+        heading: currentLocation.heading,
+        speed: currentLocation.speed,
         accuracy: currentLocation.accuracy,
         error: currentLocation.error,
+    }
+};
+
+export const storeBearing = () => {
+    //TODO manage arrow directions
+    var bearing = 0;
+    const absoluteBearing = calculateBearing(
+        store.getState().gameDataReducer.currentLocation,
+        store.getState().gameDataReducer.nextBeacon);
+    /*console.log(store.getState().gameDataReducer.currentLocation);
+    console.log(store.getState().gameDataReducer.nextBeacon);
+    console.log(bearing);*/
+    // TODO calculate the difference between calculated bearing and the GPS heading value
+    if(store.getState().gameDataReducer.currentLocation.heading != null &&
+        !isNaN(parseFloat(store.getState().gameDataReducer.currentLocation.heading)))
+    {
+        // NB: 45 degrees less because arrow is already tilted at 45 degrees
+        bearing = ((store.getState().gameDataReducer.currentLocation.heading - absoluteBearing) * -1) - 45;
+        console.log(store.getState().gameDataReducer.currentLocation.heading);
+        console.log(bearing);
+    } else {
+        console.log("Current location heading not valid, using absoluteBearing");
+        bearing = absoluteBearing;
+    }
+    return{
+        type:STORE_BEARING,
+        bearing: bearing
     }
 };
 

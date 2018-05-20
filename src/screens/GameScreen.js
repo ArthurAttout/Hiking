@@ -5,10 +5,7 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { connect } from "react-redux";
 import {COLORS} from "../utils/constants";
 import MapView, { Marker } from 'react-native-maps'
-import {getNextBeacon} from "../config/FakeServer";
-import store from "../config/store";
-import {joinTeam} from "../actions/actionsJoinGame";
-import {setMapViewVisible, storeCurrentLocation, storeNextBeacon} from "../actions/actionsGameData";
+import {setMapViewVisible, storeCurrentLocation, storeNextBeacon, storeBearing} from "../actions/actionsGameData";
 
 class GScreen extends React.Component {
     static navigationOptions = {
@@ -37,6 +34,9 @@ class GScreen extends React.Component {
                 const currentPosition = {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
+                    altitude: position.coords.altitude,
+                    heading: position.coords.heading,
+                    speed: position.coords.speed,
                     accuracy: position.coords.accuracy,
                     error: null,
                 };
@@ -47,26 +47,54 @@ class GScreen extends React.Component {
                 const currentPosition = {
                     latitude: 50.228411,
                     longitude: 5.335913,
+                    altitude: 0,
+                    heading: 0,
+                    speed: 0,
                     accuracy: 0,
                     error: error.message,
                 };
                 this.props.storeCurrentLocation(currentPosition);
+                this.props.storeBearing();
             },
-            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+            {
+                enableHighAccuracy: true,
+                timeout: 20000,
+                maximumAge: 1000
+            },
         );
-                });
+
+        this.watchID = navigator.geolocation.watchPosition((position) => {
+            // TODO manage when current location is inside the beacon zone
+                let updatedLocation = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    altitude: position.coords.altitude,
+                    heading: position.coords.heading,
+                    speed: position.coords.speed,
+                    accuracy: position.coords.accuracy
+                };
+                this.props.storeCurrentLocation(updatedLocation);
+                this.props.storeBearing();
             },
-            // TODO manage error when GPS is not activated
             (error) => {
-                this.setState({
-                    latitude: 50.228411,
-                    longitude: 5.335913,
-                    accuracy: 0,
-                    error: error.message
-                })
+                const currentPosition = {
+                    error: error.message,
+                };
+                this.props.storeCurrentLocation(currentPosition);
             },
-            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+            {
+                enableHighAccuracy: true,
+                timeout: 20000,
+                maximumAge: 1000,
+                distanceFilter: 1
+            },
         );
+
+        //TODO store whatid
+    }
+
+    componentWillUnmount() {
+        navigator.geolocation.clearWatch(this.watchId);
     }
 
     render() {
@@ -83,9 +111,10 @@ class GScreen extends React.Component {
         );
     }
 
-    // TODO rotate arrow based on next beacon location
+
     renderMainView() {
         if(!this.props.mapViewVisible){
+            // TODO rotate arrow based on next beacon location
             return (
                 /*For testing only
                 <TouchableNativeFeedback
@@ -96,17 +125,11 @@ class GScreen extends React.Component {
                     }}
                 >*/
                 <View style={styles.map}>
-                    <FontAwesomeIcon size={200} color={COLORS.Primary} name="location-arrow"/>
+                    <FontAwesomeIcon style={ {transform: [{ rotate: (this.props.bearing+'deg')}]} } size={200} color={COLORS.Primary} name="location-arrow"/>
                 </View>
                 //</TouchableNativeFeedback>
             );
         } else {
-            const initialRegion = {
-                latitude: this.props.currentLocation.latitude,
-                longitude: this.props.currentLocation.longitude,
-                latitudeDelta: 0.0,
-                longitudeDelta: 0.0,
-            };
             const beacon = {
                 latitude: this.props.nextBeacon.latitude,
                 longitude: this.props.nextBeacon.longitude,
@@ -117,9 +140,27 @@ class GScreen extends React.Component {
                 // TODO place next marker as well
                 <MapView
                     style={styles.map}
-                    initialRegion={initialRegion}
+                    region={
+                        {
+                            latitude: this.props.currentLocation.latitude,
+                            longitude: this.props.currentLocation.longitude,
+                            latitudeDelta: 0.0,
+                            longitudeDelta: 0.0,
+                        }
+                    }
+                    //showsUserLocation={true}
+                    followUserLocation={true}
+                    showsMyLocationButton={true}
                 >
-                    <Marker coordinate={initialRegion}/>
+                    <Marker
+                        coordinate={{
+                            latitude: this.props.currentLocation.latitude,
+                            longitude: this.props.currentLocation.longitude,
+                            latitudeDelta: 0.0,
+                            longitudeDelta: 0.0,
+                        }}
+                        image={require('../images/ic_directions_walk_black.png')}
+                    />
                     <Marker coordinate={beacon}/>
                 </MapView>
             );
@@ -171,7 +212,8 @@ const mapStateToProps = (state, own) => {
         gameData: state.gameDataReducer.gameData,
         nextBeacon: state.gameDataReducer.nextBeacon,
         currentLocation: state.gameDataReducer.currentLocation,
-        mapViewVisible: state.gameDataReducer.mapViewVisible
+        mapViewVisible: state.gameDataReducer.mapViewVisible,
+        bearing: state.gameDataReducer.bearing,
     }
 };
 
@@ -180,9 +222,10 @@ function mapDispatchToProps(dispatch, own) {
         ...own,
         storeCurrentLocation: (currentLocation) => dispatch(storeCurrentLocation(currentLocation)),
         setMapViewVisible: (mapViewVisible) => dispatch(setMapViewVisible(mapViewVisible)),
-        storeNextBeacon: (nextBeacon) => dispatch(storeNextBeacon(nextBeacon))
+        storeNextBeacon: (nextBeacon) => dispatch(storeNextBeacon(nextBeacon)),
+        storeBearing: () => dispatch(storeBearing())
     }
-};
+}
 
 //Connect everything
 export default GameScreen = connect(mapStateToProps, mapDispatchToProps)(GScreen);
@@ -215,7 +258,8 @@ const styles = StyleSheet.create({
         height: '100%',
         width: '100%',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        marginBottom: 56,
     },
 });
 

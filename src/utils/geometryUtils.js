@@ -66,3 +66,13 @@ export const calculateDeltaAltitude = (track) => {
             return maximum - minimum;
     });
 };
+
+export const calculateBearing = (currentPosition, destinationBeacon) => {
+    // λ = longitude
+    // φ = latitude
+    var y = Math.sin(destinationBeacon.longitude-currentPosition.longitude) * Math.cos(destinationBeacon.latitude);
+    var x = Math.cos(currentPosition.latitude)*Math.sin(destinationBeacon.latitude) -
+        Math.sin(currentPosition.latitude)*Math.cos(destinationBeacon.latitude)*Math.cos(destinationBeacon.longitude-currentPosition.longitude);
+    var bearing = (Math.atan2(y, x)) * (180 / Math.PI); // convert from radian to degrees
+    return ((bearing + 360) % 360)
+};

@@ -1,4 +1,5 @@
-import { STORE_SERVER_DATA, STORE_NEXT_BEACON, STORE_CURRENT_LOCATION, SET_MAP_VIEW_VISIBLE } from '../actions/actionsGameData';
+import { STORE_SERVER_DATA, STORE_NEXT_BEACON, STORE_CURRENT_LOCATION, SET_MAP_VIEW_VISIBLE,
+    STORE_BEARING} from '../actions/actionsGameData';
 
 let dataState = {
     gameData: {
@@ -24,10 +25,19 @@ let dataState = {
     currentLocation: {
         latitude: 0.0,
         longitude: 0.0,
+        altitude: 0,
+        heading: 0,
+            //Returns a double representing the direction in which the device is traveling.
+            // This value, specified in degrees, indicates how far off from heading true north the device is.
+            // 0 degrees represents true north, and the direction is determined clockwise (which means that east
+            // is 90 degrees and west is 270 degrees). If speed is 0, heading is NaN.
+            // If the device is unable to provide heading information, this value is null.
+        speed: 0,
         accuracy: 0.0,
         error: null,
     },
     mapViewVisible: false,
+    bearing: 0
 };
 
 export default function gameDataReducer (state = dataState, action) {
@@ -67,6 +77,9 @@ export default function gameDataReducer (state = dataState, action) {
                 currentLocation: {
                     latitude: action.latitude,
                     longitude: action.longitude,
+                    altitude: action.altitude,
+                    heading: action.heading,
+                    speed: action.speed,
                     accuracy: action.accuracy,
                     error: action.error,
                 }
@@ -75,6 +88,11 @@ export default function gameDataReducer (state = dataState, action) {
             return {
                 ...state,
                 mapViewVisible: action.mapViewVisible
+            };
+        case STORE_BEARING:
+            return {
+                ...state,
+                bearing: action.bearing
             };
         default:
             return state;

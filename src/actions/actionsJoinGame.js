@@ -9,8 +9,6 @@ export const PLAYER_STATUS_FETCHED = 'PLAYER_STATUS_FETCHED';
 export const SET_GAME_CODE ='SET_GAME_CODE';
 export const FETCH_PLAYER_STATUS = 'FETCH_PLAYER_STATUS';
 export const INPUT_CODE = 'INPUT_CODE';
-export const JOIN_TEAM = 'JOIN_TEAM';
-export const TOGGLE_GAME_READY = 'TOGGLE_GAME_READY';
 
 export const submit = () =>{
     return dispatch => {
@@ -41,7 +39,7 @@ export const submit = () =>{
             else {
                 navigatorRef.dispatch(NavigationActions.reset({ // this is react-navigation's dispatch
                     index: 0,
-                    actions: [NavigationActions.navigate({routeName: 'GameScreen'})],
+                    actions: [NavigationActions.navigate({routeName: 'TeamSelectionScreen'})],
                 }));
             }
         }, 5000);
