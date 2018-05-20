@@ -15,19 +15,6 @@ import {navigatorRef} from "../../App";
 class JGScreen extends React.Component {
     constructor(props) {
         super(props);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    handleSubmit() {
-        if(this.props.isGameMaster){
-            const { navigate } = this.props.navigation;
-            navigate('GameMasterScreen');
-        }
-        else
-        {
-            const { navigate } = this.props.navigation;
-            navigate('TeamSelectionScreen');
-        }
     }
 
     render() {

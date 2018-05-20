@@ -1,6 +1,8 @@
 import {navigatorRef} from "../../App";
 import {NavigationActions} from 'react-navigation';
 import store from '../config/store'
+import {isCodePlayer} from "../config/FakeServer";
+
 export const SUBMIT = 'SUBMIT';
 export const SET_PLAYER_NAME= 'SET_PLAYER_NAME';
 export const PLAYER_STATUS_FETCHED = 'PLAYER_STATUS_FETCHED';
@@ -8,7 +10,7 @@ export const SET_GAME_CODE ='SET_GAME_CODE';
 export const FETCH_PLAYER_STATUS = 'FETCH_PLAYER_STATUS';
 export const INPUT_CODE = 'INPUT_CODE';
 
-export const submit = () =>{
+export const submit = (navigator) =>{
     return dispatch => {
         /*
         let url = "https://hikong.masi-henallux.be:5000/joinGame";
@@ -28,16 +30,15 @@ export const submit = () =>{
                 console.error("Error  : " + error);
             });*/
         setTimeout(function(){
-            if(!store.getState().joinGameReducer.isGameMaster){
-                navigatorRef.dispatch(NavigationActions.reset({
-                    index: 0,
-                    actions: [NavigationActions.navigate({routeName: 'GameMasterScreen'})],
+            dispatch(playerStatusFetched(true));
+            if(isCodePlayer(store.getState().joinGameReducer.gameCode)){
+                navigatorRef.dispatch(NavigationActions.navigate({
+                    routeName:"TeamSelectionScreen"
                 }));
             }
             else {
-                navigatorRef.dispatch(NavigationActions.reset({
-                    index: 0,
-                    actions: [NavigationActions.navigate({routeName: 'TeamSelectionScreen'})],
+                navigatorRef.dispatch(NavigationActions.navigate({
+                    routeName:"GameMasterScreen"
                 }));
             }
         }, 100);

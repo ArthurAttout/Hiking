@@ -52,7 +52,8 @@ export default function joinGameReducer (state = dataState, action) {
         case PLAYER_STATUS_FETCHED:
             return{
                 ...state,
-                playerStatus: action.status
+                playerStatus: action.status,
+                showProgressStatus: false,
             };
         default:
             return state;

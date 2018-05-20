@@ -4,17 +4,12 @@ import {
     TouchableNativeFeedback,
     View,StatusBar,Image,Text
 } from 'react-native';
-import {COLORS} from "../utils/constants";
 import {connect} from "react-redux";
 import Menu from './GameMasterSideMenu'
 import MapView,{Polyline} from 'react-native-maps';
 import SideMenu from 'react-native-side-menu'
-import {
-    addNewTeam,
-    closeColorPicker, closeModalTeamEditor, deleteTeam, onTeamColorChange, populateDropdown, showColorPicker,
-    showModalTeamEditor, teamNameChanged
-} from "../actions/actionsAssignTeams";
-import {changeSideMenuOpened} from "../actions/actionsCreateGameMap";
+import {changeSideMenuOpened,forceRefresh,setContinuousRefresh,updatePositions,
+        setIntervalID} from "../actions/actionsGameMasterScreen";
 
 class Screen extends React.Component {
 
@@ -22,8 +17,22 @@ class Screen extends React.Component {
         super(props);
     }
 
-    render() {
+    componentWillMount(){
+        if(this.props.continuousRefresh){
+            this.intervalID = setInterval(() => {
+                this.props.updatePositions();
+            },3000);
+        }else {
+            clearInterval(this.intervalID);
+        }
+    }
 
+    componentWillUnmount(){
+        console.log("kill interval");
+        clearInterval(this.intervalID);
+    }
+
+    render() {
         const menu = <Menu/>;
 
         return (
@@ -48,6 +57,9 @@ const mapStateToProps = (state, own) => {
         ...own,
         sideMenuOpened: state.gameMasterScreenReducer.sideMenuOpened,
         centerRegion: state.gameMasterScreenReducer.centerRegion,
+        continuousRefresh: state.gameMasterScreenReducer.continuousRefresh,
+        teams: state.gameMasterScreenReducer.teams,
+        intervalID: state.gameMasterScreenReducer.intervalID,
     }
 };
 
@@ -55,6 +67,10 @@ function mapDispatchToProps(dispatch,own) {
     return {
         ...own,
         changeSideMenuOpened:(state) => dispatch(changeSideMenuOpened(state)),
+        forceRefresh:() => dispatch(forceRefresh()),
+        updatePositions:() => dispatch(updatePositions()),
+        setIntervalID:(id) => dispatch(setIntervalID(id)),
+        setContinuousRefresh: () => dispatch(setContinuousRefresh()),
     }
 }
 
