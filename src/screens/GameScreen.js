@@ -52,21 +52,8 @@ class GScreen extends React.Component {
                 };
                 this.props.storeCurrentLocation(currentPosition);
             },
-            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
-        );
-                });
-            },
-            // TODO manage error when GPS is not activated
-            (error) => {
-                this.setState({
-                    latitude: 50.228411,
-                    longitude: 5.335913,
-                    accuracy: 0,
-                    error: error.message
-                })
-            },
-            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
-        );
+            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+        )
     }
 
     render() {

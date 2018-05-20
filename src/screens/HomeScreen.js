@@ -4,7 +4,7 @@ import { registerKilledListener, registerAppListener } from "../config/firebase/
 import FCM from "react-native-fcm";
 import {COLORS} from '../utils/constants'
 
-registerKilledListener();
+//registerKilledListener();
 registerAppListener();
 
 
@@ -58,6 +58,7 @@ export default class HomeScreen extends React.Component {
 
     _onPressJoinGame() {
         const { navigate } = this.props.navigation;
+        FCM.getFCMToken().then((t) => console.log(t));
         navigate('JoinGameScreen');
     }
 
