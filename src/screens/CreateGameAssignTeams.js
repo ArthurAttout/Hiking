@@ -26,8 +26,6 @@ class Screen extends React.Component {
     }
 
     render() {
-
-
         return(
                 <ScrollView>
                     <FlatList

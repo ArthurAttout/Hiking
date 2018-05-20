@@ -5,6 +5,7 @@ import joinGameReducer from './joinGameReducer'
 import settingsReducer from './settingsReducer'
 import assignTeamsReducer from './assignTeamsReducer'
 import gameDataReducer from './gameDataReducer'
+import gameMasterScreenReducer from './gameMasterScreenReducer'
 
 const rootReducer = combineReducers({
     gameModesReducer,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
     createGameMapReducer,
     assignTeamsReducer,
     joinGameReducer,
-    gameDataReducer
+    gameDataReducer,
+    gameMasterScreenReducer,
 });
 
 export default rootReducer;
