@@ -17,6 +17,7 @@ export const CONFIRM_RIDDLE_SOLVING = 'CONFIRM_RIDDLE_SOLVING';
 export const RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED = 'RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED';
 export const STORE_END_GAME_STATS = 'STORE_END_GAME_STATS';
 export const STORE_TEAM_INFO = 'STORE_TEAM_INFO';
+export const DECREMENT_TEAM_LIVE = 'DECREMENT_TEAM_LIVE';
 
 
 export const storeTeamInfo = (teamInfo) => {
@@ -58,8 +59,6 @@ export const storeNextBeacon = (nextBeacon) =>{
 };
 
 export const storeCurrentLocation = (currentLocation) =>{
-
-
     return{
         type:STORE_CURRENT_LOCATION,
         latitude: currentLocation.latitude,
@@ -118,6 +117,7 @@ export const setMapViewVisible = (mapViewVisible) =>{
 };
 
 export const onCloseModal = () => {
+    console.log("Modal closure requested");
     return{
         type:RIDDLE_SOLVING_CLOSE_MODAL,
     }
@@ -131,26 +131,45 @@ export const onRequestModal = () => {
 
 export const onConfirmRiddleSolving = ()=>{
     console.log(store.getState().gameDataReducer.currentAnswer);
-    if(store.getState().gameDataReducer.currentAnswer === store.getState().gameDataReducer.nextBeacon.riddleAnswer) {
+    if(store.getState().gameDataReducer.currentAnswer.toLowerCase() ===
+        store.getState().gameDataReducer.nextBeacon.riddleAnswer.toLowerCase()) {
+
         // TODO replace with real server
+        // TODO use confirmpoint and send teamInfo udpdate
         const nextBeacon = getNextBeacon2(store.getState().gameDataReducer.gameCode,
             store.getState().gameDataReducer.teamName);
 
         store.dispatch(storeNextBeacon(nextBeacon));
+        store.dispatch(onCloseModal());
         navigatorRef.dispatch(NavigationActions.navigate({routeName:"GameScreen"}));
         return {
             type: CONFIRM_RIDDLE_SOLVING,
             correctAnswer: true,
-            modalVisible: false,
-            currentAnswer: ''
+            currentAnswer: '',
         }
     } else {
+        store.dispatch(decrementTeamLive());
         return {
             type: CONFIRM_RIDDLE_SOLVING,
             correctAnswer: false,
-            modalVisible: true,
-            currentAnswer: store.getState().gameDataReducer.currentAnswer
+            currentAnswer: store.getState().gameDataReducer.currentAnswer,
         }
+    }
+};
+
+export const decrementTeamLive = () => {
+    if(store.getState().gameDataReducer.teamInfo.lives === 1){
+        store.dispatch(onCloseModal());
+        console.log(store.getState().gameDataReducer.modalVisible)
+        //TODO navigate to a GAME OVER screen then to the last beacon
+        const nextBeacon = getNextBeacon2(store.getState().gameDataReducer.gameCode,
+            store.getState().gameDataReducer.teamName);
+        store.dispatch(storeNextBeacon(nextBeacon));
+        navigatorRef.dispatch(NavigationActions.navigate({routeName:"GameOverScreen"}));
+    }
+    return {
+        type: DECREMENT_TEAM_LIVE,
+        teamLives: (store.getState().gameDataReducer.teamInfo.lives - 1)
     }
 };
 

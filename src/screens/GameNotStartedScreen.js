@@ -1,5 +1,5 @@
 import React from 'react';
-import {AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableOpacity} from 'react-native';
+import {AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableOpacity, BackHandler, ToastAndroid} from 'react-native';
 import { connect } from "react-redux";
 import {COLORS} from "../utils/constants";
 
@@ -7,7 +7,21 @@ class GNSScreen extends React.Component {
     static navigationOptions = {
         title: 'Game Not Started',
         header: null,
+        headerLeft: null
     };
+
+    componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+        return true;
+    }
 
     constructor(props) {
         super(props);

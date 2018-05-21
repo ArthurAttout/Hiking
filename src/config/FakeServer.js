@@ -61,10 +61,10 @@ export function getTeamInfo(gameCode, teamId){
         "ColorHex": "#7d7682",
         "Game_idGame": 1,
         "Checkpoint": 7,
-        //"iconUrl": "https://www.longree.be/data/teamAtBoLo.png",
-        "iconUrl": null,
+        "iconUrl": "https://www.longree.be/data/teamAtBoLo.png",
+        //"iconUrl": null,
         "score": 0,
-        "lives": 8,
+        "lives": 10,
         "idTeam": 1
     }
 };
@@ -97,7 +97,7 @@ export function getDataFromServer(gameCode) {
             "mapViewEnabled": true,
             "nextBeaconVisible": true,
             "displayDropDistance": false,
-            "lives": 0,
+            "lives": 10,
             "timerRiddle": 0,
         }
 }

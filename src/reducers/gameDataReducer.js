@@ -1,7 +1,8 @@
 import {
     STORE_SERVER_DATA, STORE_NEXT_BEACON, STORE_CURRENT_LOCATION, SET_MAP_VIEW_VISIBLE,
     STORE_BEARING, PLAYER_INSIDE_BEACON, RIDDLE_SOLVING_CLOSE_MODAL, RIDDLE_SOLVING_REQUEST_MODAL, SET_CURRENT_ANSWER,
-    CONFIRM_RIDDLE_SOLVING, storeNextBeacon, RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED, STORE_END_GAME_STATS, STORE_TEAM_INFO
+    CONFIRM_RIDDLE_SOLVING, storeNextBeacon, RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED, STORE_END_GAME_STATS,
+    STORE_TEAM_INFO, DECREMENT_TEAM_LIVE
 } from '../actions/actionsGameData';
 import {getNextBeacon2} from "../config/FakeServer";
 
@@ -146,8 +147,7 @@ export default function gameDataReducer (state = dataState, action) {
             return{
                 ...state,
                 correctAnswer: action.correctAnswer,
-                modalVisible: action.modalVisible,
-                currentAnswer: action.currentAnswer
+                currentAnswer: action.currentAnswer,
             };
         case RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED:
             return{
@@ -168,7 +168,15 @@ export default function gameDataReducer (state = dataState, action) {
             return{
                 ...state,
                 teamInfo: action.teamInfo
-            }
+            };
+        case DECREMENT_TEAM_LIVE:
+            return {
+                ...state,
+                teamInfo: {
+                    ...state.teamInfo,
+                    lives: action.teamLives
+                }
+            };
         default:
             return state;
     }

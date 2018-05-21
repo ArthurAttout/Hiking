@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableNativeFeedback } from 'react-native';
+import {AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableNativeFeedback, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from "react-redux";
 import {COLORS} from "../utils/constants";
@@ -27,14 +27,14 @@ class BScreen extends React.Component {
                     <Text style={styles.titleText}>{"Congrats\n" + this.props.teamInfo.name + "!"}</Text>
                     {(this.props.teamInfo.iconUrl === null) ?
                         <Icon.Button name="circle"
-                                     size={230}
+                                     size={(Dimensions.get('window').width * 0.45)}
                                      color={this.props.teamInfo.ColorHex}
                                      backgroundColor='transparent'
                                      style={styles.iconStyle}/>
                         :
                         <Image
                             resizeMode={'contain'}
-                            style={{width: 230, height: 230}}
+                            style={{width: (Dimensions.get('window').width * 0.45), height: (Dimensions.get('window').width * 0.45)}}
                             source={{uri: this.props.teamInfo.iconUrl }}/>
                     }
                     <View style={styles.resultsView}>
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     },
     resultsPrompts: {
         flex: 2,
-        //alignContent: 'space-around',
+        alignContent: 'space-around',
         justifyContent: 'space-around',
     },
     results: {

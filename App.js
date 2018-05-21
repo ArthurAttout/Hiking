@@ -17,6 +17,7 @@ import CreateGameAssignTeams from "./src/screens/CreateGameAssignTeams";
 import BeaconScreen from "./src/screens/BeaconScreen";
 import RecapitulativeScreen from "./src/screens/RecapitulativeScreen"
 import EndGameScreen from "./src/screens/EndGameScreen";
+import GameOverScreen from "./src/screens/GameOverScreen";
 
 const mapNavigationStateParamsToProps = (SomeComponent) => {
     return class extends Component {
@@ -48,7 +49,8 @@ const RootStack = StackNavigator(
         CreateGameMapBeaconScreen: {screen: mapNavigationStateParamsToProps(CreateGameMapBeacon)},
         GameScreen: {screen: mapNavigationStateParamsToProps(GameScreen)},
         BeaconScreen: {screen: mapNavigationStateParamsToProps(BeaconScreen)},
-        EndGameScreen: {screen: mapNavigationStateParamsToProps(EndGameScreen)}
+        EndGameScreen: {screen: mapNavigationStateParamsToProps(EndGameScreen)},
+        GameOverScreen: {screen: mapNavigationStateParamsToProps(GameOverScreen)}
     },
     {
         initialRouteName: 'HomeScreen',

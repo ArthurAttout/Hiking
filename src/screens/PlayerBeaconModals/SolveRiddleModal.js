@@ -1,15 +1,22 @@
 import React from 'react';
 import Modal from "react-native-modal";
 import {StyleSheet, ScrollView, TextInput,
-    View, Image, Text,FlatList, TouchableNativeFeedback} from 'react-native';
+    View, Image, Text,FlatList, TouchableNativeFeedback, Dimensions, Vibration} from 'react-native';
+import {COLORS, GAME_MODES} from "../../utils/constants";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default class SolveRiddleModal extends React.Component{
 
     constructor(props){
         super(props);
+        this.renderStars = this.renderStars.bind(this);
     }
 
     render(){
+        if(this.props.isSubmitButtonPressed) {
+            Vibration.vibrate(1000);
+        }
+
         return(
             <Modal
                 onBackdropPress={() => {this.props.onCloseModal()}}
@@ -25,6 +32,10 @@ export default class SolveRiddleModal extends React.Component{
                             value={this.props.currentAnswer}
                             onChangeText={(answer) => this.props.setCurrentAnswer(answer)}
                         />
+                    </View>
+
+                    <View style={styles.stars}>
+                    {this.renderStars()}
                     </View>
 
                     <View
@@ -57,12 +68,37 @@ export default class SolveRiddleModal extends React.Component{
             </Modal>
         )
     }
+
+    renderStars() {
+        if(this.props.gameData.gameMode !== GAME_MODES.NORMAL){
+            let stars = [];
+
+            for(let i = this.props.gameData.lives; i > 0; i--) {
+                // TODO manage lifes lost
+                if(this.props.teamInfo.lives < i){
+                    stars.push(
+                        <Icon key={i} style={{color: 'red'}} size={(Dimensions.get('window').height * 0.04)}
+                                         color={COLORS.Primary} name="heart-outline"/>
+                    )
+                } else {
+                    stars.push(
+                        <Icon key={i} style={{color: 'red'}} size={(Dimensions.get('window').height * 0.04)}
+                                         color={COLORS.Primary} name="heart"/>
+                    )
+                }
+            }
+
+            return stars;
+        }
+    }
 }
 
 const styles = StyleSheet.create({
     container: {
-        width:'100%',
-        height:'35%',
+        //width:'100%',
+        //height:'35%',
+        width: Dimensions.get('window').width,
+        height: (Dimensions.get('window').height * 0.35),
         backgroundColor:'#ffffff',
         justifyContent: 'center',
         alignItems:'center',
@@ -78,9 +114,14 @@ const styles = StyleSheet.create({
         height:'100%'
     },
     textInput:{
-        width:'95%',
+        width: '100%',
         height:60,
         alignSelf:'center',
+    },
+    stars:{
+        //flex:1,
+        flexDirection:'row',
+        flexWrap: 'wrap',
     },
     buttons:{
         flex:1,

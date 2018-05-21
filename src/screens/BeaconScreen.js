@@ -1,10 +1,11 @@
 import React from 'react';
-import { AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableNativeFeedback } from 'react-native';
+import {AppRegistry, Text, View, StyleSheet, StatusBar, Image,
+    TouchableNativeFeedback, Dimensions } from 'react-native';
 import { connect } from "react-redux";
-import {COLORS} from "../utils/constants";
+import {COLORS, GAME_MODES} from "../utils/constants";
 import {getNextBeacon2} from "../config/FakeServer";
 import {
-    onCloseModal, onConfirmRiddleSolving, onRequestModal, setCurrentAnswer, storeEndGameStats,
+    onCloseModal, onConfirmRiddleSolving, onRequestModal, setCurrentAnswer,
     storeNextBeacon, submitButtonPressed
 } from "../actions/actionsGameData";
 import SolveRiddleModal from "./PlayerBeaconModals/SolveRiddleModal";
@@ -31,42 +32,42 @@ class BScreen extends React.Component {
         // TODO manage beacon text for the different modes
         // TODO fix image size to dynamic (45% seems good)
         return (
-            <View style={styles.container}>
-                <StatusBar
-                    backgroundColor={COLORS.Primary_accent}
-                    barStyle="light-content"
-                />
-                <View style={styles.topMessageView}>
-                    <Text style={styles.topMessageText}>{this.props.nextBeacon.name}</Text>
-                </View>
-                <View style={styles.body}>
-                    <Text style={styles.titleText}>Congrats!</Text>
-                    <Image
-                        resizeMode={'contain'}
-                        style={{width: 230, height: 230}}
-                        source={{uri: this.props.nextBeacon.iconUrl }}/>
-                    <Text style={styles.beaconText}>
-                        {(this.props.gameData.gameMode === 1) ?
-                            "You successfully reached the " + this.props.nextBeacon.name + " beacon!"
-                            :
-                            this.props.nextBeacon.riddleStatement}</Text>
-                </View>
-                <TouchableNativeFeedback
-                    background={TouchableNativeFeedback.Ripple('white')}
-                    onPress={() => {this.handleOnPress()}}
-                >
-                    <View style={styles.bottomView}>
-                        <Text style={styles.bottomText}>{(this.props.gameData.gameMode === 1) ? "NEXT BEACON" : "SOLVE" }</Text>
+                <View style={styles.container}>
+                    <StatusBar
+                        backgroundColor={COLORS.Primary_accent}
+                        barStyle="light-content"
+                    />
+                    <View style={styles.topMessageView}>
+                        <Text style={styles.topMessageText}>{this.props.nextBeacon.name}</Text>
                     </View>
-                </TouchableNativeFeedback>
-                {this._renderModal()}
-            </View>
+                    <View style={styles.body}>
+                        <Text style={styles.titleText}>Congrats!</Text>
+                        <Image
+                            resizeMode={'contain'}
+                            style={{width: (Dimensions.get('window').width * 0.45), height: (Dimensions.get('window').width * 0.45)}}
+                            source={{uri: this.props.nextBeacon.iconUrl }}/>
+                        <Text style={styles.beaconText}>
+                            {(this.props.gameData.gameMode === GAME_MODES.NORMAL) ?
+                                "You successfully reached the " + this.props.nextBeacon.name + " beacon!"
+                                :
+                                this.props.nextBeacon.riddleStatement}</Text>
+                    </View>
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('white')}
+                        onPress={() => {this.handleOnPress()}}
+                    >
+                        <View style={styles.bottomView}>
+                            <Text style={styles.bottomText}>{(this.props.gameData.gameMode ===  GAME_MODES.NORMAL) ? "NEXT BEACON >" : "SOLVE" }</Text>
+                        </View>
+                    </TouchableNativeFeedback>
+                    {this._renderModal()}
+                </View>
         );
     }
 
     handleOnPress(){
         const { navigate } = this.props.navigation;
-        if(this.props.gameData.gameMode === 1){
+        if(this.props.gameData.gameMode ===  GAME_MODES.NORMAL){
             // TODO get next beacon
             const nextBeacon = getNextBeacon2(this.props.gameCode,
                 this.props.teamName);
@@ -85,6 +86,8 @@ class BScreen extends React.Component {
             modalVisible={this.props.modalVisible}
             currentAnswer = {this.props.currentAnswer}
             correctAnswer = {this.props.correctAnswer}
+            gameData = {this.props.gameData}
+            teamInfo = {this.props.teamInfo}
             isSubmitButtonPressed = {this.props.isSubmitButtonPressed}
             submitButtonPressed = {this.props.submitButtonPressed}
             setCurrentAnswer={this.props.setCurrentAnswer}
@@ -99,6 +102,7 @@ const mapStateToProps = (state, own) => {
     return {
         ...own,
         gameData: state.gameDataReducer.gameData,
+        teamInfo: state.gameDataReducer.teamInfo,
         nextBeacon: state.gameDataReducer.nextBeacon,
         modalVisible: state.gameDataReducer.modalVisible,
         currentAnswer: state.gameDataReducer.currentAnswer,
@@ -124,11 +128,13 @@ export default BeaconScreen = connect(mapStateToProps, mapDispatchToProps)(BScre
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        //flex: 1,
         flexDirection: 'column',
         justifyContent: 'space-around',
         alignItems: 'center',
         backgroundColor: '#ffffff',
+        width: Dimensions.get('window').width,
+        height: (Dimensions.get('window').height - 23),
     },
     topMessageView: {
         backgroundColor: '#558b2f',
