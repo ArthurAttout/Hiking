@@ -179,7 +179,6 @@ export default function createGameMapReducer(state = dataState, action){
             return state;
 
         case DRAG_FINISH_LINE:
-            console.log("in");
             let newBeaconFinish = {
                 ...state.beaconFinishLine,
                 coordinate:{
@@ -572,10 +571,6 @@ export default function createGameMapReducer(state = dataState, action){
             };
 
         case SET_CURRENT_BEACON_NAME:
-            console.log("will set current beacon : ");
-            console.log(state.currentCustomizingBeacon);
-
-            console.log("To name :" + action.name);
             return{
                 ...state,
                 currentCustomizingBeacon:{

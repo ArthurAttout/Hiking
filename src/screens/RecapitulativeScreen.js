@@ -149,10 +149,8 @@ class RecapitulativeScreen extends React.Component {
             })
         };
         let request = prepareRequest(params,"POST");
-        console.log(request);
         fetch('https://hikong.masi-henallux.be:5000/game',request)
             .then ((response) => {
-                console.log(response);
                 return response.json()
             })
             .then ((json) => {

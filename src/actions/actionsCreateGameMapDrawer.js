@@ -214,7 +214,6 @@ export const closeQRCodePicker = () => {
 };
 
 export const setCurrentBeaconQRCode = (code) => {
-    console.log(code);
     return{
         type:SET_CURRENT_BEACON_QR_CODE,
         code: code,
@@ -249,7 +248,6 @@ export const sendImageToServer = (base64) => {
 };
 
 export const receivedUploadUrl = (url) => {
-    console.log("Received URL is " + url);
     return{
         type: RECEIVED_UPLOAD_URL,
         url: url

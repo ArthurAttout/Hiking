@@ -71,7 +71,6 @@ export const closeColorPicker = () => {
 
 export const onTeamColorChange = (color) =>{
     let colorRGB = tinycolor(color);
-    console.log(colorRGB.toHexString());
     return{
         type: TEAM_COLOR_CHANGE,
         color: colorRGB.toHexString()

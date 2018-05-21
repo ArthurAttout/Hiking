@@ -54,8 +54,6 @@ export default function joinGameReducer (state = dataState, action) {
             };
 
         case FETCH_PLAYER_STATUS:
-            console.log(state.playerName);
-            console.log(state.gameCode);
             return{
                 ...state,
                 showProgressStatus: true
