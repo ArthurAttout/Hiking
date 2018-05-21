@@ -120,7 +120,7 @@ export default class Menu extends React.Component{
                 background={TouchableNativeFeedback.Ripple('blue')}
                 delayPressIn={0}>Finish</IconFoundation.Button>)
             :
-            (<View/>)
+            (<View/>);
 
         return (
             <ScrollView style={styles.container}>
@@ -162,7 +162,7 @@ export default class Menu extends React.Component{
                         onSubmitEditing={() => {this.props.onSubmitTrackName(section)}}
                         underlineColorAndroid='transparent'
                         placeholderTextColor="#FFFFFF"
-                        placeholder={section.trackName}/>
+                        placeholder={section.isNameEditable === true ? "" : section.trackName}/>
 
 
                         <IconAwesome
@@ -217,7 +217,7 @@ export default class Menu extends React.Component{
                         editable={section.isNameEditable === true}
                         onSubmitEditing={() => {this.props.onSubmitTrackName(section)}}
                         underlineColorAndroid='transparent'
-                        placeholder={section.trackName}
+                        placeholder={section.isNameEditable === true ? "" : section.trackName}
                         placeholderTextColor="#FFFFFF"/>
 
 
@@ -299,7 +299,7 @@ export default class Menu extends React.Component{
                         delayPressIn={0}/>
                 </View>
                 <FlatList
-                    data={section.beacons}
+                    data={section.beacons.filter((item) => item.id !== this.props.beaconFinishLine.id)}
                     style={styles.flatList}
                     keyExtractor={item => JSON.stringify(item.id)}
                     renderItem={({ item,index }) => (

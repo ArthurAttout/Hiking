@@ -122,7 +122,7 @@ class RecapitulativeScreen extends React.Component {
             displayDropDistance:        this.props.settings.dropDistanceVisibilityEnabled !== undefined,
             timerRiddle:                this.standardizeNumber(this.props.settings.timerMaxRiddle),
             lives:                      this.standardizeNumber(this.props.settings.numberLives),
-            enableNextBeaconVisibility: this.standardizeNumber(this.props.settings.nextBeaconVisibilityEnabled),
+            enableNextBeaconVisibility: this.props.settings.nextBeaconVisibilityEnabled !== undefined,
 
             teams: this.props.teams.map((team) => {
                 return{

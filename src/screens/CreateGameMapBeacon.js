@@ -9,7 +9,7 @@ import IconAwesome from 'react-native-vector-icons/FontAwesome';
 import Menu from './CreateGameMapMenuDrawer'
 import {
     dragBeacon, setupInitialMap, addBeacon, startTracking, touchBeacon, onCenterRegionChange,
-    onClearLinkedPath, onConfirmLinkedPath, changeSideMenuOpened,
+    onClearLinkedPath, onConfirmLinkedPath, changeSideMenuOpened,dragFinishLine
 } from "../actions/actionsCreateGameMap";
 
 import {
@@ -55,6 +55,7 @@ class Screen extends React.Component {
 
     render(){
         const menu = <Menu
+            beaconFinishLine={this.props.beaconFinishLine}
             chosenMode={this.props.chosenMode}
             navigation={this.props.navigation}
             userTracks={this.props.tracks}
@@ -121,13 +122,21 @@ class Screen extends React.Component {
                             initialRegion={this.props.centerRegion}
                             onRegionChange={(evt) => {this.props.onCenterRegionChange(evt)}}>
                             {
-                                this.props.currentTrack.beacons.map((beacon,index,array) => this.renderMarker(beacon,index,array))
+                                this.props.currentTrack.beacons
+                                    .filter((item) => item.id !== this.props.beaconFinishLine.id)
+                                    .map((beacon,index,array) => this.renderMarker(beacon,index,array))
                             }
                             <Polyline
                                 coordinates={this.props.currentTrack.path}
                                 strokeColor={COLORS.Primary}
                                 strokeWidth={6}
                             />
+                            <Marker
+                                draggable
+                                coordinate={this.props.beaconFinishLine.coordinate}
+                                image={require('../images/finish.png')}
+                                onPress={() => {this.props.touchBeacon(this.props.beaconFinishLine)}}
+                                onDragEnd={(evt) => this.props.dragFinishLine(evt.nativeEvent.coordinate)}/>
                         </MapView>
                         {this.renderBottomNavigation()}
                     </View>
@@ -195,6 +204,7 @@ class Screen extends React.Component {
             )
         }
 
+        /*
         if(index === array.length-1){ //Finish line icon
             return(
                 <Marker
@@ -206,7 +216,7 @@ class Screen extends React.Component {
                     onDragEnd={(evt) => this.props.dragBeacon(beacon,evt.nativeEvent.coordinate)}
                 />
             )
-        }
+        }*/
 
         return(
             <Marker
@@ -263,6 +273,7 @@ const mapStateToProps = (state, own) => {
         tracks: state.createGameMapReducer.tracks,
         confirmLinkedBeacons:state.createGameMapReducer.confirmLinkedBeacons,
         sideMenuOpened:state.createGameMapReducer.sideMenuOpened,
+        beaconFinishLine: state.createGameMapReducer.beaconFinishLine,
 
         //Drawer
         modalVisible:state.createGameMapReducer.modalVisible,
@@ -280,6 +291,7 @@ function mapDispatchToProps(dispatch,own) {
         setupInitialMap: () => dispatch(setupInitialMap()),
         changeSideMenuOpened:(state) => dispatch(changeSideMenuOpened(state)),
 
+        dragFinishLine: (coord) => dispatch(dragFinishLine(coord)),
         dragBeacon: (original,coord) => dispatch(dragBeacon(original,coord)),
         addNewBeacon:() => dispatch(addBeacon()),
         startTracking:(evt) => dispatch(startTracking(evt)),

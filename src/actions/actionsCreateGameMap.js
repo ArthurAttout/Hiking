@@ -7,6 +7,7 @@ export const SETUP_INITIAL_MAP = 'SETUP_INITIAL_MAP';
 export const ADD_NEW_BEACON = 'ADD_NEW_BEACON';
 export const TOGGLE_TRACKING = 'TOGGLE_TRACKING';
 export const TOUCH_BEACON = 'TOUCH_BEACON';
+export const DRAG_FINISH_LINE = 'DRAG_FINISH_LINE';
 export const CENTER_REGION_CHANGED = 'CENTER_REGION_CHANGED';
 export const CLEAR_PATH = 'CLEAR_PATH';
 export const CONFIRM_PATH = 'CONFIRM_PATH';
@@ -65,12 +66,14 @@ export const onClearLinkedPath = () =>{
 
 export const onConfirmLinkedPath = () => {
     return dispatch => {
+        let curr = store.getState().createGameMapReducer.currentTrack;
+
         dispatch(fetchingDistances());
-        return calculateDeltaAltitude(store.getState().createGameMapReducer.currentTrack)
+        return calculateDeltaAltitude(curr)
             .then(function(res) {
-                dispatch(doneCalculatingDistances(res))
+                dispatch(doneCalculatingDistances(curr, res))
             })
-            .catch(error => console.log("I fucked up : " + error));
+            .catch(error => console.log("Error with fetch : " + error));
     };
 };
 
@@ -80,11 +83,12 @@ export const fetchingDistances = () => {
     }
 };
 
-export const doneCalculatingDistances = (totalDelta) => {
+export const doneCalculatingDistances = (track, totalDelta) => {
     return{
         type:DONE_CALCULATING_PATH,
-        totalDistance: calculateTotalDistance(store.getState().createGameMapReducer.currentTrack),
-        totalDelta: totalDelta
+        totalDistance: calculateTotalDistance(track),
+        totalDelta: totalDelta,
+        track: track,
     }
 };
 
@@ -95,3 +99,28 @@ export const changeSideMenuOpened = (isOpen) => {
     }
 };
 
+export const dragFinishLine = (coord) => {
+    return (dispatch) => {
+        dispatch(dragFinishLineContd(coord));
+        dispatch(calculateAllDistances());
+    }
+};
+
+export const dragFinishLineContd = (coord) => {
+    return{
+        type: DRAG_FINISH_LINE,
+        coord: coord
+    }
+};
+
+export const calculateAllDistances = () => {
+    return (dispatch) => {
+        store.getState().createGameMapReducer.tracks.map((track) => {
+            calculateDeltaAltitude(store.getState().createGameMapReducer.currentTrack)
+                .then(function(totalAltitudeDelta) {
+                    dispatch(doneCalculatingDistances(track, totalAltitudeDelta))
+                })
+                .catch(error => console.log("Error with fetch : " + error));
+        })
+    }
+};
