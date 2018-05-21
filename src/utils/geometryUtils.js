@@ -53,13 +53,11 @@ export const calculateDeltaAltitude = (track) => {
 
     let parameters = first.latitude + "," + first.longitude + "|" + last.latitude + "," + last.longitude + "&samples=" + samplesAmount + "&key=" + API_KEY;
     let url = "https://maps.googleapis.com/maps/api/elevation/json?path=" + parameters;
-    console.log(url);
     return fetch(url)
         .then(function(response) {
             return response.json();
         })
         .then(function(result) {
-            console.log(result);
             let maximum = Math.max.apply(Math,result.results.map(function(o){return o.elevation;}));
             let minimum = Math.min.apply(Math,result.results.map(function(o){return o.elevation;}));
 

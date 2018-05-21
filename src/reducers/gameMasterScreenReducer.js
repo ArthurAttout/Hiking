@@ -1,7 +1,10 @@
-import {FORCE_REFRESH,SET_CONTINUOUS_REFRESH,CHANGE_GAMEMASTER_SIDE_MENU_OPENED,
-FETCHED_NEW_POSITIONS,FETCHING_NEW_POSITIONS,SET_INTERVAL_ID,UPDATE_POSITIONS} from "../actions/actionsGameMasterScreen";
+import {
+    FORCE_REFRESH, SET_CONTINUOUS_REFRESH, CHANGE_GAMEMASTER_SIDE_MENU_OPENED,REQUEST_MODAL_TEAM,
+    FETCHED_NEW_POSITIONS, FETCHING_NEW_POSITIONS, SET_INTERVAL_ID, UPDATE_POSITIONS, START_GAME
+} from "../actions/actionsGameMasterScreen";
 
 let dataState = {
+    showStartButton: true,
     sideMenuOpened: false,
     centerRegion:{
         latitude:  50.223777,
@@ -12,6 +15,7 @@ let dataState = {
     teams:[
         {
             id:"a",
+            name:'Team Alpha',
             color:"#4c00f0",
             coordinate:{
                 latitude:  50.223867,
@@ -20,6 +24,7 @@ let dataState = {
         },
         {
             id:"b",
+            name:'Team Beta',
             color:"#f03500",
             coordinate:{
                 latitude:  50.223687,
@@ -28,6 +33,7 @@ let dataState = {
         },
         {
             id:"c",
+            name:'Team Gamma',
             color:"#00f047",
             coordinate:{
                 latitude:  50.223777,
@@ -44,7 +50,7 @@ export default function gameMasterScreenReducer (state = dataState, action) {
         case CHANGE_GAMEMASTER_SIDE_MENU_OPENED:
             return{
                 ...state,
-                sideMenuOpened: true,
+                sideMenuOpened: action.isOpen,
             };
 
         case FETCHING_NEW_POSITIONS:
@@ -53,12 +59,24 @@ export default function gameMasterScreenReducer (state = dataState, action) {
                 showProgressStatus: true,
             };
 
+
         case FETCHED_NEW_POSITIONS:
             return{
                 ...state,
                 teams: action.newPositions,
             };
 
+        case START_GAME:
+            return{
+                ...state,
+                showStartButton: false,
+            };
+
+        case REQUEST_MODAL_TEAM:
+            return{
+                ...state,
+
+            }
         default:
             return state;
     }

@@ -242,7 +242,7 @@ export default class RiddleAndCodeModal extends React.Component{
             }
             else {
                 let source = { uri: response.uri };
-                console.log(response.path);
+                this.props.sendImageToServer(response.data);
                 this.props.setImagePath(response.path);
             }
         });

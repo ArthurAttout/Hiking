@@ -1,3 +1,5 @@
+import {prepareRequest} from "../utils/constants";
+
 export const ADD_NEW_TRACK = 'ADD_NEW_TRACK';
 export const CLEAR_BEACONS = 'CLEAR_BEACONS';
 export const DELETE_TRACK = 'DELETE_TRACK';
@@ -23,6 +25,7 @@ export const CLOSE_QR_CODE_PICKER = 'CLOSE_QR_CODE_PICKER';
 export const SET_CURRENT_BEACON_QR_CODE = 'SET_CURRENT_BEACON_QR_CODE';
 export const SHOW_MODAL_BEACON_ID = 'SHOW_MODAL_BEACON_ID';
 export const CLOSE_MODAL_BEACON_ID = 'CLOSE_MODAL_BEACON_ID';
+export const RECEIVED_UPLOAD_URL = 'RECEIVED_UPLOAD_URL';
 
 export const RANDOM_RIDDLE_LOADING = 'RANDOM_RIDDLE_LOADING';
 export const RANDOM_RIDDLE_LOADED = 'RANDOM_RIDDLE_LOADED';
@@ -205,7 +208,6 @@ export const showQRCodePicker = () => {
 };
 
 export const closeQRCodePicker = () => {
-    console.log("aaaaaaaa");
     return{
         type: CLOSE_QR_CODE_PICKER
     }
@@ -231,3 +233,25 @@ export const closeModalBeaconID = () => {
     }
 };
 
+export const sendImageToServer = (base64) => {
+    return (dispatch) => {
+
+        let request = {
+            method: "POST",
+            body: base64,
+        };
+
+        fetch('https://hikong.masi-henallux.be:5000/upload',request)
+            .then ((response) => response.text())
+            .then((url) => dispatch(receivedUploadUrl(url)))
+
+    }
+};
+
+export const receivedUploadUrl = (url) => {
+    console.log("Received URL is " + url);
+    return{
+        type: RECEIVED_UPLOAD_URL,
+        url: url
+    }
+};

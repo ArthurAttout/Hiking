@@ -1,4 +1,4 @@
-import {randomRiddleLoaded} from "./actionsCreateGameMapDrawer";
+
 import store from '../config/store'
 export const FORCE_REFRESH= 'FORCE_REFRESH';
 export const CHANGE_GAMEMASTER_SIDE_MENU_OPENED = 'CHANGE_GAMEMASTER_SIDE_MENU_OPENED';
@@ -7,11 +7,13 @@ export const UPDATE_POSITIONS = 'UPDATE_POSITIONS';
 export const FETCHING_NEW_POSITIONS  = 'FETCHING_NEW_POSITIONS';
 export const SET_INTERVAL_ID = "SET_INTERVAL_ID";
 export const FETCHED_NEW_POSITIONS= 'FETCHED_NEW_POSITIONS';
+export const REQUEST_MODAL_TEAM = 'REQUEST_MODAL_TEAM';
+export const START_GAME = 'START_GAME';
 
 export const changeSideMenuOpened = (isOpen) => {
     return{
         type: CHANGE_GAMEMASTER_SIDE_MENU_OPENED,
-        payload: isOpen
+        isOpen: isOpen
     }
 };
 
@@ -51,13 +53,6 @@ export const updatePositions = () => {
     }
 };
 
-export const setIntervalID = (id) => {
-    return{
-        type:SET_INTERVAL_ID,
-        id: id
-    }
-};
-
 export const fetchingNewPositions = () => {
     return{
         type: FETCHING_NEW_POSITIONS,
@@ -68,5 +63,24 @@ export const newPositionsFetched = (positions) => {
     return{
         type: FETCHED_NEW_POSITIONS,
         newPositions: positions.teams,
+    }
+};
+
+export const showBeaconsOfTeam = (team) => {
+    return{
+        type:""
+    }
+};
+
+export const startGame = () => {
+    return{
+        type:START_GAME,
+    }
+};
+
+export const onRequestModal = (team) => {
+    return{
+        type:REQUEST_MODAL_TEAM,
+        team: team,
     }
 };

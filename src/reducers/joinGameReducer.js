@@ -5,7 +5,7 @@ import {
 
 let dataState = {
     gameReady: false,
-    gameCode: 'ABCD',
+    gameCode: 'GM',
     playerName: 'JohnDoe',
     teamName: 'AtBoLo',
     teamId: 0,

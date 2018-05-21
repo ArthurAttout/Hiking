@@ -77,7 +77,6 @@ class Screen extends React.Component {
                                 style={{alignSelf: 'flex-end'}}
                                 underlayColor='#f0f0f0'
                                 onPress={() => {
-                                    console.log(this.props.allSettings);
                                     const {navigate} = this.props.navigation;
                                     navigate('RecapitulativeScreen', {
                                         teams: this.props.teams,

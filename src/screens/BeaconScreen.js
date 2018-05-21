@@ -71,7 +71,6 @@ class BScreen extends React.Component {
             const nextBeacon = getNextBeacon2(this.props.gameCode,
                 this.props.teamName);
             this.props.storeNextBeacon(nextBeacon);
-            console.log(nextBeacon);
             navigate('GameScreen');
         } else {
             // TODO manage solving riddles

@@ -344,6 +344,7 @@ export default class Menu extends React.Component{
                        setCurrentBeaconName={this.props.setCurrentBeaconName}
                        onConfirmCustomizeBeacon={this.props.onConfirmCustomizeBeacon}
                        section={section}
+                       sendImageToServer={this.props.sendImageToServer}
                        onCloseModal={this.props.onCloseModal}/>);
 
             case GAME_MODES.RIDDLES:
@@ -355,6 +356,7 @@ export default class Menu extends React.Component{
                         showModalRandomRiddle={this.props.showModalRandomRiddle}
                         showModalCustomRiddle={this.props.showModalCustomRiddle}
                         addRandomRiddle={this.props.addRandomRiddle}
+                        sendImageToServer={this.props.sendImageToServer}
                         addCustomRiddle={this.props.addCustomRiddle}
                         submitRandomRiddle={this.props.submitRandomRiddle}
                         submitCustomRiddle={this.props.submitCustomRiddle}
@@ -373,6 +375,7 @@ export default class Menu extends React.Component{
                         showModalBeaconID={this.props.showModalBeaconID}
                         closeModalBeaconID={this.props.closeModalBeaconID}
                         modalBeaconIDVisible={this.props.modalBeaconIDVisible}
+                        sendImageToServer={this.props.sendImageToServer}
                         setCurrentBeaconQRCode={this.props.setCurrentBeaconQRCode}
                         submitCustomRiddle={this.props.submitCustomRiddle}
                         showModalCustomRiddle={this.props.showModalCustomRiddle}

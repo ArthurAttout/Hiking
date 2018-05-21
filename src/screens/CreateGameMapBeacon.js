@@ -18,7 +18,7 @@ import {
     setImagePath, onCancelCustomizeBeacon, setCurrentBeaconName, onConfirmCustomizeBeacon,
     addCustomRiddle, addRandomRiddle, submitCustomRiddle, submitRandomRiddle, setCurrentBeaconRiddleAnswer,
     setCurrentBeaconRiddleStatement, requestNewRandomRiddle, showQRCodePicker,closeQRCodePicker,setCurrentBeaconQRCode,
-    showModalBeaconID,closeModalBeaconID
+    showModalBeaconID,closeModalBeaconID,sendImageToServer
 } from "../actions/actionsCreateGameMapDrawer";
 
 import {connect} from "react-redux";
@@ -60,6 +60,7 @@ class Screen extends React.Component {
             userTracks={this.props.tracks}
             currentTrackID={this.props.currentTrack.id}
             setImagePath={this.props.setImagePath}
+            sendImageToServer={this.props.sendImageToServer}
             userCanFinish={this.props.userCanFinish}
 
             QRCodePickerVisible={this.props.QRCodePickerVisible}
@@ -302,6 +303,7 @@ function mapDispatchToProps(dispatch,own) {
         setCurrentBeaconName:(name) => dispatch(setCurrentBeaconName(name)),
         onCancelCustomizeBeacon:(beacon) => dispatch(onCancelCustomizeBeacon(beacon)),
         onConfirmCustomizeBeacon:()=>dispatch(onConfirmCustomizeBeacon()),
+        sendImageToServer:(base64) => dispatch(sendImageToServer(base64)),
 
         addRandomRiddle:()=>{dispatch(addRandomRiddle())},
         addCustomRiddle:()=>{dispatch(addCustomRiddle())},
