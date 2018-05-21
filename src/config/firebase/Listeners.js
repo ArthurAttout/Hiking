@@ -5,7 +5,6 @@ import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, 
 export function registerAppListener(){
     FCM.on(FCMEvent.Notification, notif => {
         console.log(notif['startGameNow']);
-
         FCM.presentLocalNotification({
             title: notif.fcm.title,
             body: notif.fcm.body,
