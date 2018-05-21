@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {connect} from "react-redux";
-import {joinTeam} from "../actions/actionsJoinGame";
+import {joinTeam,fetchTeams} from "../actions/actionsJoinGame";
 import {storeServerData, storeNextBeacon, storeTeamInfo} from "../actions/actionsGameData";
 import {COLORS} from "../utils/constants";
 import {
@@ -32,6 +32,10 @@ class TSScreen extends React.Component {
     constructor(props) {
         super(props);
         this._onTeamPress = this._onTeamPress.bind(this);
+    }
+
+    componentWillMount(){
+        this.props.fetchTeams();
     }
 
     render() {
@@ -76,16 +80,15 @@ class TSScreen extends React.Component {
                 {text: 'Cancel', onPress: () => null},
                 {text: 'OK', onPress: () => {
                         const teamTitle = item.title;
-                        const teamId = item.idTeam;
-                        this.props.joinTeam(teamTitle, teamId);
-
+                        this.props.joinTeam(teamTitle);
+/*
                         // TODO send data to server
                         sendClientDataToServer(this.props.gameCode,
                                                 this.props.playerName,
                                                 this.props.teamName);
 
                         // TODO get team info from server
-                        const teamInfo = getTeamInfo(this.props.gameCode, teamId);
+                        const teamInfo = getTeamInfo(this.props.gameCode);
                         this.props.storeTeamInfo(teamInfo);
 
                         // TODO get data from server
@@ -100,13 +103,13 @@ class TSScreen extends React.Component {
 
                         const {navigate} = this.props.navigation;
                         //TODO check how to get notification game is ready
-                        if(isGameReady(this.props.gameCode)){
+                        if(false){
                             // True
                             navigate('GameScreen');
                         } else {
                             // False
                             navigate('GameNotStartedScreen');
-                        }
+                        }*/
                     }
                 }
             ],
@@ -125,6 +128,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) =>{
     return {
+        fetchTeams: () => dispatch(fetchTeams()),
         joinTeam: (team) => dispatch(joinTeam(team)),
         storeTeamInfo: (teamInfo) => dispatch(storeTeamInfo(teamInfo)),
         storeServerData: (gameData) => dispatch(storeServerData(gameData)),

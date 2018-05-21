@@ -162,7 +162,6 @@ export const onConfirmRiddleSolving = ()=>{
 export const decrementTeamLive = () => {
     if(store.getState().gameDataReducer.teamInfo.lives === 1){
         store.dispatch(onCloseModal());
-        console.log(store.getState().gameDataReducer.modalVisible)
         //TODO navigate to a GAME OVER screen then to the last beacon
         const nextBeacon = getNextBeacon2(store.getState().gameDataReducer.gameCode,
             store.getState().gameDataReducer.teamName);

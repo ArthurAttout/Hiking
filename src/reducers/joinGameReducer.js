@@ -1,6 +1,7 @@
 import {
     SUBMIT, JOIN_TEAM, TOGGLE_GAME_READY, SET_GAME_CODE, SET_PLAYER_NAME,
-    FETCH_PLAYER_STATUS, PLAYER_STATUS_FETCHED, FETCH_TEAMS
+    FETCH_PLAYER_STATUS, PLAYER_STATUS_FETCHED, FETCH_TEAMS,FETCHING_TEAMS,
+    TEAMS_FETCHED,ERROR_WITH_INPUT
 } from '../actions/actionsJoinGame';
 
 let dataState = {
@@ -34,7 +35,6 @@ export default function joinGameReducer (state = dataState, action) {
             return {
                 ...state,
                 teamName:action.teamName,
-                teamId: action.teamId
             };
         case TOGGLE_GAME_READY:
             return {
@@ -69,6 +69,29 @@ export default function joinGameReducer (state = dataState, action) {
             return{
                 ...state,
                 teamsList: action.teamsList
+            };
+
+        case FETCHING_TEAMS:
+            return{
+                ...state,
+                showProgressStatusTeams: true,
+            };
+
+        case ERROR_WITH_INPUT:
+            return{
+                ...state,
+                showProgressStatus: false,
+            };
+
+        case TEAMS_FETCHED:
+            return{
+                ...state,
+                teamsList : action.teams.map((team) => {
+                    return{
+                        ...team,
+                        title: team.name,
+                    }
+                })
             };
         default:
             return state;

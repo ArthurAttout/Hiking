@@ -2,6 +2,8 @@ import React from 'react';
 import {AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableOpacity, BackHandler, ToastAndroid} from 'react-native';
 import { connect } from "react-redux";
 import {COLORS} from "../utils/constants";
+import FCM, {FCMEvent} from "react-native-fcm";
+
 
 class GNSScreen extends React.Component {
     static navigationOptions = {
@@ -12,6 +14,12 @@ class GNSScreen extends React.Component {
 
     componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+        FCM.on(FCMEvent.Notification, notif => {
+            if(notif['startGameNow']){ //Expected notification
+                const { navigate } = this.props.navigation;
+                navigate("GameScreen");
+            }
+        });
     }
 
     componentWillUnmount() {
@@ -60,16 +68,8 @@ class GNSScreen extends React.Component {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        gameCode: state.joinGameReducer.gameCode,
-        playerName: state.joinGameReducer.playerName,
-        teamName: state.joinGameReducer.teamName
-    }
-};
-
 //Connect everything
-export default GameNotStartedScreen = connect(mapStateToProps)(GNSScreen);
+export default GNSScreen;
 
 const styles = StyleSheet.create({
     container: {

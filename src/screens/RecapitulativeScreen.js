@@ -114,33 +114,32 @@ class RecapitulativeScreen extends React.Component {
     }
 
     _onConfirm(){
-        let url = "https://hikong.masi-henallux.be:5000/game";
         let params = {
             gameMode:                   this.props.settings.chosenMode.mode,
-            tresholdShrink:             this.standardizeNumber(this.props.settings.shrinkDelay),
+            tresholdShrink:             RecapitulativeScreen.standardizeNumber(this.props.settings.shrinkDelay),
             mapViewEnable:              this.props.settings.viewMapEnabled !== undefined,
             displayDropDistance:        this.props.settings.dropDistanceVisibilityEnabled !== undefined,
-            timerRiddle:                this.standardizeNumber(this.props.settings.timerMaxRiddle),
-            lives:                      this.standardizeNumber(this.props.settings.numberLives),
+            timerRiddle:                RecapitulativeScreen.standardizeNumber(this.props.settings.timerMaxRiddle),
+            lives:                      RecapitulativeScreen.standardizeNumber(this.props.settings.numberLives),
             enableNextBeaconVisibility: this.props.settings.nextBeaconVisibilityEnabled !== undefined,
 
             teams: this.props.teams.map((team) => {
                 return{
-                    name:       this.standardizeText(team.name),
-                    colorHex:   this.standardizeHexColor(team.color),
+                    name:       RecapitulativeScreen.standardizeText(team.name),
+                    colorHex:   RecapitulativeScreen.standardizeHexColor(team.color),
                     iconURL:    null,
                     trip:{
-                        name:               this.standardizeText(team.track.trackName),
+                        name:               RecapitulativeScreen.standardizeText(team.track.trackName),
                         distance:           team.track.totalDistance,
                         heighDifference:    team.track.altitudeDelta,
                         beacons:            team.track.beacons.map((beacon) => {
                             return{
-                                name:       this.standardizeText(beacon.name),
+                                name:       RecapitulativeScreen.standardizeText(beacon.name),
                                 latitude:   beacon.coordinate.latitude,
                                 longitude:  beacon.coordinate.longitude,
-                                iconURL:    this.standardizeText(beacon.imageServerURL),
-                                qrCodeID:   this.standardizeText(beacon.qrCode),
-                                riddle:     this.standardizeRiddle(beacon.riddle)
+                                iconURL:    RecapitulativeScreen.standardizeText(beacon.imageServerURL),
+                                qrCodeID:   RecapitulativeScreen.standardizeText(beacon.qrCode),
+                                riddle:     RecapitulativeScreen.standardizeRiddle(beacon.riddle)
                             }
                         })
                     }
@@ -162,14 +161,14 @@ class RecapitulativeScreen extends React.Component {
             });
     }
 
-    standardizeNumber(input){
+    static standardizeNumber(input){
         return input === undefined ? 0 : input;
     }
 
-    standardizeText(input){
+    static standardizeText(input){
         return input === undefined || input === null || input === '' ? null : input;
     }
-    standardizeRiddle(riddle){
+    static standardizeRiddle(riddle){
         return riddle === undefined ?
             {
                 statement : "",
@@ -181,7 +180,7 @@ class RecapitulativeScreen extends React.Component {
                 answer: riddle.answer,
             }
     }
-    standardizeHexColor(input){
+    static standardizeHexColor(input){
         return input === "" || input === undefined || input === null ? "#ffffff" : input;
     }
 }

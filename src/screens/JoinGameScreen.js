@@ -89,7 +89,7 @@ function mapDispatchToProps(dispatch, own) {
         setGameCode: (value) => dispatch(setGameCode(value)),
         setPlayerName: (value) => dispatch(setPlayerName(value)),
     }
-};
+}
 
 //Connect everything
 export default JoinGameScreen = connect(mapStateToProps, mapDispatchToProps)(JGScreen);

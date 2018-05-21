@@ -79,7 +79,7 @@ export function isCodePlayer(gameCode) {
 }
 
 export function isGameReady(gameCode) {
-    if(gameCode.toLowerCase() === ("ABCD").toLowerCase()) {
+    if(gameCode.toLowerCase() === ("ABCDE").toLowerCase()) {
         return false;
     } else {
         return true;
