@@ -27,7 +27,6 @@ class GScreen extends React.Component {
 
     constructor(props) {
         super(props);
-
         this.renderBottomNavigation = this.renderBottomNavigation.bind(this);
         this.renderMainView = this.renderMainView.bind(this);
     }

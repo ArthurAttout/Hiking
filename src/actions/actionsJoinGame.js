@@ -1,7 +1,7 @@
 import {navigatorRef} from "../../App";
 import {NavigationActions} from 'react-navigation';
 import store from '../config/store'
-import {isCodePlayer} from "../config/FakeServer";
+import {getGameTeams, isCodePlayer} from "../config/FakeServer";
 
 export const SUBMIT = 'SUBMIT';
 export const SET_PLAYER_NAME= 'SET_PLAYER_NAME';
@@ -11,6 +11,7 @@ export const FETCH_PLAYER_STATUS = 'FETCH_PLAYER_STATUS';
 export const INPUT_CODE = 'INPUT_CODE';
 export const JOIN_TEAM = 'JOIN_TEAM';
 export const TOGGLE_GAME_READY = 'TOGGLE_GAME_READY';
+export const FETCH_TEAMS = 'FETCH_TEAMS';
 
 export const submit = (navigator) =>{
     return dispatch => {
@@ -31,6 +32,11 @@ export const submit = (navigator) =>{
             .catch((error) => {
                 console.error("Error  : " + error);
             });*/
+
+        // TODO get team list from server
+        const teamsList = getGameTeams(store.getState().joinGameReducer.gameCode);
+        store.dispatch(fetchTeams(teamsList));
+
         setTimeout(function(){
             dispatch(playerStatusFetched(true));
             if(isCodePlayer(store.getState().joinGameReducer.gameCode)){
@@ -75,6 +81,14 @@ export const setGameCode = (value) => {
     }
 };
 
+export function fetchTeams(teamsList){
+    return {
+        type: FETCH_TEAMS,
+        teamsList: teamsList
+    }
+
+}
+
 export function getGameModes(){
     return (dispatch) => {
         setTimeout(() => {
@@ -105,10 +119,11 @@ export const inputCode = (gameCode,playerName) =>{
     }
 };
 
-export const joinTeam = (team) =>{
+export const joinTeam = (team, teamId) =>{
     return{
         type:JOIN_TEAM,
-        teamName:team
+        teamName:team,
+        teamId: teamId
     }
 };
 

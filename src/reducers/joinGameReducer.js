@@ -1,13 +1,24 @@
-import { SUBMIT, JOIN_TEAM, TOGGLE_GAME_READY,SET_GAME_CODE,SET_PLAYER_NAME,
-    FETCH_PLAYER_STATUS,PLAYER_STATUS_FETCHED} from '../actions/actionsJoinGame';
+import {
+    SUBMIT, JOIN_TEAM, TOGGLE_GAME_READY, SET_GAME_CODE, SET_PLAYER_NAME,
+    FETCH_PLAYER_STATUS, PLAYER_STATUS_FETCHED, FETCH_TEAMS
+} from '../actions/actionsJoinGame';
 
 let dataState = {
     gameReady: false,
     gameCode: 'ABCD',
     playerName: 'JohnDoe',
     teamName: 'AtBoLo',
+    teamId: 0,
     showProgressStatus: false,
     isGameMaster: false,
+    teamsList: [
+        {
+            title: "",
+            ColorHex: "#7d7682",
+            iconUrl: null,
+            idTeam: null,
+        },
+        ]
 };
 
 export default function joinGameReducer (state = dataState, action) {
@@ -22,7 +33,8 @@ export default function joinGameReducer (state = dataState, action) {
         case JOIN_TEAM:
             return {
                 ...state,
-                teamName:action.teamName
+                teamName:action.teamName,
+                teamId: action.teamId
             };
         case TOGGLE_GAME_READY:
             return {
@@ -54,6 +66,11 @@ export default function joinGameReducer (state = dataState, action) {
                 ...state,
                 playerStatus: action.status,
                 showProgressStatus: false,
+            };
+        case FETCH_TEAMS:
+            return{
+                ...state,
+                teamsList: action.teamsList
             };
         default:
             return state;

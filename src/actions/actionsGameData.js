@@ -16,6 +16,15 @@ export const SET_CURRENT_ANSWER = 'SET_CURRENT_ANSWER';
 export const CONFIRM_RIDDLE_SOLVING = 'CONFIRM_RIDDLE_SOLVING';
 export const RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED = 'RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED';
 export const STORE_END_GAME_STATS = 'STORE_END_GAME_STATS';
+export const STORE_TEAM_INFO = 'STORE_TEAM_INFO';
+
+
+export const storeTeamInfo = (teamInfo) => {
+    return{
+        type: STORE_TEAM_INFO,
+        teamInfo: teamInfo
+    }
+};
 
 // TODO view what to store
 export const storeServerData = (gameData) =>{
@@ -64,7 +73,6 @@ export const storeCurrentLocation = (currentLocation) =>{
 };
 
 export const checkPlayerInsideBeacon = () => {
-    // TODO test is current position is within 5m of the nextBeacon
     if(calculateDistance(store.getState().gameDataReducer.currentLocation,
             store.getState().gameDataReducer.nextBeacon) < 5){
         return{
@@ -80,7 +88,6 @@ export const checkPlayerInsideBeacon = () => {
 };
 
 export const storeBearing = () => {
-    //TODO manage arrow directions
     var bearing = 0;
     const absoluteBearing = calculateBearing(
         store.getState().gameDataReducer.currentLocation,
@@ -92,8 +99,6 @@ export const storeBearing = () => {
     {
         // NB: 45 degrees less because arrow is already tilted at 45 degrees
         bearing = ((store.getState().gameDataReducer.currentLocation.heading - absoluteBearing) * -1) - 45;
-        console.log(store.getState().gameDataReducer.currentLocation.heading);
-        console.log(bearing);
     } else {
         console.log("Current location heading not valid, using absoluteBearing");
         bearing = absoluteBearing;
@@ -127,13 +132,12 @@ export const onRequestModal = () => {
 export const onConfirmRiddleSolving = ()=>{
     console.log(store.getState().gameDataReducer.currentAnswer);
     if(store.getState().gameDataReducer.currentAnswer === store.getState().gameDataReducer.nextBeacon.riddleAnswer) {
+        // TODO replace with real server
         const nextBeacon = getNextBeacon2(store.getState().gameDataReducer.gameCode,
             store.getState().gameDataReducer.teamName);
+
         store.dispatch(storeNextBeacon(nextBeacon));
-        // TODO manage changing screen when correct answer given
-        navigatorRef.dispatch(NavigationActions.navigate({
-            routeName:"GameScreen"
-        }));
+        navigatorRef.dispatch(NavigationActions.navigate({routeName:"GameScreen"}));
         return {
             type: CONFIRM_RIDDLE_SOLVING,
             correctAnswer: true,
@@ -141,8 +145,6 @@ export const onConfirmRiddleSolving = ()=>{
             currentAnswer: ''
         }
     } else {
-        // TODO display error message
-
         return {
             type: CONFIRM_RIDDLE_SOLVING,
             correctAnswer: false,

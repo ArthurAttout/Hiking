@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableNativeFeedback } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from "react-redux";
 import {COLORS} from "../utils/constants";
 import MapView, { Marker } from 'react-native-maps';
@@ -24,10 +24,19 @@ class BScreen extends React.Component {
                     barStyle="light-content"
                 />
                 <View style={styles.body}>
-                    <Text style={styles.titleText}>Congrats!</Text>
-                    <Image
-                        style={{height: '50%', resizeMode: 'contain'}}
-                        source={require('../images/logo_512.png')}/>
+                    <Text style={styles.titleText}>{"Congrats\n" + this.props.teamInfo.name + "!"}</Text>
+                    {(this.props.teamInfo.iconUrl === null) ?
+                        <Icon.Button name="circle"
+                                     size={230}
+                                     color={this.props.teamInfo.ColorHex}
+                                     backgroundColor='transparent'
+                                     style={styles.iconStyle}/>
+                        :
+                        <Image
+                            resizeMode={'contain'}
+                            style={{width: 230, height: 230}}
+                            source={{uri: this.props.teamInfo.iconUrl }}/>
+                    }
                     <View style={styles.resultsView}>
                         <View style={styles.resultsPrompts}>
                             <Text style={styles.resultsPromptsText}>Time :</Text>
@@ -60,6 +69,7 @@ class BScreen extends React.Component {
 
 const mapStateToProps = state => {
     return {
+        teamInfo: state.gameDataReducer.teamInfo,
         gameStats: state.gameDataReducer.gameStats,
     }
 };
@@ -92,7 +102,7 @@ const styles = StyleSheet.create({
     bottomText:{
         color: 'white',
         fontSize: 20,
-        margin: 5
+        margin: 5,
     },
     body: {
         flex: 1,
@@ -113,12 +123,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     titleText: {
-        fontSize: 40,
+        fontSize: 30,
         fontWeight: 'bold',
-        margin: 10
+        margin: 10,
+        textAlign: 'center',
     },
     resultsPrompts: {
         flex: 2,
+        //alignContent: 'space-around',
         justifyContent: 'space-around',
     },
     results: {
@@ -136,6 +148,11 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: '#000000',
         fontWeight: 'bold'
+    },
+    iconStyle:{
+        backgroundColor:'transparent',
+        justifyContent:'center',
+        alignItems: 'center'
     },
 });
 

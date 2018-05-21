@@ -1,11 +1,21 @@
 import {
     STORE_SERVER_DATA, STORE_NEXT_BEACON, STORE_CURRENT_LOCATION, SET_MAP_VIEW_VISIBLE,
     STORE_BEARING, PLAYER_INSIDE_BEACON, RIDDLE_SOLVING_CLOSE_MODAL, RIDDLE_SOLVING_REQUEST_MODAL, SET_CURRENT_ANSWER,
-    CONFIRM_RIDDLE_SOLVING, storeNextBeacon, RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED, STORE_END_GAME_STATS
+    CONFIRM_RIDDLE_SOLVING, storeNextBeacon, RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED, STORE_END_GAME_STATS, STORE_TEAM_INFO
 } from '../actions/actionsGameData';
 import {getNextBeacon2} from "../config/FakeServer";
 
 let dataState = {
+    teamInfo: {
+        name: "",
+        ColorHex: "#000000",
+        Game_idGame: 0,
+        Checkpoint: 0,
+        iconUrl: null,
+        score: 0,
+        lives: 0,
+        idTeam: 0
+    },
     gameData: {
         gameMode: 1,
         shrinkSpeed: 0,
@@ -154,6 +164,11 @@ export default function gameDataReducer (state = dataState, action) {
                     totalTeams: action.totalTeams,
                 }
             };
+        case STORE_TEAM_INFO:
+            return{
+                ...state,
+                teamInfo: action.teamInfo
+            }
         default:
             return state;
     }

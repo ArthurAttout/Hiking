@@ -10,20 +10,64 @@ export function getGameModes(){
 
 export function getGameTeams(gameCode){
     return [
-        {"title":"Team 1"},
-        {"title":"Team 2"},
-        {"title":"Team 3"},
-        {"title":"Team 4"},
-        {"title":"Team 5"},
-        {"title":"Team 6"},
-        {"title":"Team 7"},
-        {"title":"Team 8"},
-        {"title":"Team 9"},
-        {"title":"Team 10"},
-        {"title":"Team 11"},
-        {"title":"Team 12"}
+        {
+            "title":"Team AtBoLo",
+            "ColorHex": "#7d7682",
+            "iconUrl": "https://www.longree.be/data/teamAtBoLo.png",
+            "idTeam": 0
+        },
+        {
+            "title":"Team L",
+            "ColorHex": "#ff0000",
+            "iconUrl": null,
+            "idTeam": 1
+        },
+        {
+            "title":"Team G",
+            "ColorHex": "#ffa500",
+            "iconUrl": null,
+            "idTeam": 2
+        },
+        {
+            "title":"Team B",
+            "ColorHex": "#ffff00",
+            "iconUrl": null,
+            "idTeam": 3
+        },
+        {
+            "title":"Team T",
+            "ColorHex": "#008000",
+            "iconUrl": null,
+            "idTeam": 4
+        },
+        {
+            "title":"Team Q",
+            "ColorHex": "#0000ff",
+            "iconUrl": null,
+            "idTeam": 5
+        },
+        {
+            "title":"Team +",
+            "ColorHex": "#800080",
+            "iconUrl": null,
+            "idTeam": 5
+        },
     ]
 }
+
+export function getTeamInfo(gameCode, teamId){
+    return {
+        "name": "Team AtBoLo",
+        "ColorHex": "#7d7682",
+        "Game_idGame": 1,
+        "Checkpoint": 7,
+        //"iconUrl": "https://www.longree.be/data/teamAtBoLo.png",
+        "iconUrl": null,
+        "score": 0,
+        "lives": 8,
+        "idTeam": 1
+    }
+};
 
 export function isCodePlayer(gameCode) {
     // TODO replace with contact to server

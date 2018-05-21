@@ -4,12 +4,14 @@ import {
     FlatList, StatusBar
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {getGameTeams} from "../config/FakeServer";
 import {connect} from "react-redux";
 import {joinTeam} from "../actions/actionsJoinGame";
-import {storeServerData, storeNextBeacon} from "../actions/actionsGameData";
+import {storeServerData, storeNextBeacon, storeTeamInfo} from "../actions/actionsGameData";
 import {COLORS} from "../utils/constants";
-import {isGameReady, getDataFromServer, getNextBeacon1, sendClientDataToServer} from "../config/FakeServer";
+import {
+    isGameReady, getDataFromServer, getNextBeacon1, sendClientDataToServer,
+    getTeamInfo
+} from "../config/FakeServer";
 
 // TODO disable the back button
 // TODO automatically remove keyboard if player left it
@@ -29,10 +31,6 @@ class TSScreen extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            teamName: '',
-            teams: getGameTeams()
-        };
         this._onTeamPress = this._onTeamPress.bind(this);
     }
 
@@ -45,7 +43,7 @@ class TSScreen extends React.Component {
                     barStyle="light-content"
                 />
                 <FlatList
-                    data={this.state.teams}
+                    data={this.props.teamsList}
                     style={styles.teamsList}
                     keyExtractor={item => item.title}
                     renderItem={({ item }) => (
@@ -56,7 +54,7 @@ class TSScreen extends React.Component {
                                 <View style={styles.teamsListView}>
                                     <Icon.Button name="circle"
                                                  size={50}
-                                                 color="#a4a4a4"
+                                                 color={item.ColorHex}
                                                  backgroundColor='transparent'
                                                  style={styles.iconStyle}/>
                                     <Text style={styles.teamsListText}>
@@ -78,12 +76,17 @@ class TSScreen extends React.Component {
                 {text: 'Cancel', onPress: () => null},
                 {text: 'OK', onPress: () => {
                         const teamTitle = item.title;
-                        this.props.joinTeam(teamTitle);
+                        const teamId = item.idTeam;
+                        this.props.joinTeam(teamTitle, teamId);
 
                         // TODO send data to server
                         sendClientDataToServer(this.props.gameCode,
                                                 this.props.playerName,
                                                 this.props.teamName);
+
+                        // TODO get team info from server
+                        const teamInfo = getTeamInfo(this.props.gameCode, teamId);
+                        this.props.storeTeamInfo(teamInfo);
 
                         // TODO get data from server
                         const gameData = getDataFromServer(this.props.gameCode);
@@ -116,12 +119,14 @@ class TSScreen extends React.Component {
 const mapStateToProps = (state) => {
     return {
         gameCode: state.joinGameReducer.gameCode,
+        teamsList: state.joinGameReducer.teamsList
     }
 };
 
 const mapDispatchToProps = (dispatch) =>{
     return {
         joinTeam: (team) => dispatch(joinTeam(team)),
+        storeTeamInfo: (teamInfo) => dispatch(storeTeamInfo(teamInfo)),
         storeServerData: (gameData) => dispatch(storeServerData(gameData)),
         storeNextBeacon: (nextBeacon) => dispatch(storeNextBeacon(nextBeacon))
     }
