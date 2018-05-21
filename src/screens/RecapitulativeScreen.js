@@ -115,11 +115,46 @@ class RecapitulativeScreen extends React.Component {
 
     _onConfirm(){
         let url = "https://hikong.masi-henallux.be:5000/game";
-        let params = {};
-        let request = prepareRequest(params,"POST");
+        let params = {
+            gameMode:                   this.props.settings.chosenMode.mode,
+            tresholdShrink:             this.standardizeNumber(this.props.settings.shrinkDelay),
+            mapViewEnable:              this.props.settings.viewMapEnabled !== undefined,
+            displayDropDistance:        this.props.settings.dropDistanceVisibilityEnabled !== undefined,
+            timerRiddle:                this.standardizeNumber(this.props.settings.timerMaxRiddle),
+            lives:                      this.standardizeNumber(this.props.settings.numberLives),
+            enableNextBeaconVisibility: this.props.settings.nextBeaconVisibilityEnabled !== undefined,
 
+            teams: this.props.teams.map((team) => {
+                return{
+                    name:       this.standardizeText(team.name),
+                    colorHex:   this.standardizeHexColor(team.color),
+                    iconURL:    null,
+                    trip:{
+                        name:               this.standardizeText(team.track.trackName),
+                        distance:           team.track.totalDistance,
+                        heighDifference:    team.track.altitudeDelta,
+                        beacons:            team.track.beacons.map((beacon) => {
+                            return{
+                                name:       this.standardizeText(beacon.name),
+                                latitude:   beacon.coordinate.latitude,
+                                longitude:  beacon.coordinate.longitude,
+                                iconURL:    this.standardizeText(beacon.imageServerURL),
+                                qrCodeID:   this.standardizeText(beacon.qrCode),
+                                riddle:     this.standardizeRiddle(beacon.riddle)
+                            }
+                        })
+                    }
+
+                }
+            })
+        };
+        let request = prepareRequest(params,"POST");
+        console.log(request);
         fetch('https://hikong.masi-henallux.be:5000/game',request)
-            .then ((response) => response.json())
+            .then ((response) => {
+                console.log(response);
+                return response.json()
+            })
             .then ((json) => {
                 const { navigate } = this.props.navigation;
                 navigate('GameCreatedScreen',json);
@@ -127,6 +162,29 @@ class RecapitulativeScreen extends React.Component {
             .catch((error) => {
                 console.error("Error  : " + error);
             });
+    }
+
+    standardizeNumber(input){
+        return input === undefined ? 0 : input;
+    }
+
+    standardizeText(input){
+        return input === undefined || input === null || input === '' ? null : input;
+    }
+    standardizeRiddle(riddle){
+        return riddle === undefined ?
+            {
+                statement : "",
+                answer: "",
+            }
+            :
+            {
+                statement: riddle.statement,
+                answer: riddle.answer,
+            }
+    }
+    standardizeHexColor(input){
+        return input === "" || input === undefined || input === null ? "#ffffff" : input;
     }
 }
 

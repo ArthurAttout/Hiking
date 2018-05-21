@@ -120,7 +120,7 @@ export default class Menu extends React.Component{
                 background={TouchableNativeFeedback.Ripple('blue')}
                 delayPressIn={0}>Finish</IconFoundation.Button>)
             :
-            (<View/>)
+            (<View/>);
 
         return (
             <ScrollView style={styles.container}>
@@ -162,7 +162,7 @@ export default class Menu extends React.Component{
                         onSubmitEditing={() => {this.props.onSubmitTrackName(section)}}
                         underlineColorAndroid='transparent'
                         placeholderTextColor="#FFFFFF"
-                        placeholder={section.trackName}/>
+                        placeholder={section.isNameEditable === true ? "" : section.trackName}/>
 
 
                         <IconAwesome
@@ -217,7 +217,7 @@ export default class Menu extends React.Component{
                         editable={section.isNameEditable === true}
                         onSubmitEditing={() => {this.props.onSubmitTrackName(section)}}
                         underlineColorAndroid='transparent'
-                        placeholder={section.trackName}
+                        placeholder={section.isNameEditable === true ? "" : section.trackName}
                         placeholderTextColor="#FFFFFF"/>
 
 
@@ -299,7 +299,7 @@ export default class Menu extends React.Component{
                         delayPressIn={0}/>
                 </View>
                 <FlatList
-                    data={section.beacons}
+                    data={section.beacons.filter((item) => item.id !== this.props.beaconFinishLine.id)}
                     style={styles.flatList}
                     keyExtractor={item => JSON.stringify(item.id)}
                     renderItem={({ item,index }) => (
@@ -344,6 +344,7 @@ export default class Menu extends React.Component{
                        setCurrentBeaconName={this.props.setCurrentBeaconName}
                        onConfirmCustomizeBeacon={this.props.onConfirmCustomizeBeacon}
                        section={section}
+                       sendImageToServer={this.props.sendImageToServer}
                        onCloseModal={this.props.onCloseModal}/>);
 
             case GAME_MODES.RIDDLES:
@@ -355,6 +356,7 @@ export default class Menu extends React.Component{
                         showModalRandomRiddle={this.props.showModalRandomRiddle}
                         showModalCustomRiddle={this.props.showModalCustomRiddle}
                         addRandomRiddle={this.props.addRandomRiddle}
+                        sendImageToServer={this.props.sendImageToServer}
                         addCustomRiddle={this.props.addCustomRiddle}
                         submitRandomRiddle={this.props.submitRandomRiddle}
                         submitCustomRiddle={this.props.submitCustomRiddle}
@@ -373,6 +375,7 @@ export default class Menu extends React.Component{
                         showModalBeaconID={this.props.showModalBeaconID}
                         closeModalBeaconID={this.props.closeModalBeaconID}
                         modalBeaconIDVisible={this.props.modalBeaconIDVisible}
+                        sendImageToServer={this.props.sendImageToServer}
                         setCurrentBeaconQRCode={this.props.setCurrentBeaconQRCode}
                         submitCustomRiddle={this.props.submitCustomRiddle}
                         showModalCustomRiddle={this.props.showModalCustomRiddle}

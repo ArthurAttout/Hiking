@@ -9,7 +9,7 @@ import Menu from './GameMasterSideMenu'
 import MapView,{Marker} from 'react-native-maps';
 import SideMenu from 'react-native-side-menu'
 import {changeSideMenuOpened,forceRefresh,setContinuousRefresh,updatePositions,
-        setIntervalID} from "../actions/actionsGameMasterScreen";
+        showBeaconsOfTeam,startGame,onRequestModal} from "../actions/actionsGameMasterScreen";
 
 class Screen extends React.Component {
 
@@ -33,7 +33,13 @@ class Screen extends React.Component {
     }
 
     render() {
-        const menu = <Menu/>;
+        const menu =
+            <Menu
+                teams={this.props.teams}
+                startGame={this.props.startGame}
+                onRequestModal={this.props.onRequestModal}
+                showStartButton={this.props.showStartButton}
+                />;
 
         return (
             <SideMenu
@@ -68,6 +74,9 @@ const mapStateToProps = (state, own) => {
         continuousRefresh: state.gameMasterScreenReducer.continuousRefresh,
         teams: state.gameMasterScreenReducer.teams,
         intervalID: state.gameMasterScreenReducer.intervalID,
+        showStartButton: state.gameMasterScreenReducer.showStartButton,
+        gameStarted: state.gameMasterScreenReducer.gameStarted,
+
     }
 };
 
@@ -79,6 +88,9 @@ function mapDispatchToProps(dispatch,own) {
         updatePositions:() => dispatch(updatePositions()),
         setIntervalID:(id) => dispatch(setIntervalID(id)),
         setContinuousRefresh: () => dispatch(setContinuousRefresh()),
+        showBeaconsOfTeam:(team) => dispatch(showBeaconsOfTeam()),
+        startGame:() => dispatch(startGame()),
+        onRequestModal:(team) => dispatch(onRequestModal(team)),
     }
 }
 

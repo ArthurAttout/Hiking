@@ -1,5 +1,5 @@
 import {
-    DRAG_BEACON, SETUP_INITIAL_MAP, ADD_NEW_BEACON, TOGGLE_TRACKING,
+    DRAG_BEACON, SETUP_INITIAL_MAP, ADD_NEW_BEACON, TOGGLE_TRACKING,DRAG_FINISH_LINE,
     TOUCH_BEACON,CENTER_REGION_CHANGED, CLEAR_PATH,CALCULATING_PATH,DONE_CALCULATING_PATH
 } from "../actions/actionsCreateGameMap";
 
@@ -7,7 +7,7 @@ import {FOCUS_ON_BEACON,SUBMIT_TRACK_NAME,TRACK_NAME_CHANGED,EDIT_TRACK_NAME,CAN
     EDIT_TRACK,CLEAR_BEACONS,DELETE_TRACK,ADD_NEW_TRACK,CLOSE_MODAL,REQUEST_MODAL,SET_IMAGE_PATH,SET_CURRENT_BEACON_NAME,
     SHOW_MODAL_ADD_CUSTOM_RIDDLE,SHOW_MODAL_ADD_RANDOM_RIDDLE,CLOSE_MODAL_ADD_CUSTOM_RIDDLE,CLOSE_MODAL_ADD_RANDOM_RIDDLE,
     SET_CURRENT_BEACON_RIDDLE_STATEMENT,SET_CURRENT_BEACON_RIDDLE_ANSWER,RANDOM_RIDDLE_LOADED,RANDOM_RIDDLE_LOADING,
-    SHOW_QR_CODE_PICKER,CLOSE_QR_CODE_PICKER,SET_CURRENT_BEACON_QR_CODE,SHOW_MODAL_BEACON_ID,CLOSE_MODAL_BEACON_ID
+    SHOW_QR_CODE_PICKER,CLOSE_QR_CODE_PICKER,SET_CURRENT_BEACON_QR_CODE,SHOW_MODAL_BEACON_ID,CLOSE_MODAL_BEACON_ID,RECEIVED_UPLOAD_URL
 } from '../actions/actionsCreateGameMapDrawer'
 
 import UUIDGenerator from 'react-native-uuid-generator';
@@ -28,6 +28,14 @@ let dataState = {
     modalBeaconIDVisible: false,
     modalVisible:false,
     userCanFinish: false,
+    beaconFinishLine:{
+        coordinate:{
+            latitude:  50.223777,
+            longitude: 5.335017,
+            latitudeDelta: 0.015,
+            longitudeDelta: 0.0121,
+        }
+    },
     currentCustomizingBeacon: {
         name:undefined,
         imagePath:undefined,
@@ -46,6 +54,10 @@ export default function createGameMapReducer(state = dataState, action){
             let generatedUUID = UUIDGenerator.getRandomUUID();
             return {
                 ...state,
+                beaconFinishLine:{
+                    ...state.beaconFinishLine,
+                    id : UUIDGenerator.getRandomUUID(),
+                },
                 currentTrack: {
                     ...state.currentTrack,
                     id:generatedUUID,
@@ -70,6 +82,18 @@ export default function createGameMapReducer(state = dataState, action){
                     longitudeDelta: action.centerLongitudeDelta,
                 }
             };
+
+        case SUBMIT_TRACK_NAME:
+            return{
+                ...state,
+                tracks: state.tracks.map((item) => {
+                    return{
+                        ...item,
+                        isNameEditable: false,
+                    }
+                })
+            };
+
 
         case ADD_NEW_BEACON:
             if(state.isTrackingMode || state.currentTrack === undefined){
@@ -144,7 +168,7 @@ export default function createGameMapReducer(state = dataState, action){
                     }
                 }
 
-                if(newState.currentTrack.path.length === newState.currentTrack.beacons.length){ //The user has linked all beacons
+                if(newState.currentTrack.path.length === newState.currentTrack.beacons.length + 1){ //The user has linked all beacons and the finish line
                     return{
                         ...newState,
                         confirmLinkedBeacons:true
@@ -154,8 +178,50 @@ export default function createGameMapReducer(state = dataState, action){
             }
             return state;
 
-        case DRAG_BEACON:
+        case DRAG_FINISH_LINE:
+            console.log("in");
+            let newBeaconFinish = {
+                ...state.beaconFinishLine,
+                coordinate:{
+                    latitude: action.coord.latitude,
+                    longitude: action.coord.longitude,
+                }
+            };
 
+            return {
+                ...state,
+                beaconFinishLine: newBeaconFinish,
+                currentTrack: {
+                    ...state.currentTrack,
+                    beacons: (state.currentTrack.beacons.filter((item) => item.id !== state.beaconFinishLine.id)).concat({
+                        ...newBeaconFinish,
+                        latitude: newBeaconFinish.coordinate.latitude,
+                        longitude: newBeaconFinish.coordinate.longitude,
+                    }),
+                    path: (state.currentTrack.path.filter((item) => item.id !== state.beaconFinishLine.id)).concat({
+                        ...newBeaconFinish,
+                        latitude: newBeaconFinish.coordinate.latitude,
+                        longitude: newBeaconFinish.coordinate.longitude,
+                    }),
+                },
+                tracks: state.tracks.map((track) => {
+                    return{
+                        ...track,
+                        beacons: (track.beacons.filter((item) => item.id !== state.beaconFinishLine.id)).concat({
+                            ...newBeaconFinish,
+                            latitude: newBeaconFinish.coordinate.latitude,
+                            longitude: newBeaconFinish.coordinate.longitude,
+                        }),
+                        path: (track.path.filter((item) => item.id !== state.beaconFinishLine.id)).concat({
+                            ...newBeaconFinish,
+                            latitude: newBeaconFinish.coordinate.latitude,
+                            longitude: newBeaconFinish.coordinate.longitude,
+                        }),
+                    }
+                })
+            };
+
+        case DRAG_BEACON:
             return {
                 ...state,
                 currentTrack:{
@@ -184,42 +250,42 @@ export default function createGameMapReducer(state = dataState, action){
                         return beacon;
                     })},
 
-                    tracks:state.tracks.map((track,index) => {
-                        let newTrack = {
-                            ...track,
-                            beacons : track.beacons.map((beacon,index) => {
-                                if(beacon.id === action.draggedBeacon.id){
-                                    return {
-                                        ...beacon,
-                                        coordinate:{
-                                            ...beacon.coordinate,
-                                            latitude:action.newCoordinates.latitude,
-                                            longitude:action.newCoordinates.longitude
-                                        }
-                                    }
-                                }
-                                return beacon;
-                            }),
-                            path : track.path.map((beacon,index) => {
-                                if(beacon.id === action.draggedBeacon.id){
-                                    return {
-                                        ...beacon,
+                tracks:state.tracks.map((track,index) => {
+                    let newTrack = {
+                        ...track,
+                        beacons : track.beacons.map((beacon,index) => {
+                            if(beacon.id === action.draggedBeacon.id){
+                                return {
+                                    ...beacon,
+                                    coordinate:{
+                                        ...beacon.coordinate,
                                         latitude:action.newCoordinates.latitude,
                                         longitude:action.newCoordinates.longitude
                                     }
                                 }
-                                return beacon;
-                            })
-                        };
-                        if(track.id === state.currentTrack.id){
-                            return {
-                                ...newTrack,
-                                totalDistance: action.totalDistance
                             }
+                            return beacon;
+                        }),
+                        path : track.path.map((beacon,index) => {
+                            if(beacon.id === action.draggedBeacon.id){
+                                return {
+                                    ...beacon,
+                                    latitude:action.newCoordinates.latitude,
+                                    longitude:action.newCoordinates.longitude
+                                }
+                            }
+                            return beacon;
+                        })
+                    };
+                    if(track.id === state.currentTrack.id){
+                        return {
+                            ...newTrack,
+                            totalDistance: action.totalDistance
                         }
-                        return newTrack;
-                    })
-                };
+                    }
+                    return newTrack;
+                })
+            };
 
         case ADD_NEW_TRACK:
             return{
@@ -305,11 +371,11 @@ export default function createGameMapReducer(state = dataState, action){
                 ...state,
                 confirmLinkedBeacons: false,
                 tracks:state.tracks.map((track,index) => {
-                    if(track.id === state.currentTrack.id){
+                    if(track.id === action.track.id){
                         return {
                             ...track,
                             finished: true,
-                            path:state.currentTrack.path,
+                            path: action.track.path,
                             totalDistance: action.totalDistance,
                             altitudeDelta: action.totalDelta
                         }
@@ -407,22 +473,20 @@ export default function createGameMapReducer(state = dataState, action){
                     imagePath:action.path
                 },
                 tracks : state.tracks.map((item,index) => {
-                    if(item.id === state.currentTrack.id){
-                        return {
-                            ...item,
-                            beacons: item.beacons.map((beacon) => {
-                                if(beacon.id === state.currentCustomizingBeacon.id){
-                                    return{
-                                        ...beacon,
-                                        imagePath: action.path,
-                                        name: state.currentCustomizingBeacon.name,
-                                    }
+                    return {
+                        ...item,
+                        beacons: item.beacons.map((beacon) => {
+                            if(beacon.id === state.currentCustomizingBeacon.id){
+                                return{
+                                    ...beacon,
+                                    imagePath: action.path,
+                                    name: state.currentCustomizingBeacon.name,
                                 }
-                                return beacon;
-                            })
-                        }
+                            }
+                            return beacon;
+                        })
                     }
-                    return item;
+
                 }),
                 currentTrack:{
                     ...state.currentTrack,
@@ -480,21 +544,18 @@ export default function createGameMapReducer(state = dataState, action){
                 modalVisible:false,
                 currentCustomizingBeacon: undefined,
                 tracks : state.tracks.map((item,index) => {
-                    if(item.id === state.currentTrack.id){
-                        return {
-                            ...item,
-                            beacons: item.beacons.map((beacon) => {
-                                if(beacon.id === state.currentCustomizingBeacon.id){
-                                    return{
-                                        ...beacon,
-                                        name: state.currentCustomizingBeacon.name,
-                                    }
+                    return {
+                        ...item,
+                        beacons: item.beacons.map((beacon) => {
+                            if(beacon.id === state.currentCustomizingBeacon.id){
+                                return{
+                                    ...beacon,
+                                    name: state.currentCustomizingBeacon.name,
                                 }
-                                return beacon;
-                            })
-                        }
-                    }
-                    return item;
+                            }
+                            return beacon;
+                        })
+                    };
                 }),
                 currentTrack:{
                     ...state.currentTrack,
@@ -511,6 +572,10 @@ export default function createGameMapReducer(state = dataState, action){
             };
 
         case SET_CURRENT_BEACON_NAME:
+            console.log("will set current beacon : ");
+            console.log(state.currentCustomizingBeacon);
+
+            console.log("To name :" + action.name);
             return{
                 ...state,
                 currentCustomizingBeacon:{
@@ -587,6 +652,44 @@ export default function createGameMapReducer(state = dataState, action){
             return{
                 ...state,
                 QRCodePickerVisible: false,
+            };
+
+        case RECEIVED_UPLOAD_URL:
+            return{
+                ...state,
+                currentCustomizingBeacon : {
+                    ...state.currentCustomizingBeacon,
+                    imageServerURL: action.url,
+                },
+                tracks : state.tracks.map((item) => {
+                    if(item.id === state.currentTrack.id){
+                        return {
+                            ...item,
+                            beacons: item.beacons.map((beacon) => {
+                                if(beacon.id === state.currentCustomizingBeacon.id){
+                                    return{
+                                        ...beacon,
+                                        imageServerURL: action.url,
+                                    }
+                                }
+                                return beacon;
+                            })
+                        }
+                    }
+                    return item;
+                }),
+                currentTrack:{
+                    ...state.currentTrack,
+                    beacons:state.currentTrack.beacons.map((beacon) => {
+                        if(beacon.id === state.currentCustomizingBeacon.id){
+                            return{
+                                ...beacon,
+                                imageServerURL: action.url,
+                            }
+                        }
+                        return beacon;
+                    })
+                }
             };
 
         case SET_CURRENT_BEACON_QR_CODE:{

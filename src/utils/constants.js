@@ -13,18 +13,12 @@ export const COLORS = Object.freeze(
     });
 
 export const prepareRequest = (params,method) => {
-    let esc = encodeURIComponent;
-    let body = Object.keys(params)
-        .map(k => esc(k) + '=' + esc(params[k]))
-        .join('&');
 
     return {
         method: method,
         headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Content-Type': 'application/json; charset=UTF-8',
         },
-        credentials: 'include',
-        body: body
+        body: JSON.stringify(params)
     };
 };
