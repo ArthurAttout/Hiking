@@ -18,6 +18,7 @@ export const RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED = 'RIDDLE_SOLVING_SUBMIT_BUTTO
 export const STORE_END_GAME_STATS = 'STORE_END_GAME_STATS';
 export const STORE_TEAM_INFO = 'STORE_TEAM_INFO';
 export const DECREMENT_TEAM_LIVE = 'DECREMENT_TEAM_LIVE';
+export const SHRINK_ZONE = 'SHRINK_ZONE';
 
 
 export const storeTeamInfo = (teamInfo) => {
@@ -39,6 +40,7 @@ export const storeServerData = (gameData) =>{
         displayDropDistance: gameData.displayDropDistance,
         timerRiddle: gameData.timerMaxRiddle,
         lives: gameData.lives,
+        shrinkZone: gameData.shrinkZone
     }
 };
 
@@ -202,6 +204,17 @@ export const storeEndGameStats = (gameStats) => {
         score: gameStats.score,
         position: gameStats.position,
         totalTeams: gameStats.totalTeams,
+    }
+};
+
+export const shrinkZone = () => {
+    console.log("Shrink Zone shrinked from " + store.getState().gameDataReducer.gameData.shrinkZone.radius + "m to "
+    + (store.getState().gameDataReducer.gameData.shrinkZone.radius -
+            store.getState().gameDataReducer.gameData.shrinkSpeed) + "m");
+    return{
+        type: SHRINK_ZONE,
+        shrinkZoneRadius: (store.getState().gameDataReducer.gameData.shrinkZone.radius -
+                            store.getState().gameDataReducer.gameData.shrinkSpeed)
     }
 };
 

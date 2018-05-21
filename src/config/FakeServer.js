@@ -99,6 +99,11 @@ export function getDataFromServer(gameCode) {
             "displayDropDistance": false,
             "lives": 10,
             "timerRiddle": 0,
+            "shrinkZone": {
+                "centerLatitude": 50.229155,
+                "centerLongitude": 5.337019,
+                "radius": 1000
+            }
         }
 }
 

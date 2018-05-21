@@ -2,7 +2,7 @@ import {
     STORE_SERVER_DATA, STORE_NEXT_BEACON, STORE_CURRENT_LOCATION, SET_MAP_VIEW_VISIBLE,
     STORE_BEARING, PLAYER_INSIDE_BEACON, RIDDLE_SOLVING_CLOSE_MODAL, RIDDLE_SOLVING_REQUEST_MODAL, SET_CURRENT_ANSWER,
     CONFIRM_RIDDLE_SOLVING, storeNextBeacon, RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED, STORE_END_GAME_STATS,
-    STORE_TEAM_INFO, DECREMENT_TEAM_LIVE
+    STORE_TEAM_INFO, DECREMENT_TEAM_LIVE, SHRINK_ZONE
 } from '../actions/actionsGameData';
 import {getNextBeacon2} from "../config/FakeServer";
 
@@ -25,6 +25,11 @@ let dataState = {
         displayDropDistance: true,
         timerRiddle: 0,
         lives: 0,
+        shrinkZone: {
+            centerLatitude: 0,
+            centerLongitude: 0,
+            radius: 0
+        }
     },
     nextBeacon: {
         id: 0,
@@ -81,6 +86,7 @@ export default function gameDataReducer (state = dataState, action) {
                     displayDropDistance: action.displayDropDistance,
                     timerRiddle: action.timerMaxRiddle,
                     lives: action.lives,
+                    shrinkZone: action.shrinkZone
                 }
             };
         case STORE_NEXT_BEACON:
@@ -175,6 +181,17 @@ export default function gameDataReducer (state = dataState, action) {
                 teamInfo: {
                     ...state.teamInfo,
                     lives: action.teamLives
+                }
+            };
+        case SHRINK_ZONE:
+            return{
+                ...state,
+                gameData: {
+                    ...state.gameData,
+                    shrinkZone:{
+                        ...state.gameData.shrinkZone,
+                        radius: action.shrinkZoneRadius
+                    }
                 }
             };
         default:

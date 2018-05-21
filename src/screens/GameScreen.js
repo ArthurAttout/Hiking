@@ -4,10 +4,10 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { connect } from "react-redux";
 import {COLORS} from "../utils/constants";
-import MapView, { Marker } from 'react-native-maps'
+import MapView, { Marker, Circle } from 'react-native-maps'
 import {
     setMapViewVisible, storeCurrentLocation, storeNextBeacon, storeBearing,
-    checkPlayerInsideBeacon, storeEndGameStats
+    checkPlayerInsideBeacon, storeEndGameStats, shrinkZone
 } from "../actions/actionsGameData";
 import {getGameStats, getNextBeacon1} from "../config/FakeServer";
 
@@ -108,6 +108,10 @@ class GScreen extends React.Component {
         );
 
         //TODO store whatid
+
+        // TODO replace with 60 seconds (60000) for final version
+        var intervalID = setInterval(() => {this.props.shrinkZone()}, 10000);
+
     }
 
     componentWillUnmount() {
@@ -133,18 +137,9 @@ class GScreen extends React.Component {
         if(!this.props.mapViewVisible){
             // TODO rotate arrow based on next beacon location
             return (
-                /*For testing only
-                <TouchableNativeFeedback
-                    background={TouchableNativeFeedback.Ripple('white')}
-                    onPress={() => {
-                        const { navigate } = this.props.navigation;
-                        navigate('EndGameScreen');
-                    }}
-                >*/
                 <View style={styles.map}>
                     <FontAwesomeIcon style={ {transform: [{ rotate: (this.props.bearing+'deg')}]} } size={200} color={COLORS.Primary} name="location-arrow"/>
                 </View>
-                //</TouchableNativeFeedback>
             );
         } else {
             const beacon = {
@@ -153,6 +148,8 @@ class GScreen extends React.Component {
                 latitudeDelta: 0.0,
                 longitudeDelta: 0.0
             };
+            // TODO replace region with initial region
+            // TODO use onRegionChangeComplete to save how the user changed the map
             return (
                 <MapView
                     style={styles.map}
@@ -166,6 +163,7 @@ class GScreen extends React.Component {
                     }
                     followUserLocation={true}
                     showsMyLocationButton={true}
+                    /*onRegionChangeComplete={(evt) => {this.props.onRegionChange(evt)}}>*/
                 >
                     <Marker
                         coordinate={{
@@ -183,6 +181,16 @@ class GScreen extends React.Component {
                         :
                         <Marker coordinate={beacon}/>
                     }
+                    <Circle
+                        center={{
+                            latitude: this.props.gameData.shrinkZone.centerLatitude,
+                            longitude: this.props.gameData.shrinkZone.centerLongitude
+                        }}
+                        radius={this.props.gameData.shrinkZone.radius}
+                        strokeColor={'red'}
+                        strokeWidth={2}
+                    />
+
                 </MapView>
             );
         }
@@ -247,7 +255,8 @@ function mapDispatchToProps(dispatch, own) {
         storeNextBeacon: (nextBeacon) => dispatch(storeNextBeacon(nextBeacon)),
         storeBearing: () => dispatch(storeBearing()),
         checkPlayerInsideBeacon: () => dispatch(checkPlayerInsideBeacon()),
-        storeEndGameState: (gameStats) => dispatch(storeEndGameStats(gameStats))
+        storeEndGameState: (gameStats) => dispatch(storeEndGameStats(gameStats)),
+        shrinkZone: () => dispatch(shrinkZone())
     }
 }
 
