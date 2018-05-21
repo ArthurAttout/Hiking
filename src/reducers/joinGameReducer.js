@@ -1,7 +1,7 @@
 import {
     SUBMIT, JOIN_TEAM, TOGGLE_GAME_READY, SET_GAME_CODE, SET_PLAYER_NAME,
     FETCH_PLAYER_STATUS, PLAYER_STATUS_FETCHED, FETCH_TEAMS,FETCHING_TEAMS,
-    TEAMS_FETCHED,ERROR_WITH_INPUT
+    TEAMS_FETCHED,ERROR_WITH_INPUT, SET_TEAM_NAME
 } from '../actions/actionsJoinGame';
 
 let dataState = {
@@ -45,6 +45,12 @@ export default function joinGameReducer (state = dataState, action) {
             return{
                 ...state,
                 playerName: action.playerName
+            };
+
+        case SET_TEAM_NAME:
+            return{
+                ...state,
+                teamName: action.teamName,
             };
 
         case SET_GAME_CODE:

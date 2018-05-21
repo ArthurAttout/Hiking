@@ -68,8 +68,17 @@ class GNSScreen extends React.Component {
     }
 }
 
+const mapStateToProps = (state, own) => {
+    return {
+        ...own,
+        playerName: state.joinGameReducer.playerName,
+        gameCode: state.joinGameReducer.gameCode,
+        teamName: state.joinGameReducer.teamName,
+    }
+};
+
 //Connect everything
-export default GNSScreen;
+export default GameNotStartedScreen = connect(mapStateToProps)(GNSScreen);
 
 const styles = StyleSheet.create({
     container: {

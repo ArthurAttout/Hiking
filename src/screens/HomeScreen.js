@@ -4,10 +4,6 @@ import { registerKilledListener, registerAppListener } from "../config/firebase/
 import FCM from "react-native-fcm";
 import {COLORS} from '../utils/constants'
 
-//registerKilledListener();
-registerAppListener();
-
-
 export default class HomeScreen extends React.Component {
     static navigationOptions = {
         header: null

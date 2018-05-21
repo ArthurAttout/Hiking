@@ -12,12 +12,20 @@ export const PLAYER_STATUS_FETCHED = 'PLAYER_STATUS_FETCHED';
 export const ERROR_WITH_INPUT= 'ERROR_WITH_INPUT';
 export const SET_GAME_CODE ='SET_GAME_CODE';
 export const FETCH_PLAYER_STATUS = 'FETCH_PLAYER_STATUS';
+export const SET_TEAM_NAME= 'SET_TEAM_NAME';
 export const INPUT_CODE = 'INPUT_CODE';
 export const JOIN_TEAM = 'JOIN_TEAM';
 export const TOGGLE_GAME_READY = 'TOGGLE_GAME_READY';
 export const FETCHING_TEAMS = 'FETCHING_TEAMS';
 export const TEAMS_FETCHED = 'TEAMS_FETCHED';
 export const FETCH_TEAMS = 'FETCH_TEAMS';
+
+export const setTeamName = (teamName) => {
+    return{
+        type: SET_TEAM_NAME,
+        teamName: teamName,
+    }
+};
 
 export const submit = () =>{
     return dispatch => {
@@ -45,7 +53,7 @@ export const submit = () =>{
                 {
                     if(json.admin){
                         navigatorRef.dispatch(NavigationActions.navigate({
-                            routeName:"GameMasterScreen"
+                            routeName:"GameMasterScreen",
                         }));
                     }
                     else {
@@ -107,6 +115,7 @@ export const inputCode = (gameCode,playerName) =>{
 
 export const joinTeam = (teamName) =>{
     return (dispatch) => {
+        dispatch(setTeamName(teamName));
         FCM.getFCMToken().then((token) => {
             console.log(token);
             let params = {
@@ -123,7 +132,6 @@ export const joinTeam = (teamName) =>{
                 .then ((response) => {
                     console.log(response);
                     if(response.ok){
-                        console.log("To me it was OKK");
                         return response.json()
                     }
                     else {
