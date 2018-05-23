@@ -4,10 +4,12 @@ import {
     TEAMS_FETCHED,ERROR_WITH_INPUT, SET_TEAM_NAME
 } from '../actions/actionsJoinGame';
 
+import {ToastAndroid} from 'react-native'
+
 let dataState = {
     gameReady: false,
-    gameCode: 'GM',
-    playerName: 'JohnDoe',
+    gameCode: '',
+    playerName: '',
     teamName: 'AtBoLo',
     teamId: 0,
     showProgressStatus: false,
@@ -84,6 +86,7 @@ export default function joinGameReducer (state = dataState, action) {
             };
 
         case ERROR_WITH_INPUT:
+            ToastAndroid.show('This game does not seem to exist ...',ToastAndroid.LONG);
             return{
                 ...state,
                 showProgressStatus: false,

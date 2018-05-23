@@ -35,6 +35,7 @@ class JGScreen extends React.Component {
                         <TextInput
                             style={styles.textInput}
                             placeholder={'Game code'}
+                            autoCapitalize='characters'
                             id={'gameCode'}
                             value={this.props.gameCode}
                             onChangeText={this.props.setGameCode}
