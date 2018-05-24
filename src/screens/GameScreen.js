@@ -34,6 +34,7 @@ class GScreen extends React.Component {
     componentDidMount() {
         navigator.geolocation.getCurrentPosition(
             (position) => {
+                console.log(position);
                 const currentPosition = {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,

@@ -9,6 +9,9 @@ export const SET_INTERVAL_ID = "SET_INTERVAL_ID";
 export const FETCHED_NEW_POSITIONS= 'FETCHED_NEW_POSITIONS';
 export const REQUEST_MODAL_TEAM = 'REQUEST_MODAL_TEAM';
 export const START_GAME = 'START_GAME';
+export const ERROR_START = 'ERROR_START';
+export const FETCHING_START= 'FETCHING_START';
+export const START_FETCHED = 'START_FETCHED';
 
 export const changeSideMenuOpened = (isOpen) => {
     return{
@@ -73,8 +76,37 @@ export const showBeaconsOfTeam = (team) => {
 };
 
 export const startGame = () => {
+    return dispatch => {
+        let gameCode = store.getState().joinGameReducer.gameCode;
+        fetch("https://hikong.masi-henallux.be:5000/" + gameCode +"/BattleReady")
+            .then((response) => {
+                if(response.ok){
+                    dispatch(startFetched())
+                }
+                else {
+                    dispatch(errorStart("An error has occured, please try again later"));
+                }
+            });
+        dispatch(fetchingStart());
+    }
+};
+
+export const fetchingStart = () => {
     return{
-        type:START_GAME,
+        type: FETCHING_START
+    }
+};
+
+export const startFetched = () => {
+    return{
+        type: START_FETCHED
+    }
+};
+
+export const errorStart = (message) => {
+    return{
+        type: ERROR_START,
+        message: message
     }
 };
 

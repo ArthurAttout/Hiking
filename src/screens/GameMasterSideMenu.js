@@ -1,6 +1,6 @@
 import React from 'react';
 import {COLORS, GAME_MODES} from '../utils/constants'
-import {StyleSheet, ScrollView, TextInput,FlatList,
+import {StyleSheet, ScrollView, TextInput,FlatList,ActivityIndicator,
     View, Image, Text, TouchableNativeFeedback} from 'react-native';
 
 export default class Menu extends React.Component{
@@ -16,7 +16,12 @@ export default class Menu extends React.Component{
                     <Text style={{
                         textAlign:'center'
                     }}>
-                        The game has not started yet ! Touch the button when you're ready
+                        {
+                            this.props.errorMessage === undefined ?
+                                "The game has not started yet ! Touch the button when you're ready"
+                                :
+                                this.props.errorMessage
+                        }
                     </Text>
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('white')}
@@ -31,29 +36,39 @@ export default class Menu extends React.Component{
             )
         }
         else {
-            return(
-                <ScrollView style={styles.container}>
-                    <FlatList
-                        data={this.props.teams}
-                        style={styles.flatList}
-                        keyExtractor={item => JSON.stringify(item.id)}
-                        renderItem={({ item,index }) => (
-                            <View
-                                style={styles.buttonViewStyle}>
-                                <TouchableNativeFeedback
-                                    background={TouchableNativeFeedback.Ripple('white')}
-                                    onPress={() => {this.props.onRequestModal(item)}}
-                                    delayPressIn={0}>
-                                    <View style={styles.nativeFeedbackStyle}>
-                                        <Text style={styles.textStyleTeam}>
-                                            {item.name}
-                                        </Text>
-                                    </View>
-                                </TouchableNativeFeedback>
-                            </View>
-                    )}/>
-                </ScrollView>
-            )
+            if(this.props.showProgressStart){
+                return(
+                    <ScrollView style={styles.container}>
+                        <ActivityIndicator/>
+                    </ScrollView>
+                )
+            }
+            else
+            {
+                return(
+                    <ScrollView style={styles.container}>
+                        <FlatList
+                            data={this.props.teams}
+                            style={styles.flatList}
+                            keyExtractor={item => JSON.stringify(item.id)}
+                            renderItem={({ item,index }) => (
+                                <View
+                                    style={styles.buttonViewStyle}>
+                                    <TouchableNativeFeedback
+                                        background={TouchableNativeFeedback.Ripple('white')}
+                                        onPress={() => {this.props.onRequestModal(item)}}
+                                        delayPressIn={0}>
+                                        <View style={styles.nativeFeedbackStyle}>
+                                            <Text style={styles.textStyleTeam}>
+                                                {item.name}
+                                            </Text>
+                                        </View>
+                                    </TouchableNativeFeedback>
+                                </View>
+                            )}/>
+                    </ScrollView>
+                )
+            }
         }
     }
 }

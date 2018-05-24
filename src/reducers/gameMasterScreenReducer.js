@@ -1,6 +1,7 @@
 import {
     FORCE_REFRESH, SET_CONTINUOUS_REFRESH, CHANGE_GAMEMASTER_SIDE_MENU_OPENED,REQUEST_MODAL_TEAM,
-    FETCHED_NEW_POSITIONS, FETCHING_NEW_POSITIONS, SET_INTERVAL_ID, UPDATE_POSITIONS, START_GAME
+    FETCHED_NEW_POSITIONS, FETCHING_NEW_POSITIONS, SET_INTERVAL_ID, UPDATE_POSITIONS, START_GAME,
+    ERROR_START,FETCHING_START,START_FETCHED
 } from "../actions/actionsGameMasterScreen";
 
 let dataState = {
@@ -75,8 +76,29 @@ export default function gameMasterScreenReducer (state = dataState, action) {
         case REQUEST_MODAL_TEAM:
             return{
                 ...state,
+            };
 
-            }
+        case FETCHING_START:
+            return{
+                ...state,
+                showProgressStart : true,
+                showStartButton: false
+            };
+
+        case START_FETCHED:
+            return {
+                ...state,
+                showProgressStart: false,
+                showStartButton: false,
+            };
+
+        case ERROR_START:
+            return{
+                ...state,
+                errorMessage: action.message,
+                showProgressStart: false,
+                showStartButton: true
+            };
         default:
             return state;
     }

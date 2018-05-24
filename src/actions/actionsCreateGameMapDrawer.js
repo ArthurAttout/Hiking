@@ -98,6 +98,7 @@ export const onCloseModal = () => {
 };
 
 export const onRequestModal = (beacon) => {
+    console.log(beacon);
     return{
         type: REQUEST_MODAL,
         beacon: beacon

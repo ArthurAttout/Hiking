@@ -39,6 +39,8 @@ class Screen extends React.Component {
                 startGame={this.props.startGame}
                 onRequestModal={this.props.onRequestModal}
                 showStartButton={this.props.showStartButton}
+                showProgressStart={this.props.showProgressStart}
+                errorMessage={this.props.errorMessage}
                 />;
 
         return (
@@ -76,7 +78,8 @@ const mapStateToProps = (state, own) => {
         intervalID: state.gameMasterScreenReducer.intervalID,
         showStartButton: state.gameMasterScreenReducer.showStartButton,
         gameStarted: state.gameMasterScreenReducer.gameStarted,
-
+        errorMessage: state.gameMasterScreenReducer.errorMessage,
+        showProgressStart: state.gameMasterScreenReducer.showProgressStart,
     }
 };
 
