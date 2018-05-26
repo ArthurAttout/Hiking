@@ -1,12 +1,32 @@
 import {
     STORE_SERVER_DATA, STORE_NEXT_BEACON, STORE_CURRENT_LOCATION, SET_MAP_VIEW_VISIBLE,
     STORE_BEARING, PLAYER_INSIDE_BEACON, RIDDLE_SOLVING_CLOSE_MODAL, RIDDLE_SOLVING_REQUEST_MODAL, SET_CURRENT_ANSWER,
-    CONFIRM_RIDDLE_SOLVING, storeNextBeacon, RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED, STORE_END_GAME_STATS,
-    STORE_TEAM_INFO, DECREMENT_TEAM_LIVE, SHRINK_ZONE
+    CONFIRM_RIDDLE_SOLVING, RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED, STORE_END_GAME_STATS,
+    STORE_TEAM_INFO, DECREMENT_TEAM_LIVE, SHRINK_ZONE, CENTER_REGION_CHANGED, STORE_TIMER_IDS
 } from '../actions/actionsGameData';
-import {getNextBeacon2} from "../config/FakeServer";
 
 let dataState = {
+    admin: false,
+    game: {
+        Settings_idSettings: null,
+        idGame: null,
+        name: "",
+        GameMode: null,
+        isStarted: false,
+        PlayerCode: "",
+        GameMasterCode: ""
+    },
+    settings: {
+        timerRiddle: null,
+        tresholdShrink: null,
+        idSettings: null,
+        center_x: null,     // latitude
+        center_y: null,     //longitude
+        lives: 0,
+        radius: null,
+        enableNextBeaconVisibility: false,
+        mapViewEnable: false
+    },
     teamInfo: {
         name: "",
         ColorHex: "#000000",
@@ -17,31 +37,14 @@ let dataState = {
         lives: 0,
         idTeam: 0
     },
-    gameData: {
-        gameMode: 1,
-        shrinkSpeed: 0,
-        mapViewEnabled: true,
-        nextBeaconVisible: true,
-        displayDropDistance: true,
-        timerRiddle: 0,
-        lives: 0,
-        shrinkZone: {
-            centerLatitude: 0,
-            centerLongitude: 0,
-            radius: 0
-        }
-    },
     nextBeacon: {
-        id: 0,
-        latitude: 0,
-        longitude: 0,
-        name: "NextBeacon",
-        iconUrl: "",
-        qrCodeId: "",
-        riddleId:  0,
-        riddleStatement: "Mon coup n'est pas fatal mais je fais parfois mal souvent je suis dresse et je sens bon la maree, qui suis je ?",
-        riddleAnswer: "Ma bite",
-        lastBeacon: false
+        name: "",
+        iconURL: null,
+        latitude: null,
+        longitude: null,
+        statement: "Mon coup n'est pas fatal mais je fais parfois mal souvent je suis dresse et je sens bon la maree, qui suis je ?",
+        answer: "Ma bite",
+        lastBeacon:false
     },
     currentLocation: {
         latitude: 0.0,
@@ -67,41 +70,36 @@ let dataState = {
     gameStats: {
         time: "0:00",
         score: 0,
-        position: 99,
+        classement: 99,
         totalTeams: 99
+    },
+    centerRegion: null,
+    ids: {
+        watchId: null,
+        shrinkIntervalID: null,
+        refreshIntervalID: null
     }
 };
 
 export default function gameDataReducer (state = dataState, action) {
     switch (action.type) {
         case STORE_SERVER_DATA:
-            // TODO filter based on game mode
             return {
                 ...state,
-                gameData: {
-                    gameMode: action.gameMode,
-                    shrinkSpeed: action.shrinkSpeed,
-                    mapViewEnabled: action.mapViewEnabled,
-                    nextBeaconVisible: action.nextBeaconVisible,
-                    displayDropDistance: action.displayDropDistance,
-                    timerRiddle: action.timerMaxRiddle,
-                    lives: action.lives,
-                    shrinkZone: action.shrinkZone
-                }
+                admin: action.admin,
+                game: action.game,
+                settings: action.settings
             };
         case STORE_NEXT_BEACON:
             return {
                 ...state,
                 nextBeacon: {
-                    id: action.id,
+                    name: action.name,
+                    iconURL: action.iconURL,
                     latitude: action.latitude,
                     longitude: action.longitude,
-                    name: action.name,
-                    iconUrl: action.iconUrl,
-                    qrCodeId: action.qrCodeId,
-                    riddleId: action.riddleId,
-                    riddleStatement: action.riddleStatement,
-                    riddleAnswer: action.riddleAnswer,
+                    statement: action.statement,
+                    answer: action.answer,
                     lastBeacon: action.lastBeacon
                 }
             };
@@ -164,10 +162,10 @@ export default function gameDataReducer (state = dataState, action) {
             return {
                 ...state,
                 gameStats: {
-                    time: action.time,
-                    score: action.score,
-                    position: action.position,
+                    classement: action.classement,
                     totalTeams: action.totalTeams,
+                    score: action.score,
+                    time: action.time
                 }
             };
         case STORE_TEAM_INFO:
@@ -186,13 +184,20 @@ export default function gameDataReducer (state = dataState, action) {
         case SHRINK_ZONE:
             return{
                 ...state,
-                gameData: {
-                    ...state.gameData,
-                    shrinkZone:{
-                        ...state.gameData.shrinkZone,
-                        radius: action.shrinkZoneRadius
-                    }
+                settings: {
+                    ...state.settings,
+                    radius: action.shrinkZoneRadius
                 }
+            };
+        case CENTER_REGION_CHANGED:
+            return {
+                ...state,
+                centerRegion: action.newRegion
+            };
+        case STORE_TIMER_IDS:
+            return {
+                ...state,
+                ids: action.ids
             };
         default:
             return state;

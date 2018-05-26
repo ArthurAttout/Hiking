@@ -31,7 +31,7 @@ class GNSScreen extends React.Component {
     }
 
     handleBackButton() {
-        ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+        //ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
         return true;
     }
 

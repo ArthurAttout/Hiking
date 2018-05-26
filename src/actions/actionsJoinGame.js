@@ -5,6 +5,7 @@ import {getGameTeams, isCodePlayer} from "../config/FakeServer";
 import RecapitulativeScreen from "../screens/RecapitulativeScreen";
 import {prepareRequest} from "../utils/constants";
 import FCM, {FCMEvent} from "react-native-fcm";
+import {storeNextBeacon, storeServerData} from "./actionsGameData";
 
 export const SUBMIT = 'SUBMIT';
 export const SET_PLAYER_NAME= 'SET_PLAYER_NAME';
@@ -51,6 +52,14 @@ export const submit = () =>{
                 }
                 else
                 {
+                    dispatch(storeServerData(json));
+                    console.log("Game Data");
+                    console.log("isAdmin");
+                    console.log(store.getState().gameDataReducer.admin);
+                    console.log("Game");
+                    console.log(store.getState().gameDataReducer.game);
+                    console.log("Settings");
+                    console.log(store.getState().gameDataReducer.settings);
                     if(json.admin){
                         navigatorRef.dispatch(NavigationActions.navigate({
                             routeName:"GameMasterScreen",
@@ -117,19 +126,24 @@ export const joinTeam = (teamName) =>{
     return (dispatch) => {
         dispatch(setTeamName(teamName));
         FCM.getFCMToken().then((token) => {
-            console.log(token);
             let params = {
                 playercode: store.getState().joinGameReducer.gameCode,
                 pseudonyme: store.getState().joinGameReducer.playerName,
                 token: token,
                 name: teamName,
-                latitude:  50.223777, //TODO set from geolocation
-                longitude: 5.335017,  //TODO set from geolocation
+                // TODO gerer le cas d'erreur si position non obtenue
+                latitude:  store.getState().gameDataReducer.currentLocation.latitude,
+                longitude: store.getState().gameDataReducer.currentLocation.longitude,
             };
-            console.log(params);
             let request = prepareRequest(params,"POST");
+            console.log("Joining team with /jointeam");
+            console.log("Parameters");
+            console.log(params);
+            console.log("Request");
+            console.log(request);
             fetch('https://hikong.masi-henallux.be:5000/jointeam',request)
                 .then ((response) => {
+                    console.log("Response :");
                     console.log(response);
                     if(response.ok){
                         return response.json()
@@ -141,11 +155,80 @@ export const joinTeam = (teamName) =>{
                     }
                 })
                 .then ((json) => {
-                    if(!json.hasError){
-                        console.log("navigate !");
-                        navigatorRef.dispatch(NavigationActions.navigate({
-                            routeName:"GameNotStartedScreen"
-                        }));
+                    if(!json.hasError) {
+                        // check if gane has started
+                        if (store.getState().gameDataReducer.game.isStarted) {
+                            // check if the first checkpoint must be fetched
+                            if(store.getState().gameDataReducer.teamInfo.Checkpoint === 0){
+                                // get first point
+                                let params = {
+                                    namePlayer: store.getState().joinGameReducer.playerName,
+                                    nameTeam: store.getState().joinGameReducer.teamName
+                                };
+                                let request = prepareRequest(params,"POST");
+                                console.log("Requesting first beacon with /firstpoint");
+                                console.log("Parameters");
+                                console.log(params);
+                                console.log("Request");
+                                console.log(request);
+                                fetch('https://hikong.masi-henallux.be:5000/firstpoint',request)
+                                    .then ((response) => {
+                                        console.log("Response :");
+                                        console.log(response);
+                                        if(response.ok){
+                                            return response.json()
+                                        }
+                                        else {
+                                            return {
+                                                hasError: true
+                                            }
+                                        }
+                                    })
+                                    .then ((json) => {
+                                        if(!json.hasError) {
+                                            dispatch(storeNextBeacon(json));
+                                        }
+                                    })
+                            } else {
+                                // get next checkpoint
+                                // TODO determine how to get !!!!!!!!!!!!!!!!!!!!!!!!
+                                console.log("First beacon to request is not the first point in track")
+                                /*let params = {
+                                    name: store.getState().joinGameReducer.playerName,
+                                };
+                                let request = prepareRequest(params,"POST");
+                                console.log("Requesting next beacon with /confirmpoint");
+                                console.log("Parameters");
+                                console.log(params);
+                                console.log("Request");
+                                console.log(request);
+                                fetch('https://hikong.masi-henallux.be:5000/firstpoint',request)
+                                    .then ((response) => {
+                                        console.log("Response :");
+                                        console.log(response);
+                                        if(response.ok){
+                                            return response.json()
+                                        }
+                                        else {
+                                            return {
+                                                hasError: true
+                                            }
+                                        }
+                                    })
+                                    .then ((json) => {
+                                        if(!json.hasError) {
+                                            dispatch(storeNextBeacon(json));
+                                        }
+                                    })*/
+                            }
+                            navigatorRef.dispatch(NavigationActions.navigate({
+                                routeName: "GameScreen"
+                            }));
+                        } else {
+                            navigatorRef.dispatch(NavigationActions.navigate({
+                                routeName: "GameNotStartedScreen"
+                            }));
+                        }
                     }
                 })
 

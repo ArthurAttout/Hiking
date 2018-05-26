@@ -1,8 +1,8 @@
 import store from "../config/store";
 import {calculateBearing, calculateDistance} from "../utils/geometryUtils";
-import {getNextBeacon2} from "../config/FakeServer";
 import {navigatorRef} from "../../App";
 import {NavigationActions} from 'react-navigation';
+import {prepareRequest} from "../utils/constants";
 
 export const STORE_SERVER_DATA = 'STORE_SERVER_DATA';
 export const STORE_NEXT_BEACON = 'STORE_NEXT_BEACON';
@@ -19,6 +19,8 @@ export const STORE_END_GAME_STATS = 'STORE_END_GAME_STATS';
 export const STORE_TEAM_INFO = 'STORE_TEAM_INFO';
 export const DECREMENT_TEAM_LIVE = 'DECREMENT_TEAM_LIVE';
 export const SHRINK_ZONE = 'SHRINK_ZONE';
+export const CENTER_REGION_CHANGED = 'CENTER_REGION_CHANGED';
+export const STORE_TIMER_IDS = 'STORE_TIMER_IDS';
 
 
 export const storeTeamInfo = (teamInfo) => {
@@ -29,34 +31,101 @@ export const storeTeamInfo = (teamInfo) => {
 };
 
 // TODO view what to store
-export const storeServerData = (gameData) =>{
+export const storeServerData = (json) =>{
     // TODO filter based on game mode
     return{
         type:STORE_SERVER_DATA,
-        gameMode: gameData.gameMode,
-        shrinkSpeed: gameData.shrinkSpeed,
-        mapViewEnabled: gameData.mapViewEnabled,
-        nextBeaconVisible: gameData.nextBeaconVisible,
-        displayDropDistance: gameData.displayDropDistance,
-        timerRiddle: gameData.timerMaxRiddle,
-        lives: gameData.lives,
-        shrinkZone: gameData.shrinkZone
+        admin: json.admin,
+        game: json.game,
+        settings: json.settings
     }
 };
+
+export const getNextBeacon = () => {
+    return (dispatch) => {
+        let params = {
+            name: store.getState().joinGameReducer.playerName,
+            lives: store.getState().gameDataReducer.teamInfo.lives
+        };
+        let request = prepareRequest(params, "POST");
+        console.log("Requesting next beacon with /confirmpoint");
+        console.log("Parameters");
+        console.log(params);
+        console.log("Request");
+        console.log(request);
+        fetch('https://hikong.masi-henallux.be:5000/confirmpoint', request)
+            .then((response) => {
+                console.log("Response :");
+                console.log(response);
+                if (response.ok) {
+                    return response.json()
+                }
+                else {
+                    return {
+                        hasError: true
+                    }
+                }
+            })
+            .then((json) => {
+                // TODO gerer cas d'erreur
+                if (!json.hasError) {
+                    dispatch(storeNextBeacon(json));
+                    navigatorRef.dispatch(NavigationActions.navigate({
+                        routeName: "GameScreen"
+                    }));
+                }
+            })
+    }
+};
+
+export const getNextBeaconNoConfirm = () => {
+    return (dispatch) => {
+        let params = {
+            name: store.getState().joinGameReducer.playerName,
+            lives: store.getState().gameDataReducer.teamInfo.lives
+        };
+        let request = prepareRequest(params, "POST");
+        console.log("Requesting next beacon with /nextpoint");
+        console.log("Parameters");
+        console.log(params);
+        console.log("Request");
+        console.log(request);
+        fetch('https://hikong.masi-henallux.be:5000/confirmpoint', request)
+            .then((response) => {
+                console.log("Response :");
+                console.log(response);
+                if (response.ok) {
+                    return response.json()
+                }
+                else {
+                    return {
+                        hasError: true
+                    }
+                }
+            })
+            .then((json) => {
+                // TODO gerer cas d'erreur
+                if (!json.hasError) {
+                    dispatch(storeNextBeacon(json));
+                    navigatorRef.dispatch(NavigationActions.navigate({
+                        routeName: "GameScreen"
+                    }));
+                }
+            })
+    }
+};
+
 
 export const storeNextBeacon = (nextBeacon) =>{
     return{
         type:STORE_NEXT_BEACON,
-        id: nextBeacon.id,
+        name: nextBeacon.name,
+        iconURL: nextBeacon.iconURL,
         latitude: nextBeacon.latitude,
         longitude: nextBeacon.longitude,
-        name: nextBeacon.name,
-        iconUrl: nextBeacon.iconUrl,
-        qrCodeId: nextBeacon.qrCodeId,
-        riddleId:  nextBeacon.riddleId,
-        riddleStatement: nextBeacon.riddleStatement,
-        riddleAnswer: nextBeacon.riddleAnswer,
-        lastBeacon: nextBeacon.lastBeacon,
+        statement: nextBeacon.statement,
+        answer: nextBeacon.answer,
+        lastBeacon: nextBeacon.lastBeacon
     }
 };
 
@@ -73,17 +142,81 @@ export const storeCurrentLocation = (currentLocation) =>{
     }
 };
 
+export const refreshPosition = () => {
+    return () => {
+        let params = {
+            pseudonyme: store.getState().joinGameReducer.playerName,
+            latitude: store.getState().gameDataReducer.currentLocation.latitude,
+            longitude: store.getState().gameDataReducer.currentLocation.longitude
+        };
+        let request = prepareRequest(params, "PUT");
+        console.log("Refreshing position with /refreshpos");
+        console.log("Parameters");
+        console.log(params);
+        console.log("Request");
+        console.log(request);
+        fetch('https://hikong.masi-henallux.be:5000/refreshpos', request)
+            .then((response) => {
+                console.log("Response :");
+                console.log(response);;
+                if (response.ok) {
+                    return response.json()
+                }
+                else {
+                    return {
+                        hasError: true
+                    }
+                }
+            })
+            .then((json) => {
+                if (!json.hasError) {
+                    // TODO gerer cas d'erreur?
+                }
+            });
+    }
+};
+
 export const checkPlayerInsideBeacon = () => {
-    if(calculateDistance(store.getState().gameDataReducer.currentLocation,
-            store.getState().gameDataReducer.nextBeacon) < 5){
-        return{
-            type:PLAYER_INSIDE_BEACON,
-            isPlayerInsideBeacon: true
-        }
-    } else {
-        return{
-            type:PLAYER_INSIDE_BEACON,
-            isPlayerInsideBeacon: false
+    return (dispatch) => {
+        if (calculateDistance(store.getState().gameDataReducer.currentLocation,
+                store.getState().gameDataReducer.nextBeacon) < 5) {
+            if (store.getState().gameDataReducer.nextBeacon.lastBeacon === true) {
+                //TODO get track stat from server
+                let params = {
+                    playercode: store.getState().gameDataReducer.game.PlayerCode,
+                    name: store.getState().gameDataReducer.teamInfo.name
+                };
+                let request = prepareRequest(params, "POST");
+                console.log("Getting game stats /end");
+                console.log("Parameters");
+                console.log(params);
+                console.log("Request");
+                console.log(request);
+                fetch('https://hikong.masi-henallux.be:5000/end', request)
+                    .then((response) => {
+                        console.log(response);
+                        if (response.ok) {
+                            return response.json()
+                        }
+                        else {
+                            return {
+                                hasError: true
+                            }
+                        }
+                    })
+                    .then((json) => {
+                        if (!json.hasError) {
+                            dispatch(storeEndGameStats(json));
+                        }
+                    });
+                navigatorRef.dispatch(NavigationActions.navigate({
+                    routeName: "EndGameScreen"
+                }));
+            } else {
+                navigatorRef.dispatch(NavigationActions.navigate({
+                    routeName: "BeaconScreen"
+                }));
+            }
         }
     }
 };
@@ -119,7 +252,6 @@ export const setMapViewVisible = (mapViewVisible) =>{
 };
 
 export const onCloseModal = () => {
-    console.log("Modal closure requested");
     return{
         type:RIDDLE_SOLVING_CLOSE_MODAL,
     }
@@ -132,16 +264,12 @@ export const onRequestModal = () => {
 };
 
 export const onConfirmRiddleSolving = ()=>{
-    console.log(store.getState().gameDataReducer.currentAnswer);
     if(store.getState().gameDataReducer.currentAnswer.toLowerCase() ===
         store.getState().gameDataReducer.nextBeacon.riddleAnswer.toLowerCase()) {
 
         // TODO replace with real server
         // TODO use confirmpoint and send teamInfo udpdate
-        const nextBeacon = getNextBeacon2(store.getState().gameDataReducer.gameCode,
-            store.getState().gameDataReducer.teamName);
-
-        store.dispatch(storeNextBeacon(nextBeacon));
+        store.dispatch(getNextBeacon());
         store.dispatch(onCloseModal());
         navigatorRef.dispatch(NavigationActions.navigate({routeName:"GameScreen"}));
         return {
@@ -151,6 +279,12 @@ export const onConfirmRiddleSolving = ()=>{
         }
     } else {
         store.dispatch(decrementTeamLive());
+        if(store.getState().gameDataReducer.teamInfo.lives === 0){
+            store.dispatch(onCloseModal());
+            //TODO navigate to a GAME OVER screen then to the last beacon
+            store.dispatch(getNextBeacon());
+            navigatorRef.dispatch(NavigationActions.navigate({routeName:"GameOverScreen"}));
+        }
         return {
             type: CONFIRM_RIDDLE_SOLVING,
             correctAnswer: false,
@@ -160,14 +294,6 @@ export const onConfirmRiddleSolving = ()=>{
 };
 
 export const decrementTeamLive = () => {
-    if(store.getState().gameDataReducer.teamInfo.lives === 1){
-        store.dispatch(onCloseModal());
-        //TODO navigate to a GAME OVER screen then to the last beacon
-        const nextBeacon = getNextBeacon2(store.getState().gameDataReducer.gameCode,
-            store.getState().gameDataReducer.teamName);
-        store.dispatch(storeNextBeacon(nextBeacon));
-        navigatorRef.dispatch(NavigationActions.navigate({routeName:"GameOverScreen"}));
-    }
     return {
         type: DECREMENT_TEAM_LIVE,
         teamLives: (store.getState().gameDataReducer.teamInfo.lives - 1)
@@ -196,24 +322,56 @@ export const submitButtonPressed = () => {
     }
 };
 
-export const storeEndGameStats = (gameStats) => {
+export const storeEndGameStats = (json) => {
     return {
         type:STORE_END_GAME_STATS,
-        time: gameStats.time,
-        score: gameStats.score,
-        position: gameStats.position,
-        totalTeams: gameStats.totalTeams,
+        classement: json.classement,
+        totalTeams: json.totalTeams,
+        score: json.score,
+        time: json.time
     }
 };
 
 export const shrinkZone = () => {
-    console.log("Shrink Zone shrinked from " + store.getState().gameDataReducer.gameData.shrinkZone.radius + "m to "
-    + (store.getState().gameDataReducer.gameData.shrinkZone.radius -
-            store.getState().gameDataReducer.gameData.shrinkSpeed) + "m");
+    console.log("Shrink Zone shrinked from " + store.getState().gameDataReducer.settings.radius + "m to "
+    + (store.getState().gameDataReducer.settings.radius -
+            store.getState().gameDataReducer.settings.tresholdShrink) + "m");
+
+    // TODO check is player is outside of the zone (measure distance between user location and central point and compare to radius)
+    let playerDistanceToCenter = calculateDistance(
+        {
+            latitude: store.getState().gameDataReducer.currentLocation.latitude,
+            longitude: store.getState().gameDataReducer.currentLocation.longitude
+        },
+        {
+            latitude: store.getState().gameDataReducer.game.center_x,
+            longitude: store.getState().gameDataReducer.game.center_y
+        },
+    );
+
+    if(playerDistanceToCenter > store.getState().gameDataReducer.settings.radius){
+
+    }
+
     return{
         type: SHRINK_ZONE,
-        shrinkZoneRadius: (store.getState().gameDataReducer.gameData.shrinkZone.radius -
-                            store.getState().gameDataReducer.gameData.shrinkSpeed)
+        shrinkZoneRadius: (store.getState().gameDataReducer.settings.radius -
+                            store.getState().gameDataReducer.settings.tresholdShrink)
     }
 };
+
+export const onRegionChange = (newRegion) => {
+    return{
+        type:CENTER_REGION_CHANGED,
+        newRegion: newRegion
+    }
+};
+
+export const storeTimerIds = (ids) => {
+    return {
+        type: STORE_TIMER_IDS,
+        ids : ids
+    }
+};
+
 

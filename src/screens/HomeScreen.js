@@ -3,8 +3,11 @@ import { AppRegistry, Text, View, StyleSheet, TouchableNativeFeedback, StatusBar
 import { registerKilledListener, registerAppListener } from "../config/firebase/Listeners";
 import FCM from "react-native-fcm";
 import {COLORS} from '../utils/constants'
+import {connect} from "react-redux";
+import {fetchTeams, joinTeam} from "../actions/actionsJoinGame";
+import {storeCurrentLocation} from "../actions/actionsGameData";
 
-export default class HomeScreen extends React.Component {
+class HScreen extends React.Component {
     static navigationOptions = {
         header: null
     };
@@ -13,6 +16,37 @@ export default class HomeScreen extends React.Component {
         super(props);
         this._onPressJoinGame = this._onPressJoinGame.bind(this);
         this._onPressNewGame = this._onPressNewGame.bind(this);
+    }
+
+    componentWillMount() {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const currentPosition = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    altitude: position.coords.altitude,
+                    heading: position.coords.heading,
+                    speed: position.coords.speed,
+                    accuracy: position.coords.accuracy,
+                    error: null,
+                };
+                console.log("Got position for sending on join team");
+                console.log(currentPosition);
+                this.props.storeCurrentLocation(currentPosition);
+            },
+            // TODO manage error when GPS is not activated
+            (error) => {
+                const currentPosition = {
+                    error: error.message,
+                };
+                this.props.storeCurrentLocation(currentPosition);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 20000,
+                maximumAge: 1000
+            },
+        );
     }
 
     render() {
@@ -62,6 +96,16 @@ export default class HomeScreen extends React.Component {
         navigate('ChooseModeScreen');
     }
 }
+
+const mapDispatchToProps = (dispatch) =>{
+    return {
+        storeCurrentLocation: (currentLocation) => dispatch(storeCurrentLocation(currentLocation)),
+    }
+};
+
+//Connect everything
+export default HomeScreen = connect(null, mapDispatchToProps)(HScreen);
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -103,6 +147,4 @@ const styles = StyleSheet.create({
         color: '#a4a4a4',
     },
 });
-
-AppRegistry.registerComponent('Hiking', () => HomeScreen);
 

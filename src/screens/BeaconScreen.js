@@ -1,14 +1,18 @@
 import React from 'react';
-import {AppRegistry, Text, View, StyleSheet, StatusBar, Image,
-    TouchableNativeFeedback, Dimensions } from 'react-native';
+import {
+    AppRegistry, Text, View, StyleSheet, StatusBar, Image,
+    TouchableNativeFeedback, Dimensions, BackHandler
+} from 'react-native';
 import { connect } from "react-redux";
 import {COLORS, GAME_MODES} from "../utils/constants";
 import {getNextBeacon2} from "../config/FakeServer";
 import {
+    getNextBeacon, getNextBeaconNoConfirm,
     onCloseModal, onConfirmRiddleSolving, onRequestModal, setCurrentAnswer,
     storeNextBeacon, submitButtonPressed
 } from "../actions/actionsGameData";
 import SolveRiddleModal from "./PlayerBeaconModals/SolveRiddleModal";
+import {default as FCM, FCMEvent} from "react-native-fcm";
 
 class BScreen extends React.Component {
     static navigationOptions = {
@@ -24,8 +28,22 @@ class BScreen extends React.Component {
 
     constructor(props) {
         super(props);
-
         this.handleOnPress = this.handleOnPress.bind(this);
+    }
+
+    componentDidMount() {
+        FCM.getFCMToken().then((t) => console.log(t))
+        FCM.on(FCMEvent.Notification, notif => {
+            console.log("notif received");
+            console.log(notif);
+
+            if(notif['confirmPoint']){ //Expected notification
+                // TODO get nextBeaconNoConfirm
+                this.props.getNextBeaconNoConfirm()
+                const { navigate } = this.props.navigation;
+                navigate("GameScreen");
+            }
+        });
     }
 
     render() {
@@ -45,19 +63,19 @@ class BScreen extends React.Component {
                         <Image
                             resizeMode={'contain'}
                             style={{width: (Dimensions.get('window').width * 0.45), height: (Dimensions.get('window').width * 0.45)}}
-                            source={{uri: this.props.nextBeacon.iconUrl }}/>
+                            source={{uri: this.props.nextBeacon.iconURL }}/>
                         <Text style={styles.beaconText}>
-                            {(this.props.gameData.gameMode === GAME_MODES.NORMAL) ?
+                            {(this.props.game.GameMode === GAME_MODES.NORMAL) ?
                                 "You successfully reached the " + this.props.nextBeacon.name + " beacon!"
                                 :
-                                this.props.nextBeacon.riddleStatement}</Text>
+                                this.props.nextBeacon.statement}</Text>
                     </View>
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('white')}
                         onPress={() => {this.handleOnPress()}}
                     >
                         <View style={styles.bottomView}>
-                            <Text style={styles.bottomText}>{(this.props.gameData.gameMode ===  GAME_MODES.NORMAL) ? "NEXT BEACON >" : "SOLVE" }</Text>
+                            <Text style={styles.bottomText}>{(this.props.game.GameMode ===  GAME_MODES.NORMAL) ? "NEXT BEACON >" : "SOLVE" }</Text>
                         </View>
                     </TouchableNativeFeedback>
                     {this._renderModal()}
@@ -67,12 +85,9 @@ class BScreen extends React.Component {
 
     handleOnPress(){
         const { navigate } = this.props.navigation;
-        if(this.props.gameData.gameMode ===  GAME_MODES.NORMAL){
+        if(this.props.game.GameMode ===  GAME_MODES.NORMAL){
             // TODO get next beacon
-            const nextBeacon = getNextBeacon2(this.props.gameCode,
-                this.props.teamName);
-            this.props.storeNextBeacon(nextBeacon);
-            navigate('GameScreen');
+            this.props.getNextBeacon();
         } else {
             // TODO manage solving riddles
             this.props.onRequestModal();
@@ -85,7 +100,7 @@ class BScreen extends React.Component {
             modalVisible={this.props.modalVisible}
             currentAnswer = {this.props.currentAnswer}
             correctAnswer = {this.props.correctAnswer}
-            gameData = {this.props.gameData}
+            gameData = {this.props.game}
             teamInfo = {this.props.teamInfo}
             isSubmitButtonPressed = {this.props.isSubmitButtonPressed}
             submitButtonPressed = {this.props.submitButtonPressed}
@@ -119,6 +134,8 @@ function mapDispatchToProps(dispatch, own) {
         onConfirmRiddleSolving: () => dispatch(onConfirmRiddleSolving()),
         setCurrentAnswer: (answer) => dispatch(setCurrentAnswer(answer)),
         submitButtonPressed: () => dispatch(submitButtonPressed()),
+        getNextBeacon: () => dispatch(getNextBeacon()),
+        getNextBeaconNoConfirm: () => dispatch(getNextBeaconNoConfirm()),
     }
 }
 

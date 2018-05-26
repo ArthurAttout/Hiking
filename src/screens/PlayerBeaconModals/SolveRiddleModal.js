@@ -70,10 +70,10 @@ export default class SolveRiddleModal extends React.Component{
     }
 
     renderStars() {
-        if(this.props.gameData.gameMode !== GAME_MODES.NORMAL){
+        if(this.props.game.GameMode !== GAME_MODES.NORMAL){
             let stars = [];
 
-            for(let i = this.props.gameData.lives; i > 0; i--) {
+            for(let i = this.props.game.lives; i > 0; i--) {
                 // TODO manage lifes lost
                 if(this.props.teamInfo.lives < i){
                     stars.push(

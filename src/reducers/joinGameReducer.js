@@ -16,10 +16,14 @@ let dataState = {
     isGameMaster: false,
     teamsList: [
         {
-            title: "",
-            ColorHex: "#7d7682",
+            Checkpoint: 0,
+            ColorHex: '#ffffff',
+            Game_idGame: 1,
             iconUrl: null,
-            idTeam: null,
+            idTeam: 1,
+            lives: 0,
+            name: 'Hhjj',
+            score: 0
         },
         ]
 };
@@ -98,7 +102,14 @@ export default function joinGameReducer (state = dataState, action) {
                 teamsList : action.teams.map((team) => {
                     return{
                         ...team,
-                        title: team.name,
+                        Checkpoint: team.Checkpoint,
+                        ColorHex: team.ColorHex,
+                        Game_idGame: team.Game_idGame,
+                        iconUrl: team.iconUrl,
+                        idTeam: team.idTeam,
+                        lives: team.lives,
+                        name: team.name,
+                        score: team.score
                     }
                 })
             };
