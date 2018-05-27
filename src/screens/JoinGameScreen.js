@@ -3,14 +3,10 @@ import {
     AppRegistry, Text, TextInput, View, StyleSheet, TouchableNativeFeedback,
     StatusBar, Image,ActivityIndicator
 } from 'react-native';
-import FCM from "react-native-fcm";
 import { TextInputLayout } from "rn-textinputlayout";
-import TeamSelectionScreen from "./TeamSelectionScreen";
 import {COLORS} from '../utils/constants'
 import {connect} from "react-redux";
 import {submit,setGameCode,setPlayerName} from "../actions/actionsJoinGame";
-import {NavigationActions} from 'react-navigation';
-import {navigatorRef} from "../../App";
 
 class JGScreen extends React.Component {
     constructor(props) {

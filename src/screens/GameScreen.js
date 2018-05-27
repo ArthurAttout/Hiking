@@ -6,11 +6,10 @@ import { connect } from "react-redux";
 import {COLORS} from "../utils/constants";
 import MapView, { Marker, Circle } from 'react-native-maps'
 import {
-    setMapViewVisible, storeCurrentLocation, storeNextBeacon, storeBearing,
-    checkPlayerInsideBeacon, storeEndGameStats, shrinkZone, refreshPosition, storeTimerIds, onRegionChange,
+    setMapViewVisible, storeCurrentLocation, storeBearing,
+    checkPlayerInsideBeacon, shrinkZone, refreshPosition, storeTimerIds, onRegionChange,
     onCloseOutOfZoneModal, getLastBeacon
 } from "../actions/actionsGameData";
-import {getGameStats, getNextBeacon1} from "../config/FakeServer";
 import OutOfZoneModal from "./PlayerBeaconModals/OutOfZoneModal";
 
 class GScreen extends React.Component {
@@ -67,6 +66,7 @@ class GScreen extends React.Component {
                     speed: position.coords.speed,
                     accuracy: position.coords.accuracy
                 };
+                console.log(updatedLocation);
                 this.props.storeCurrentLocation(updatedLocation);
                 this.props.storeBearing();
                 this.props.checkPlayerInsideBeacon();
@@ -85,11 +85,8 @@ class GScreen extends React.Component {
             },
         );
 
-        //TODO store whatid
-
         var shrinkIntervalID = undefined;
         if(this.props.settings.tresholdShrink !== 0) {
-            // TODO replace with 60 seconds (60000) for final version
             shrinkIntervalID = setInterval(() => {
                 this.props.shrinkZone()
             }, 60000);
@@ -149,7 +146,7 @@ class GScreen extends React.Component {
                     style={styles.map}
                     region={this.props.centerRegion}
                     followUserLocation={true}
-                    showsMyLocationButton={true}
+                    //showsMyLocationButton={true}
                     onRegionChangeComplete={(evt) => {this.props.onRegionChange(evt)}}>
                     <Marker
                         coordinate={{

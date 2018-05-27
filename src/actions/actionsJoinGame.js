@@ -1,11 +1,9 @@
 import {navigatorRef} from "../../App";
 import {NavigationActions} from 'react-navigation';
 import store from '../config/store'
-import {getGameTeams, isCodePlayer} from "../config/FakeServer";
-import RecapitulativeScreen from "../screens/RecapitulativeScreen";
 import {prepareRequest} from "../utils/constants";
 import FCM, {FCMEvent} from "react-native-fcm";
-import {getNextBeaconNoConfirm, storeNextBeacon, storeServerData} from "./actionsGameData";
+import {getNextBeaconNoConfirm, resetTimer, storeNextBeacon, storeServerData} from "./actionsGameData";
 
 export const SUBMIT = 'SUBMIT';
 export const SET_PLAYER_NAME= 'SET_PLAYER_NAME';
@@ -53,6 +51,7 @@ export const submit = () =>{
                 else
                 {
                     dispatch(storeServerData(json));
+                    dispatch(resetTimer());
                     console.log("Game Data");
                     console.log("isAdmin");
                     console.log(store.getState().gameDataReducer.admin);

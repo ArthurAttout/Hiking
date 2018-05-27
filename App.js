@@ -18,6 +18,7 @@ import BeaconScreen from "./src/screens/BeaconScreen";
 import RecapitulativeScreen from "./src/screens/RecapitulativeScreen"
 import EndGameScreen from "./src/screens/EndGameScreen";
 import GameOverScreen from "./src/screens/GameOverScreen";
+import QRCameraScreen from "./src/screens/qrCameraScreen"
 
 const mapNavigationStateParamsToProps = (SomeComponent) => {
     return class extends Component {
@@ -50,7 +51,8 @@ const RootStack = StackNavigator(
         GameScreen: {screen: mapNavigationStateParamsToProps(GameScreen)},
         BeaconScreen: {screen: mapNavigationStateParamsToProps(BeaconScreen)},
         EndGameScreen: {screen: mapNavigationStateParamsToProps(EndGameScreen)},
-        GameOverScreen: {screen: mapNavigationStateParamsToProps(GameOverScreen)}
+        GameOverScreen: {screen: mapNavigationStateParamsToProps(GameOverScreen)},
+        QRCameraScreen: {screen: mapNavigationStateParamsToProps(QRCameraScreen)}
     },
     {
         initialRouteName: 'HomeScreen',

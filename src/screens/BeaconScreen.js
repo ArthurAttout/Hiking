@@ -1,35 +1,26 @@
 import React from 'react';
 import {
     AppRegistry, Text, View, StyleSheet, StatusBar, Image,
-    TouchableNativeFeedback, Dimensions, BackHandler
+    TouchableNativeFeedback, Dimensions, BackHandler, ActivityIndicator
 } from 'react-native';
 import { connect } from "react-redux";
 import {COLORS, GAME_MODES} from "../utils/constants";
-import {getNextBeacon2} from "../config/FakeServer";
 import {
     getNextBeacon, getNextBeaconNoConfirm,
-    onCloseOutOfZoneModal, onCloseRiddleSolvingModal, onConfirmRiddleSolving, onRequestOutOfZoneModal,
-    onRequestRiddleSolvingModal, riddleTimeOut, setCurrentAnswer,
-    storeNextBeacon, submitButtonPressed
+    onCloseRiddleSolvingModal, onConfirmRiddleSolving, onRequestRiddleSolvingModal, resetTimer, riddleTimeOut,
+    setBackOffProgressStatus, setCurrentAnswer,
+    storeBackOffId,
+    storeNextBeacon, submitButtonPressed, updateTimer
 } from "../actions/actionsGameData";
 import SolveRiddleModal from "./PlayerBeaconModals/SolveRiddleModal";
 import {default as FCM, FCMEvent} from "react-native-fcm";
 
 class BScreen extends React.Component {
-    static navigationOptions = {
-        title: 'Zone Name',      // TODO replace with team name from redux
-        headerStyle: {
-            backgroundColor: COLORS.Primary
-        },
-        headerTitleStyle: {
-            color: 'white'
-        },
-        headerLeft: null
-    };
-
     constructor(props) {
         super(props);
         this.handleOnPress = this.handleOnPress.bind(this);
+        this.renderBottomBar = this.renderBottomBar.bind(this);
+        this.renderTimer = this.renderTimer.bind(this);
     }
 
     componentDidMount() {
@@ -39,16 +30,16 @@ class BScreen extends React.Component {
             console.log(notif);
 
             if(notif['confirmPoint']){ //Expected notification
-                this.props.getNextBeaconNoConfirm();
-            } else if(notif['gameOver']) {
-                this.props.getLastBeacon();
+                if(this.props.ids.backOffTimeoutID !== null) {
+                    this.clearTimeout(this.props.ids.backOffTimeoutID);
+                    this.props.setBackOffProgressStatus(false);
+                }
+                this.props.getNextBeaconNoConfirm(notif['lives']);
             }
         });
     }
 
     render() {
-        // TODO manage beacon text for the different modes
-        // TODO fix image size to dynamic (45% seems good)
         return (
                 <View style={styles.container}>
                     <StatusBar
@@ -59,7 +50,7 @@ class BScreen extends React.Component {
                         <Text style={styles.topMessageText}>{this.props.nextBeacon.name}</Text>
                     </View>
                     <View style={styles.body}>
-                        <Text style={styles.titleText}>Congrats!</Text>
+                        {this.renderTimer()}
                         <Image
                             resizeMode={'contain'}
                             style={{width: (Dimensions.get('window').width * 0.45), height: (Dimensions.get('window').width * 0.45)}}
@@ -70,34 +61,89 @@ class BScreen extends React.Component {
                                 :
                                 this.props.nextBeacon.statement}</Text>
                     </View>
-                    <TouchableNativeFeedback
-                        background={TouchableNativeFeedback.Ripple('white')}
-                        onPress={() => {this.handleOnPress()}}
-                    >
-                        <View style={styles.bottomView}>
-                            <Text style={styles.bottomText}>{(this.props.game.GameMode ===  GAME_MODES.NORMAL) ? "NEXT BEACON >" : "SOLVE" }</Text>
-                        </View>
-                    </TouchableNativeFeedback>
-                    {this._renderModal()}
+                    {this.renderBottomBar()}
+                    {this.renderModal()}
                 </View>
         );
     }
 
     handleOnPress(){
-        const { navigate } = this.props.navigation;
-        if(this.props.game.GameMode ===  GAME_MODES.NORMAL){
-            // TODO get next beacon
-            this.props.getNextBeacon();
-        } else {
-            // TODO manage solving riddles
-            this.props.onRequestRiddleSolvingModal();
+        switch(this.props.game.GameMode){
+            case GAME_MODES.NORMAL:
+                this.props.getNextBeacon();
+                break;
+            case GAME_MODES.RIDDLES:
+                this.props.onRequestRiddleSolvingModal();
+                break;
+            case GAME_MODES.RIDDLES_AND_QR_CODE:
+                const { navigate } = this.props.navigation;
+                navigate('QRCameraScreen');
+                break;
         }
     }
 
-    _renderModal(){
+    renderTimer() {
+        if( ((this.props.game.GameMode === GAME_MODES.RIDDLES) ||
+                (this.props.game.GameMode === GAME_MODES.RIDDLES_AND_QR_CODE)) &&
+                this.props.timerRiddle !== 0) {
+            return (
+                <View style={styles.countdownView}>
+                    <TimerCountdown
+                        initialSecondsRemaining={this.props.timerSecondsRemaining*1000}        // given in seconds
+                        onTick={(secondsRemaining) => {
+                            this.props.updateTimer(secondsRemaining);
+                        }}
+                        onTimeElapsed={() => {
+                            // generate random backoff then send timeout
+                            this.props.onCloseRiddleSolvingModal();
+                            this.props.setBackOffProgressStatus(true);
+                            this.props.resetTimer();
+                            let backOffTimer = Math.floor(Math.random() * 2000) + 1;
+                            let backOffTimeoutID = this.setTimeout(this.props.riddleTimeOut(), backOffTimer);
+                            this.props.storeBackOffId(backOffTimeoutID);
+                        }}
+                        allowFontScaling={true}
+                        style={styles.countdownTimer}
+                    />
+                </View>
+            );
+        } else {
+            return (<Text style={styles.titleText}>Congrats!</Text>);
+        }
+    }
+
+    renderBottomBar() {
+        let nextButton = "";
+        switch(this.props.game.GameMode){
+            case GAME_MODES.NORMAL:
+                nextButton = "NEXT BEACON >";
+                break;
+            case GAME_MODES.RIDDLES:
+                nextButton = "SOLVE";
+                break;
+            case GAME_MODES.RIDDLES_AND_QR_CODE:
+                nextButton = "CAPTURE QR CODE";
+                break;
+        }
+        return(
+            <TouchableNativeFeedback
+                background={TouchableNativeFeedback.Ripple('white')}
+                onPress={() => {this.handleOnPress()}}
+            >
+                <View style={styles.bottomView}>
+                    {this.props.showBackOffProgressStatus ?
+                    <ActivityIndicator size="small" color="#ffffff"/>
+                    :
+                    <Text style={styles.bottomText}>{nextButton}</Text>}
+                </View>
+            </TouchableNativeFeedback>
+        );
+    }
+
+    renderModal(){
         return(
         <SolveRiddleModal
-            modalVisible={this.props.riddleSolvingModalVisible}
+            riddleSolvingModalVisible={this.props.riddleSolvingModalVisible}
             currentAnswer = {this.props.currentAnswer}
             correctAnswer = {this.props.correctAnswer}
             game = {this.props.game}
@@ -106,7 +152,7 @@ class BScreen extends React.Component {
             submitButtonPressed = {this.props.submitButtonPressed}
             setCurrentAnswer={this.props.setCurrentAnswer}
             onConfirmRiddleSolving={this.props.onConfirmRiddleSolving}
-            onCloseModal={this.props.onCloseRiddleSolvingModal}
+            onCloseRiddleSolvingModal={this.props.onCloseRiddleSolvingModal}
             timerRiddle={this.props.settings.timerRiddle}
             riddleTimeOut={this.props.riddleTimeOut}/>
         );
@@ -124,7 +170,10 @@ const mapStateToProps = (state, own) => {
         riddleSolvingModalVisible: state.gameDataReducer.riddleSolvingModalVisible,
         currentAnswer: state.gameDataReducer.currentAnswer,
         correctAnswer: state.gameDataReducer.correctAnswer,
-        isSubmitButtonPressed: state.gameDataReducer.isSubmitButtonPressed
+        isSubmitButtonPressed: state.gameDataReducer.isSubmitButtonPressed,
+        ids: state.gameDataReducer.ids,
+        showBackOffProgressStatus: state.gameDataReducer.showBackOffProgressStatus,
+        timerSecondsRemaining: state.gameDataReducer.timerSecondsRemaining
     }
 };
 
@@ -138,8 +187,12 @@ function mapDispatchToProps(dispatch, own) {
         setCurrentAnswer: (answer) => dispatch(setCurrentAnswer(answer)),
         submitButtonPressed: () => dispatch(submitButtonPressed()),
         getNextBeacon: () => dispatch(getNextBeacon()),
-        getNextBeaconNoConfirm: () => dispatch(getNextBeaconNoConfirm()),
+        getNextBeaconNoConfirm: (updatedLives) => dispatch(getNextBeaconNoConfirm(updatedLives)),
         riddleTimeOut: () => dispatch(riddleTimeOut()),
+        storeBackOffId: (backOffTimeoutID) => dispatch(storeBackOffId(backOffTimeoutID)),
+        setBackOffProgressStatus: (boolean) => dispatch(setBackOffProgressStatus(boolean)),
+        updateTimer: (secondsRemaining) => dispatch(updateTimer(secondsRemaining)),
+        resetTimer: () => dispatch(resetTimer()),
     }
 }
 
@@ -201,6 +254,17 @@ const styles = StyleSheet.create({
     },
     beaconText: {
         fontSize: 17
+    },
+    countdownView:{
+        flex:1,
+        justifyContent:'center',
+        alignContent:'center',
+        alignSelf:'center',
+        //width:'100%',
+        //height:'100%'
+    },
+    countdownTimer: {
+        fontSize: 50
     }
 });
 

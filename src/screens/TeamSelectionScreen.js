@@ -6,9 +6,9 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {connect} from "react-redux";
 import {joinTeam,fetchTeams} from "../actions/actionsJoinGame";
-import {storeServerData, storeNextBeacon, storeTeamInfo, storeCurrentLocation} from "../actions/actionsGameData";
+import {storeCurrentLocation} from "../actions/actionsGameData";
 import {COLORS} from "../utils/constants";
-import {default as FCM, FCMEvent} from "react-native-fcm";
+
 
 // TODO disable the back button
 // TODO automatically remove keyboard if player left it

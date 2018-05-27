@@ -3,7 +3,8 @@ import {
     STORE_BEARING, PLAYER_INSIDE_BEACON, RIDDLE_SOLVING_CLOSE_MODAL, RIDDLE_SOLVING_REQUEST_MODAL, SET_CURRENT_ANSWER,
     CONFIRM_RIDDLE_SOLVING, RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED, STORE_END_GAME_STATS,
     STORE_TEAM_INFO, DECREMENT_TEAM_LIVE, SHRINK_ZONE, CENTER_REGION_CHANGED, STORE_TIMER_IDS,
-    OUT_OF_ZONE_REQUEST_MODAL, OUT_OF_ZONE_CLOSE_MODAL
+    OUT_OF_ZONE_REQUEST_MODAL, OUT_OF_ZONE_CLOSE_MODAL, UPDATE_TEAM_LIVES, STORE_BACKOFF_ID,
+    SET_BACKOFF_PROGRESS_STATUS, RESET_TIMER, UPDATE_TIMER
 } from '../actions/actionsGameData';
 
 let dataState = {
@@ -79,8 +80,11 @@ let dataState = {
     ids: {
         watchId: null,
         shrinkIntervalID: null,
-        refreshIntervalID: null
-    }
+        refreshIntervalID: null,
+        backOffTimeoutID: null
+    },
+    showBackOffProgressStatus: false,
+    timerSecondsRemaining: 0
 };
 
 export default function gameDataReducer (state = dataState, action) {
@@ -210,6 +214,37 @@ export default function gameDataReducer (state = dataState, action) {
             return {
                 ...state,
                 ids: action.ids
+            };
+        case UPDATE_TEAM_LIVES:
+            return {
+                ...state,
+                teamInfo: {
+                    ...state.teamInfo,
+                    lives: action.lives
+                }
+            };
+        case STORE_BACKOFF_ID:
+            return {
+                ...state,
+                ids: {
+                    ...state.ids,
+                    backOffTimeoutID: action.backOffTimeoutID
+                }
+            };
+        case SET_BACKOFF_PROGRESS_STATUS:
+            return {
+                ...state,
+                showBackOffProgressStatus: action.showBackOffProgressStatus
+            };
+        case UPDATE_TIMER:
+            return {
+                ...state,
+                timerSecondsRemaining: action.timerSecondsRemaining
+            };
+        case RESET_TIMER:
+            return {
+                ...state,
+                timerSecondsRemaining: action.timerSecondsRemaining
             };
         default:
             return state;

@@ -3,7 +3,6 @@ import {AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableNativeFe
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from "react-redux";
 import {COLORS} from "../utils/constants";
-import MapView, { Marker } from 'react-native-maps';
 
 class BScreen extends React.Component {
     static navigationOptions = {
@@ -14,7 +13,7 @@ class BScreen extends React.Component {
         super(props);
     }
 
-    // TODO replace with team icon
+    // TODO implement sharing feature
     render() {
         console.log(this.props.gameStats);
         return (

@@ -345,7 +345,27 @@ export const onConfirmRiddleSolving = ()=>{
         store.getState().gameDataReducer.nextBeacon.answer.toLowerCase()) {
         store.dispatch(getNextBeacon());
         store.dispatch(onCloseRiddleSolvingModal());
-        navigatorRef.dispatch(NavigationActions.navigate({routeName:"GameScreen"}));
+        return {
+            type: CONFIRM_RIDDLE_SOLVING,
+            correctAnswer: true,
+            currentAnswer: '',
+        }
+    } else {
+        store.dispatch(decrementTeamLive());
+        if(store.getState().gameDataReducer.teamInfo.lives === 0){
+            store.dispatch(gameOver())
+        }
+        return {
+            type: CONFIRM_RIDDLE_SOLVING,
+            correctAnswer: false,
+            currentAnswer: store.getState().gameDataReducer.currentAnswer,
+        }
+    }
+};
+
+export const onConfirmQRScan = (scannerData) =>{
+    if(scannerData.data === store.getState().gameDataReducer.nextBeacon.answer) {
+        store.dispatch(getNextBeacon());
         return {
             type: CONFIRM_RIDDLE_SOLVING,
             correctAnswer: true,
