@@ -132,7 +132,7 @@ class RecapitulativeScreen extends React.Component {
                         name:               RecapitulativeScreen.standardizeText(team.track.trackName),
                         distance:           team.track.totalDistance,
                         heighDifference:    team.track.altitudeDelta,
-                        beacons:            team.track.beacons.map((beacon) => {
+                        beacons:            team.track.path.map((beacon) => {
                             return{
                                 name:       RecapitulativeScreen.standardizeText(beacon.name),
                                 latitude:   beacon.coordinate.latitude,
