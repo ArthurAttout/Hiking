@@ -52,6 +52,7 @@ export const getNextBeacon = () => {
         let params = {
             nameTeam: store.getState().joinGameReducer.teamInfo.name,
             namePlayer: store.getState().joinGameReducer.playerName,
+            playercode: store.getState().gameDataReducer.game.PlayerCode,
             lives: store.getState().gameDataReducer.teamInfo.lives
         };
         let request = prepareRequest(params, "POST");
@@ -143,7 +144,8 @@ export const getLastBeacon = () => {
     // TODO implement the API
     return (dispatch) => {
         let params = {
-            name: store.getState().joinGameReducer.playerName,
+            nameTeam: store.getState().joinGameReducer.teamName,
+            playercode: store.getState().gameDataReducer.game.PlayerCode
         };
         let request = prepareRequest(params, "POST");
         console.log("Requesting next beacon with /lastpoint");

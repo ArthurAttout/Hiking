@@ -131,7 +131,6 @@ export const joinTeam = (teamName) =>{
                 pseudonyme: store.getState().joinGameReducer.playerName,
                 token: token,
                 name: teamName,
-                // TODO gerer le cas d'erreur si position non obtenue
                 latitude:  store.getState().gameDataReducer.currentLocation.latitude,
                 longitude: store.getState().gameDataReducer.currentLocation.longitude,
             };
@@ -162,8 +161,8 @@ export const joinTeam = (teamName) =>{
                             if(store.getState().gameDataReducer.teamInfo.Checkpoint === 0){
                                 // get first point
                                 let params = {
-                                    namePlayer: store.getState().joinGameReducer.playerName,
-                                    nameTeam: store.getState().joinGameReducer.teamName
+                                    nameTeam: store.getState().joinGameReducer.teamName,
+                                    playercode: store.getState().gameDataReducer.game.PlayerCode
                                 };
                                 let request = prepareRequest(params,"POST");
                                 console.log("Requesting first beacon with /firstpoint");
@@ -191,7 +190,6 @@ export const joinTeam = (teamName) =>{
                                     })
                             } else {
                                 // get next checkpoint
-                                // TODO determine how to get !!!!!!!!!!!!!!!!!!!!!!!!
                                 console.log("First beacon to request is not the first point in track")
                                 dispatch(getNextBeaconNoConfirm())
                             }
