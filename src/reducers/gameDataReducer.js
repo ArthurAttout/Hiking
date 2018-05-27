@@ -2,7 +2,8 @@ import {
     STORE_SERVER_DATA, STORE_NEXT_BEACON, STORE_CURRENT_LOCATION, SET_MAP_VIEW_VISIBLE,
     STORE_BEARING, PLAYER_INSIDE_BEACON, RIDDLE_SOLVING_CLOSE_MODAL, RIDDLE_SOLVING_REQUEST_MODAL, SET_CURRENT_ANSWER,
     CONFIRM_RIDDLE_SOLVING, RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED, STORE_END_GAME_STATS,
-    STORE_TEAM_INFO, DECREMENT_TEAM_LIVE, SHRINK_ZONE, CENTER_REGION_CHANGED, STORE_TIMER_IDS
+    STORE_TEAM_INFO, DECREMENT_TEAM_LIVE, SHRINK_ZONE, CENTER_REGION_CHANGED, STORE_TIMER_IDS,
+    OUT_OF_ZONE_REQUEST_MODAL, OUT_OF_ZONE_CLOSE_MODAL
 } from '../actions/actionsGameData';
 
 let dataState = {
@@ -63,7 +64,8 @@ let dataState = {
     mapViewVisible: false,
     bearing: 0,
     isPlayerInsideBeacon: false,
-    modalVisible: false,
+    riddleSolvingModalVisible: false,
+    outOfZoneModalVisible: false,
     currentAnswer: "",
     correctAnswer: false,
     isSubmitButtonPressed: false,
@@ -134,12 +136,22 @@ export default function gameDataReducer (state = dataState, action) {
         case RIDDLE_SOLVING_CLOSE_MODAL:
             return{
                 ...state,
-                modalVisible: false,
+                riddleSolvingModalVisible: false,
             };
         case RIDDLE_SOLVING_REQUEST_MODAL:
             return{
                 ...state,
-                modalVisible: true,
+                riddleSolvingModalVisible: true,
+            };
+        case OUT_OF_ZONE_CLOSE_MODAL:
+            return{
+                ...state,
+                outOfZoneModalVisible: false,
+            };
+        case OUT_OF_ZONE_REQUEST_MODAL:
+            return{
+                ...state,
+                outOfZoneModalVisible: true,
             };
         case SET_CURRENT_ANSWER:
             return{

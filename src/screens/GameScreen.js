@@ -7,9 +7,11 @@ import {COLORS} from "../utils/constants";
 import MapView, { Marker, Circle } from 'react-native-maps'
 import {
     setMapViewVisible, storeCurrentLocation, storeNextBeacon, storeBearing,
-    checkPlayerInsideBeacon, storeEndGameStats, shrinkZone, refreshPosition, storeTimerIds, onRegionChange
+    checkPlayerInsideBeacon, storeEndGameStats, shrinkZone, refreshPosition, storeTimerIds, onRegionChange,
+    onCloseOutOfZoneModal, getLastBeacon
 } from "../actions/actionsGameData";
 import {getGameStats, getNextBeacon1} from "../config/FakeServer";
+import OutOfZoneModal from "./PlayerBeaconModals/OutOfZoneModal";
 
 class GScreen extends React.Component {
 
@@ -122,6 +124,7 @@ class GScreen extends React.Component {
                 />
                 {this.renderMainView()}
                 {this.renderBottomNavigation()}
+                {this.renderModal()}
             </View>
         );
     }
@@ -173,7 +176,6 @@ class GScreen extends React.Component {
                         strokeColor={'red'}
                         strokeWidth={2}
                     />
-
                 </MapView>
             );
         }
@@ -212,6 +214,15 @@ class GScreen extends React.Component {
             }
         }
     }
+
+    renderModal() {
+        return(
+            <OutOfZoneModal
+                modalVisible={this.props.outOfZoneModalVisible}
+                onCloseModal={this.props.onCloseOutOfZoneModal}
+                getLastBeacon={this.props.getLastBeacon}/>
+        );
+    }
 }
 
 
@@ -224,7 +235,8 @@ const mapStateToProps = (state, own) => {
         mapViewVisible: state.gameDataReducer.mapViewVisible,
         bearing: state.gameDataReducer.bearing,
         centerRegion: state.gameDataReducer.centerRegion,
-        ids: state.gameDataReducer.ids
+        ids: state.gameDataReducer.ids,
+        outOfZoneModalVisible: state.gameDataReducer.outOfZoneModalVisible
     }
 };
 
@@ -238,7 +250,9 @@ function mapDispatchToProps(dispatch, own) {
         shrinkZone: () => dispatch(shrinkZone()),
         refreshPosition: () => dispatch(refreshPosition()),
         storeTimerIds: () => dispatch(storeTimerIds()),
-        onRegionChange: (evt) => dispatch(onRegionChange(evt))
+        onRegionChange: (evt) => dispatch(onRegionChange(evt)),
+        onCloseOutOfZoneModal: () => dispatch(onCloseOutOfZoneModal()),
+        getLastBeacon: () => dispatch(getLastBeacon())
     }
 }
 

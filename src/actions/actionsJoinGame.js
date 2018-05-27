@@ -5,7 +5,7 @@ import {getGameTeams, isCodePlayer} from "../config/FakeServer";
 import RecapitulativeScreen from "../screens/RecapitulativeScreen";
 import {prepareRequest} from "../utils/constants";
 import FCM, {FCMEvent} from "react-native-fcm";
-import {storeNextBeacon, storeServerData} from "./actionsGameData";
+import {getNextBeaconNoConfirm, storeNextBeacon, storeServerData} from "./actionsGameData";
 
 export const SUBMIT = 'SUBMIT';
 export const SET_PLAYER_NAME= 'SET_PLAYER_NAME';
@@ -193,33 +193,7 @@ export const joinTeam = (teamName) =>{
                                 // get next checkpoint
                                 // TODO determine how to get !!!!!!!!!!!!!!!!!!!!!!!!
                                 console.log("First beacon to request is not the first point in track")
-                                /*let params = {
-                                    name: store.getState().joinGameReducer.playerName,
-                                };
-                                let request = prepareRequest(params,"POST");
-                                console.log("Requesting next beacon with /confirmpoint");
-                                console.log("Parameters");
-                                console.log(params);
-                                console.log("Request");
-                                console.log(request);
-                                fetch('https://hikong.masi-henallux.be:5000/firstpoint',request)
-                                    .then ((response) => {
-                                        console.log("Response :");
-                                        console.log(response);
-                                        if(response.ok){
-                                            return response.json()
-                                        }
-                                        else {
-                                            return {
-                                                hasError: true
-                                            }
-                                        }
-                                    })
-                                    .then ((json) => {
-                                        if(!json.hasError) {
-                                            dispatch(storeNextBeacon(json));
-                                        }
-                                    })*/
+                                dispatch(getNextBeaconNoConfirm())
                             }
                             navigatorRef.dispatch(NavigationActions.navigate({
                                 routeName: "GameScreen"

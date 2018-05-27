@@ -12,6 +12,12 @@ export const COLORS = Object.freeze(
         "Primary_accent":"#255d00",
     });
 
+export const GLOBAL_SETTINGS = Object.freeze(
+    {
+        "OUT_OF_ZONE_TIMEOUT": 30000,   // in ms
+    }
+);
+
 export const prepareRequest = (params,method) => {
 
     return {

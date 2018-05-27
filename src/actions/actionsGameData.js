@@ -21,6 +21,9 @@ export const DECREMENT_TEAM_LIVE = 'DECREMENT_TEAM_LIVE';
 export const SHRINK_ZONE = 'SHRINK_ZONE';
 export const CENTER_REGION_CHANGED = 'CENTER_REGION_CHANGED';
 export const STORE_TIMER_IDS = 'STORE_TIMER_IDS';
+export const OUT_OF_ZONE_CLOSE_MODAL = 'OUT_OF_ZONE_CLOSE_MODAL';
+export const OUT_OF_ZONE_REQUEST_MODAL = 'OUT_OF_ZONE_REQUEST_MODAL';
+
 
 
 export const storeTeamInfo = (teamInfo) => {
@@ -81,8 +84,7 @@ export const getNextBeacon = () => {
 export const getNextBeaconNoConfirm = () => {
     return (dispatch) => {
         let params = {
-            name: store.getState().joinGameReducer.playerName,
-            lives: store.getState().gameDataReducer.teamInfo.lives
+            nameTeam: store.getState().joinGameReducer.teamName,
         };
         let request = prepareRequest(params, "POST");
         console.log("Requesting next beacon with /nextpoint");
@@ -90,7 +92,7 @@ export const getNextBeaconNoConfirm = () => {
         console.log(params);
         console.log("Request");
         console.log(request);
-        fetch('https://hikong.masi-henallux.be:5000/confirmpoint', request)
+        fetch('https://hikong.masi-henallux.be:5000/nextpoint', request)
             .then((response) => {
                 console.log("Response :");
                 console.log(response);
@@ -107,8 +109,56 @@ export const getNextBeaconNoConfirm = () => {
                 // TODO gerer cas d'erreur
                 if (!json.hasError) {
                     dispatch(storeNextBeacon(json));
+                    // close modal if player had it open
+                    dispatch(onCloseRiddleSolvingModal());
+                    // check if this beacon is the last beacon
+                    if(store.getState().gameDataReducer.nextBeacon.lastBeacon) {
+                        // means the user who entered the answer had game over
+                        navigatorRef.dispatch(NavigationActions.navigate({
+                            routeName: "GameOverScreen"
+                        }));
+                    } else {
+                        navigatorRef.dispatch(NavigationActions.navigate({
+                            routeName: "GameScreen"
+                        }));
+                    }
+                }
+            })
+    }
+};
+
+export const getLastBeacon = () => {
+    return (dispatch) => {
+        let params = {
+            name: store.getState().joinGameReducer.playerName,
+        };
+        let request = prepareRequest(params, "POST");
+        console.log("Requesting next beacon with /lastpoint");
+        console.log("Parameters");
+        console.log(params);
+        console.log("Request");
+        console.log(request);
+        fetch('https://hikong.masi-henallux.be:5000/lastpoint', request)
+            .then((response) => {
+                console.log("Response :");
+                console.log(response);
+                if (response.ok) {
+                    return response.json()
+                }
+                else {
+                    return {
+                        hasError: true
+                    }
+                }
+            })
+            .then((json) => {
+                // TODO gerer cas d'erreur
+                if (!json.hasError) {
+                    dispatch(storeNextBeacon(json));
+                    // close modal if player had it open
+                    dispatch(onCloseRiddleSolvingModal());
                     navigatorRef.dispatch(NavigationActions.navigate({
-                        routeName: "GameScreen"
+                        routeName: "GameOverScreen"
                     }));
                 }
             })
@@ -251,26 +301,35 @@ export const setMapViewVisible = (mapViewVisible) =>{
     }
 };
 
-export const onCloseModal = () => {
+export const onCloseRiddleSolvingModal = () => {
     return{
         type:RIDDLE_SOLVING_CLOSE_MODAL,
     }
 };
 
-export const onRequestModal = () => {
+export const onRequestRiddleSolvingModal = () => {
     return{
         type: RIDDLE_SOLVING_REQUEST_MODAL,
+    }
+};
+
+export const onCloseOutOfZoneModal = () => {
+    return{
+        type:OUT_OF_ZONE_CLOSE_MODAL,
+    }
+};
+
+export const onRequestOutOfZoneModal = () => {
+    return{
+        type: OUT_OF_ZONE_REQUEST_MODAL,
     }
 };
 
 export const onConfirmRiddleSolving = ()=>{
     if(store.getState().gameDataReducer.currentAnswer.toLowerCase() ===
         store.getState().gameDataReducer.nextBeacon.riddleAnswer.toLowerCase()) {
-
-        // TODO replace with real server
-        // TODO use confirmpoint and send teamInfo udpdate
         store.dispatch(getNextBeacon());
-        store.dispatch(onCloseModal());
+        store.dispatch(onCloseRiddleSolvingModal());
         navigatorRef.dispatch(NavigationActions.navigate({routeName:"GameScreen"}));
         return {
             type: CONFIRM_RIDDLE_SOLVING,
@@ -280,10 +339,7 @@ export const onConfirmRiddleSolving = ()=>{
     } else {
         store.dispatch(decrementTeamLive());
         if(store.getState().gameDataReducer.teamInfo.lives === 0){
-            store.dispatch(onCloseModal());
-            //TODO navigate to a GAME OVER screen then to the last beacon
-            store.dispatch(getNextBeacon());
-            navigatorRef.dispatch(NavigationActions.navigate({routeName:"GameOverScreen"}));
+            store.dispatch(gameOver())
         }
         return {
             type: CONFIRM_RIDDLE_SOLVING,
@@ -298,6 +354,13 @@ export const decrementTeamLive = () => {
         type: DECREMENT_TEAM_LIVE,
         teamLives: (store.getState().gameDataReducer.teamInfo.lives - 1)
     }
+};
+
+export const gameOver = () => {
+    store.dispatch(onCloseOutOfZoneModal());
+    //TODO navigate to a GAME OVER screen then to the last beacon
+    store.dispatch(getNextBeacon());
+    navigatorRef.dispatch(NavigationActions.navigate({routeName:"GameOverScreen"}));
 };
 
 export const setCurrentAnswer = (answer) => {
@@ -350,7 +413,7 @@ export const shrinkZone = () => {
     );
 
     if(playerDistanceToCenter > store.getState().gameDataReducer.settings.radius){
-
+        store.dispatch(onRequestOutOfZoneModal());
     }
 
     return{
@@ -371,6 +434,17 @@ export const storeTimerIds = (ids) => {
     return {
         type: STORE_TIMER_IDS,
         ids : ids
+    }
+};
+
+export const riddleTimeOut = () => {
+    // make sure team has enough life points
+    store.dispatch(decrementTeamLive())
+    // show toast with answer to the riddle
+    if(store.getState().gameDataReducer.teamInfo.lives <= 0){
+        // go to game over
+    } else {
+        // confirm point and move on
     }
 };
 

@@ -1,10 +1,8 @@
 import React from 'react';
 import { AppRegistry, Text, View, StyleSheet, TouchableNativeFeedback, StatusBar, Image } from 'react-native';
-import { registerKilledListener, registerAppListener } from "../config/firebase/Listeners";
-import FCM from "react-native-fcm";
+import { registerKilledListener } from "../config/firebase/Listeners";
 import {COLORS} from '../utils/constants'
 import {connect} from "react-redux";
-import {fetchTeams, joinTeam} from "../actions/actionsJoinGame";
 import {storeCurrentLocation} from "../actions/actionsGameData";
 
 class HScreen extends React.Component {

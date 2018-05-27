@@ -2,8 +2,9 @@ import React from 'react';
 import Modal from "react-native-modal";
 import {StyleSheet, ScrollView, TextInput,
     View, Image, Text,FlatList, TouchableNativeFeedback, Dimensions, Vibration} from 'react-native';
-import {COLORS, GAME_MODES} from "../../utils/constants";
+import {COLORS, GAME_MODES, GLOBAL_SETTINGS} from "../../utils/constants";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import TimerCountdown from "react-native-timer-countdown";
 
 export default class SolveRiddleModal extends React.Component{
 
@@ -19,11 +20,11 @@ export default class SolveRiddleModal extends React.Component{
 
         return(
             <Modal
-                onBackdropPress={() => {this.props.onCloseModal()}}
-                isVisible={this.props.modalVisible}>
+                onBackdropPress={() => {this.props.onCloseRiddleSolvingModal()}}
+                isVisible={this.props.riddleSolvingModalVisible}>
 
-                <View style={styles.container}>
-
+                <View style={(this.props.timerRiddle !== 0) ? styles.containerRiddleTimer : styles.container}>
+                    {this.renderTimer()}
                     <View
                         style={styles.textInputView}>
                         <TextInput
@@ -44,7 +45,7 @@ export default class SolveRiddleModal extends React.Component{
                         <TouchableNativeFeedback
                             background={TouchableNativeFeedback.Ripple('grey')}
                             style={styles.button}
-                            onPress={() => {this.props.onCloseModal()}}
+                            onPress={() => {this.props.onCloseRiddleSolvingModal()}}
                             delayPressIn={0}>
                             <Text style={styles.buttonText}>
                                 Cancel
@@ -67,6 +68,24 @@ export default class SolveRiddleModal extends React.Component{
                 </View>
             </Modal>
         )
+    }
+
+    renderTimer() {
+        if(this.props.timerRiddle !== 0) {
+            return (
+                <View style={styles.countdownView}>
+                    <TimerCountdown
+                        initialSecondsRemaining={this.props.timerRiddle*1000}        // given in seconds
+                        onTimeElapsed={() => {
+                            // TODO remove 2 life points and move on
+                            this.props.riddleTimeOut();
+                        }}
+                        allowFontScaling={true}
+                        style={styles.countdownTimer}
+                    />
+                </View>
+            );
+        }
     }
 
     renderStars() {
@@ -95,10 +114,20 @@ export default class SolveRiddleModal extends React.Component{
 
 const styles = StyleSheet.create({
     container: {
-        //width:'100%',
+        width:'100%',
         //height:'35%',
-        width: Dimensions.get('window').width,
+        //width: Dimensions.get('window').width,
         height: (Dimensions.get('window').height * 0.35),
+        backgroundColor:'#ffffff',
+        justifyContent: 'center',
+        alignItems:'center',
+        flexDirection:'column'
+    },
+    containerRiddleTimer: {
+        width:'100%',
+        //height:'35%',
+        //width: Dimensions.get('window').width,
+        height: (Dimensions.get('window').height * 0.50),
         backgroundColor:'#ffffff',
         justifyContent: 'center',
         alignItems:'center',
@@ -120,6 +149,8 @@ const styles = StyleSheet.create({
     },
     stars:{
         //flex:1,
+        justifyContent:'center',
+        alignContent:'center',
         flexDirection:'row',
         flexWrap: 'wrap',
     },
@@ -136,4 +167,15 @@ const styles = StyleSheet.create({
         fontSize:19,
         padding:15
     },
+    countdownView:{
+        flex:1,
+        justifyContent:'center',
+        alignContent:'center',
+        alignSelf:'center',
+        //width:'100%',
+        //height:'100%'
+    },
+    countdownTimer: {
+        fontSize: 50
+    }
 });

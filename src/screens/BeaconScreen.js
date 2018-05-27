@@ -8,7 +8,8 @@ import {COLORS, GAME_MODES} from "../utils/constants";
 import {getNextBeacon2} from "../config/FakeServer";
 import {
     getNextBeacon, getNextBeaconNoConfirm,
-    onCloseModal, onConfirmRiddleSolving, onRequestModal, setCurrentAnswer,
+    onCloseOutOfZoneModal, onCloseRiddleSolvingModal, onConfirmRiddleSolving, onRequestOutOfZoneModal,
+    onRequestRiddleSolvingModal, riddleTimeOut, setCurrentAnswer,
     storeNextBeacon, submitButtonPressed
 } from "../actions/actionsGameData";
 import SolveRiddleModal from "./PlayerBeaconModals/SolveRiddleModal";
@@ -32,16 +33,15 @@ class BScreen extends React.Component {
     }
 
     componentDidMount() {
-        FCM.getFCMToken().then((t) => console.log(t))
+        FCM.getFCMToken().then((t) => console.log(t));
         FCM.on(FCMEvent.Notification, notif => {
             console.log("notif received");
             console.log(notif);
 
             if(notif['confirmPoint']){ //Expected notification
-                // TODO get nextBeaconNoConfirm
-                this.props.getNextBeaconNoConfirm()
-                const { navigate } = this.props.navigation;
-                navigate("GameScreen");
+                this.props.getNextBeaconNoConfirm();
+            } else if(notif['gameOver']) {
+                this.props.getLastBeacon();
             }
         });
     }
@@ -66,7 +66,7 @@ class BScreen extends React.Component {
                             source={{uri: this.props.nextBeacon.iconURL }}/>
                         <Text style={styles.beaconText}>
                             {(this.props.game.GameMode === GAME_MODES.NORMAL) ?
-                                "You successfully reached the " + this.props.nextBeacon.name + " beacon!"
+                                "You successfully reached the " + (this.props.nextBeacon.name !== null) ? this.props.nextBeacon.name : "" + " beacon!"
                                 :
                                 this.props.nextBeacon.statement}</Text>
                     </View>
@@ -90,23 +90,25 @@ class BScreen extends React.Component {
             this.props.getNextBeacon();
         } else {
             // TODO manage solving riddles
-            this.props.onRequestModal();
+            this.props.onRequestRiddleSolvingModal();
         }
     }
 
     _renderModal(){
         return(
         <SolveRiddleModal
-            modalVisible={this.props.modalVisible}
+            modalVisible={this.props.riddleSolvingModalVisible}
             currentAnswer = {this.props.currentAnswer}
             correctAnswer = {this.props.correctAnswer}
-            gameData = {this.props.game}
+            game = {this.props.game}
             teamInfo = {this.props.teamInfo}
             isSubmitButtonPressed = {this.props.isSubmitButtonPressed}
             submitButtonPressed = {this.props.submitButtonPressed}
             setCurrentAnswer={this.props.setCurrentAnswer}
             onConfirmRiddleSolving={this.props.onConfirmRiddleSolving}
-            onCloseModal={this.props.onCloseModal}/>
+            onCloseModal={this.props.onCloseRiddleSolvingModal}
+            timerRiddle={this.props.settings.timerRiddle}
+            riddleTimeOut={this.props.riddleTimeOut}/>
         );
     }
 }
@@ -115,10 +117,11 @@ class BScreen extends React.Component {
 const mapStateToProps = (state, own) => {
     return {
         ...own,
-        gameData: state.gameDataReducer.gameData,
+        game: state.gameDataReducer.game,
+        settings: state.gameDataReducer.settings,
         teamInfo: state.gameDataReducer.teamInfo,
         nextBeacon: state.gameDataReducer.nextBeacon,
-        modalVisible: state.gameDataReducer.modalVisible,
+        riddleSolvingModalVisible: state.gameDataReducer.riddleSolvingModalVisible,
         currentAnswer: state.gameDataReducer.currentAnswer,
         correctAnswer: state.gameDataReducer.correctAnswer,
         isSubmitButtonPressed: state.gameDataReducer.isSubmitButtonPressed
@@ -129,13 +132,14 @@ function mapDispatchToProps(dispatch, own) {
     return {
         ...own,
         storeNextBeacon: (nextBeacon) => dispatch(storeNextBeacon(nextBeacon)),
-        onCloseModal: () => dispatch(onCloseModal()),
-        onRequestModal: () => dispatch(onRequestModal()),
+        onCloseRiddleSolvingModal: () => dispatch(onCloseRiddleSolvingModal()),
+        onRequestRiddleSolvingModal: () => dispatch(onRequestRiddleSolvingModal()),
         onConfirmRiddleSolving: () => dispatch(onConfirmRiddleSolving()),
         setCurrentAnswer: (answer) => dispatch(setCurrentAnswer(answer)),
         submitButtonPressed: () => dispatch(submitButtonPressed()),
         getNextBeacon: () => dispatch(getNextBeacon()),
         getNextBeaconNoConfirm: () => dispatch(getNextBeaconNoConfirm()),
+        riddleTimeOut: () => dispatch(riddleTimeOut()),
     }
 }
 
