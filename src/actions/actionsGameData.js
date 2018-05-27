@@ -3,6 +3,7 @@ import {calculateBearing, calculateDistance} from "../utils/geometryUtils";
 import {navigatorRef} from "../../App";
 import {NavigationActions} from 'react-navigation';
 import {prepareRequest} from "../utils/constants";
+import {ToastAndroid} from "react-native";
 
 export const STORE_SERVER_DATA = 'STORE_SERVER_DATA';
 export const STORE_NEXT_BEACON = 'STORE_NEXT_BEACON';
@@ -23,7 +24,11 @@ export const CENTER_REGION_CHANGED = 'CENTER_REGION_CHANGED';
 export const STORE_TIMER_IDS = 'STORE_TIMER_IDS';
 export const OUT_OF_ZONE_CLOSE_MODAL = 'OUT_OF_ZONE_CLOSE_MODAL';
 export const OUT_OF_ZONE_REQUEST_MODAL = 'OUT_OF_ZONE_REQUEST_MODAL';
-
+export const UPDATE_TEAM_LIVES = 'UPDATE_TEAM_LIVES';
+export const STORE_BACKOFF_ID = 'STORE_BACKOFF_ID';
+export const SET_BACKOFF_PROGRESS_STATUS = 'SET_BACKOFF_PROGRESS_STATUS';
+export const UPDATE_TIMER = 'UPDATE_TIMER';
+export const RESET_TIMER ='RESET_TIMER';
 
 
 export const storeTeamInfo = (teamInfo) => {
@@ -33,9 +38,7 @@ export const storeTeamInfo = (teamInfo) => {
     }
 };
 
-// TODO view what to store
 export const storeServerData = (json) =>{
-    // TODO filter based on game mode
     return{
         type:STORE_SERVER_DATA,
         admin: json.admin,
@@ -47,7 +50,8 @@ export const storeServerData = (json) =>{
 export const getNextBeacon = () => {
     return (dispatch) => {
         let params = {
-            name: store.getState().joinGameReducer.playerName,
+            nameTeam: store.getState().joinGameReducer.teamInfo.name,
+            namePlayer: store.getState().joinGameReducer.playerName,
             lives: store.getState().gameDataReducer.teamInfo.lives
         };
         let request = prepareRequest(params, "POST");
@@ -81,53 +85,62 @@ export const getNextBeacon = () => {
     }
 };
 
-export const getNextBeaconNoConfirm = () => {
+export const getNextBeaconNoConfirm = (updatedLives) => {
     return (dispatch) => {
-        let params = {
-            nameTeam: store.getState().joinGameReducer.teamName,
-        };
-        let request = prepareRequest(params, "POST");
-        console.log("Requesting next beacon with /nextpoint");
-        console.log("Parameters");
-        console.log(params);
-        console.log("Request");
-        console.log(request);
-        fetch('https://hikong.masi-henallux.be:5000/nextpoint', request)
-            .then((response) => {
-                console.log("Response :");
-                console.log(response);
-                if (response.ok) {
-                    return response.json()
-                }
-                else {
-                    return {
-                        hasError: true
+        dispatch(updateTeamLives(updatedLives));
+        if(store.getState().gameDataReducer.settings !== 0 && store.getState().gameDataReducer.teamInfo.lives <= 0) {
+            // player who confirmed point got a game over
+            store.dispatch(getLastBeacon());
+        } else {
+            let params = {
+                nameTeam: store.getState().joinGameReducer.teamName,
+                playercode: store.getState().gameDataReducer.game.PlayerCode
+            };
+            let request = prepareRequest(params, "POST");
+            console.log("Requesting next beacon with /nextpoint");
+            console.log("Parameters");
+            console.log(params);
+            console.log("Request");
+            console.log(request);
+            fetch('https://hikong.masi-henallux.be:5000/nextpoint', request)
+                .then((response) => {
+                    console.log("Response :");
+                    console.log(response);
+                    if (response.ok) {
+                        return response.json()
                     }
-                }
-            })
-            .then((json) => {
-                // TODO gerer cas d'erreur
-                if (!json.hasError) {
-                    dispatch(storeNextBeacon(json));
-                    // close modal if player had it open
-                    dispatch(onCloseRiddleSolvingModal());
-                    // check if this beacon is the last beacon
-                    if(store.getState().gameDataReducer.nextBeacon.lastBeacon) {
-                        // means the user who entered the answer had game over
-                        navigatorRef.dispatch(NavigationActions.navigate({
-                            routeName: "GameOverScreen"
-                        }));
-                    } else {
+                    else {
+                        return {
+                            hasError: true
+                        }
+                    }
+                })
+                .then((json) => {
+                    // TODO gerer cas d'erreur
+                    if (!json.hasError) {
+                        dispatch(storeNextBeacon(json));
+                        // close modal if player had it open
+                        dispatch(onCloseRiddleSolvingModal());
+                        // check if this beacon is the last beacon
                         navigatorRef.dispatch(NavigationActions.navigate({
                             routeName: "GameScreen"
                         }));
                     }
-                }
-            })
+                })
+        }
     }
 };
 
+export const updateTeamLives = (updatedLives) => {
+    return {
+        type: UPDATE_TEAM_LIVES,
+        lives: updatedLives
+    }
+
+};
+
 export const getLastBeacon = () => {
+    // TODO implement the API
     return (dispatch) => {
         let params = {
             name: store.getState().joinGameReducer.playerName,
@@ -155,8 +168,9 @@ export const getLastBeacon = () => {
                 // TODO gerer cas d'erreur
                 if (!json.hasError) {
                     dispatch(storeNextBeacon(json));
-                    // close modal if player had it open
+                    // close any modal as a precaution
                     dispatch(onCloseRiddleSolvingModal());
+                    dispatch(onCloseOutOfZoneModal());
                     navigatorRef.dispatch(NavigationActions.navigate({
                         routeName: "GameOverScreen"
                     }));
@@ -200,15 +214,15 @@ export const refreshPosition = () => {
             longitude: store.getState().gameDataReducer.currentLocation.longitude
         };
         let request = prepareRequest(params, "PUT");
-        console.log("Refreshing position with /refreshpos");
+        /*console.log("Refreshing position with /refreshpos");
         console.log("Parameters");
         console.log(params);
         console.log("Request");
-        console.log(request);
+        console.log(request);*/
         fetch('https://hikong.masi-henallux.be:5000/refreshpos', request)
             .then((response) => {
-                console.log("Response :");
-                console.log(response);;
+                /*console.log("Response :");
+                console.log(response);*/
                 if (response.ok) {
                     return response.json()
                 }
@@ -231,7 +245,6 @@ export const checkPlayerInsideBeacon = () => {
         if (calculateDistance(store.getState().gameDataReducer.currentLocation,
                 store.getState().gameDataReducer.nextBeacon) < 5) {
             if (store.getState().gameDataReducer.nextBeacon.lastBeacon === true) {
-                //TODO get track stat from server
                 let params = {
                     playercode: store.getState().gameDataReducer.game.PlayerCode,
                     name: store.getState().gameDataReducer.teamInfo.name
@@ -327,7 +340,7 @@ export const onRequestOutOfZoneModal = () => {
 
 export const onConfirmRiddleSolving = ()=>{
     if(store.getState().gameDataReducer.currentAnswer.toLowerCase() ===
-        store.getState().gameDataReducer.nextBeacon.riddleAnswer.toLowerCase()) {
+        store.getState().gameDataReducer.nextBeacon.answer.toLowerCase()) {
         store.dispatch(getNextBeacon());
         store.dispatch(onCloseRiddleSolvingModal());
         navigatorRef.dispatch(NavigationActions.navigate({routeName:"GameScreen"}));
@@ -357,10 +370,10 @@ export const decrementTeamLive = () => {
 };
 
 export const gameOver = () => {
-    store.dispatch(onCloseOutOfZoneModal());
-    //TODO navigate to a GAME OVER screen then to the last beacon
-    store.dispatch(getNextBeacon());
-    navigatorRef.dispatch(NavigationActions.navigate({routeName:"GameOverScreen"}));
+    store.dispatch(getLastBeacon());
+    //previously used when not lastbeacon API and serveur automatically send out the last point on a gameover
+    //store.dispatch(getNextBeacon());
+    //navigatorRef.dispatch(NavigationActions.navigate({routeName:"GameOverScreen"}));
 };
 
 export const setCurrentAnswer = (answer) => {
@@ -400,7 +413,8 @@ export const shrinkZone = () => {
     + (store.getState().gameDataReducer.settings.radius -
             store.getState().gameDataReducer.settings.tresholdShrink) + "m");
 
-    // TODO check is player is outside of the zone (measure distance between user location and central point and compare to radius)
+    // check if player is outside of the zone
+    // measure distance between user location and central point and compare to radius
     let playerDistanceToCenter = calculateDistance(
         {
             latitude: store.getState().gameDataReducer.currentLocation.latitude,
@@ -437,14 +451,43 @@ export const storeTimerIds = (ids) => {
     }
 };
 
+export const storeBackOffId = (backOffTimeoutID) => {
+    return {
+        type: STORE_BACKOFF_ID,
+        backOffTimeoutID: backOffTimeoutID
+    }
+};
+
 export const riddleTimeOut = () => {
-    // make sure team has enough life points
-    store.dispatch(decrementTeamLive())
-    // show toast with answer to the riddle
+    store.dispatch(decrementTeamLive());
+    store.dispatch(decrementTeamLive());
+    ToastAndroid.show('The answer was: ' + store.getState().gameDataReducer.nextBeacon.answer,ToastAndroid.LONG);
     if(store.getState().gameDataReducer.teamInfo.lives <= 0){
-        // go to game over
+        store.dispatch(getLastBeacon());
     } else {
-        // confirm point and move on
+        store.dispatch(getNextBeacon());
+    }
+};
+
+export const setBackOffProgressStatus = (boolean) => {
+    return {
+        type: SET_BACKOFF_PROGRESS_STATUS,
+        showBackOffProgressStatus: boolean
+    }
+};
+
+export const updateTimer = (secondsRemaining) => {
+    return {
+        type: UPDATE_TIMER,
+        timerSecondsRemaining: secondsRemaining
+    }
+
+};
+
+export const resetTimer = () => {
+    return {
+        type: RESET_TIMER,
+        timerSecondsRemaining: store.getState().gameDataReducer.settings.timerRiddle
     }
 };
 
