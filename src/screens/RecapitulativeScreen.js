@@ -133,13 +133,14 @@ class RecapitulativeScreen extends React.Component {
                         distance:           team.track.totalDistance,
                         heighDifference:    team.track.altitudeDelta,
                         beacons:            team.track.path.map((beacon) => {
+                            let filteredBeacon = team.track.beacons.filter((b) => b.id === beacon.id)[0];
                             return{
-                                name:       RecapitulativeScreen.standardizeText(beacon.name),
-                                latitude:   beacon.coordinate.latitude,
-                                longitude:  beacon.coordinate.longitude,
-                                iconURL:    RecapitulativeScreen.standardizeText(beacon.imageServerURL),
-                                qrCodeID:   RecapitulativeScreen.standardizeText(beacon.qrCode),
-                                riddle:     RecapitulativeScreen.standardizeRiddle(beacon.riddle)
+                                name:       RecapitulativeScreen.standardizeText(filteredBeacon.name),
+                                latitude:   beacon.latitude,
+                                longitude:  beacon.longitude,
+                                iconURL:    RecapitulativeScreen.standardizeText(filteredBeacon.imageServerURL),
+                                qrCodeID:   RecapitulativeScreen.standardizeText(filteredBeacon.qrCode),
+                                riddle:     RecapitulativeScreen.standardizeRiddle(filteredBeacon.riddle)
                             }
                         })
                     }
@@ -147,11 +148,13 @@ class RecapitulativeScreen extends React.Component {
             })
         };
 
+        console.log(params);
 
         let request = prepareRequest(params,"POST");
-        console.log(request);
+
         fetch('https://hikong.masi-henallux.be:5000/game',request)
             .then ((response) => {
+                console.log(response);
                 return response.json()
             })
             .then ((json) => {
@@ -159,6 +162,7 @@ class RecapitulativeScreen extends React.Component {
                 navigate('GameCreatedScreen',json);
             })
             .catch((error) => {
+
                 console.error("Error  : " + error);
             });
     }
