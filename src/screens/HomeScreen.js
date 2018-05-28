@@ -1,10 +1,15 @@
 import React from 'react';
-import { AppRegistry, Text, View, StyleSheet, TouchableNativeFeedback, StatusBar, Image } from 'react-native';
+import {
+    AppRegistry, Text, View, StyleSheet, TouchableNativeFeedback, StatusBar, Image,
+    BackHandler, DeviceEventEmitter, ToastAndroid, Alert
+} from 'react-native';
 import { registerKilledListener } from "../config/firebase/Listeners";
 import {COLORS} from '../utils/constants'
 import {connect} from "react-redux";
 import {storeCurrentLocation} from "../actions/actionsGameData";
 import FCM, {FCMEvent} from "react-native-fcm";
+import LocationServicesDialogBox from "react-native-android-location-services-dialog-box";
+import store from "../config/store";
 
 class HScreen extends React.Component {
     static navigationOptions = {
@@ -15,6 +20,10 @@ class HScreen extends React.Component {
         super(props);
         this._onPressJoinGame = this._onPressJoinGame.bind(this);
         this._onPressNewGame = this._onPressNewGame.bind(this);
+    }
+
+    componentWillUnmount() {
+        LocationServicesDialogBox.stopListener(); // Stop the "locationProviderStatusChange" listener
     }
 
     componentWillMount() {
@@ -28,34 +37,10 @@ class HScreen extends React.Component {
 
         });
         console.log("aaaaa");
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                console.log(position);
-                const currentPosition = {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
-                    altitude: position.coords.altitude,
-                    heading: position.coords.heading,
-                    speed: position.coords.speed,
-                    accuracy: position.coords.accuracy,
-                    error: null,
-                };
 
-                this.props.storeCurrentLocation(currentPosition);
-            },
-            // TODO manage error when GPS is not activated
-            (error) => {
-                const currentPosition = {
-                    error: error.message,
-                };
-                this.props.storeCurrentLocation(currentPosition);
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 20000,
-                maximumAge: 1000
-            },
-        );
+        DeviceEventEmitter.addListener('locationProviderStatusChange', function(status) { // only trigger when "providerListener" is enabled
+            console.log(status); //  status => {enabled: false, status: "disabled"} or {enabled: true, status: "enabled"}
+        });
     }
 
     render() {
@@ -96,13 +81,103 @@ class HScreen extends React.Component {
     }
 
     _onPressJoinGame() {
-        const { navigate } = this.props.navigation;
-        navigate('JoinGameScreen');
+        LocationServicesDialogBox.checkLocationServicesIsEnabled({
+            message: "<h2>Use Location ?</h2>This app wants to change your device settings:<br/><br/>Use GPS, Wi-Fi, and cell network for location<br/><br/><a href='#'>Learn more</a>",
+            ok: "YES",
+            cancel: "NO",
+            enableHighAccuracy: true, // true => GPS AND NETWORK PROVIDER, false => GPS OR NETWORK PROVIDER
+            showDialog: true, // false => Opens the Location access page directly
+            openLocationServices: true, // false => Directly catch method is called if location services are turned off
+            preventOutSideTouch: true, //true => To prevent the location services popup from closing when it is clicked outside
+            preventBackClick: true, //true => To prevent the location services popup from closing when it is clicked back button
+            providerListener: true // true ==> Trigger "locationProviderStatusChange" listener when the location state changes
+        }).then(function(success) {
+                // success => {alreadyEnabled: true, enabled: true, status: "enabled"}
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        console.log(position);
+                        const currentPosition = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            altitude: position.coords.altitude,
+                            heading: position.coords.heading,
+                            speed: position.coords.speed,
+                            accuracy: position.coords.accuracy,
+                            error: null,
+                        };
+
+                        this.props.storeCurrentLocation(currentPosition);
+                    },
+                    // TODO manage error when GPS is not activated
+                    (error) => {
+                        const currentPosition = {
+                            error: error.message,
+                        };
+                        this.props.storeCurrentLocation(currentPosition);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 20000,
+                        maximumAge: 1000
+                    },
+                );
+                const { navigate } = this.props.navigation;
+                navigate('JoinGameScreen');
+            }.bind(this)
+        ).catch((error) => {
+            console.log(error.message);
+            ToastAndroid.show('Location services required, please enable them!',ToastAndroid.LONG);
+        });
     }
 
     _onPressNewGame() {
-        const { navigate } = this.props.navigation;
-        navigate('ChooseModeScreen');
+        LocationServicesDialogBox.checkLocationServicesIsEnabled({
+            message: "<h2>Use Location ?</h2>This app wants to change your device settings:<br/><br/>Use GPS, Wi-Fi, and cell network for location<br/><br/><a href='#'>Learn more</a>",
+            ok: "YES",
+            cancel: "NO",
+            enableHighAccuracy: true, // true => GPS AND NETWORK PROVIDER, false => GPS OR NETWORK PROVIDER
+            showDialog: true, // false => Opens the Location access page directly
+            openLocationServices: true, // false => Directly catch method is called if location services are turned off
+            preventOutSideTouch: true, //true => To prevent the location services popup from closing when it is clicked outside
+            preventBackClick: true, //true => To prevent the location services popup from closing when it is clicked back button
+            providerListener: true // true ==> Trigger "locationProviderStatusChange" listener when the location state changes
+        }).then(function(success) {
+                // success => {alreadyEnabled: true, enabled: true, status: "enabled"}
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        console.log(position);
+                        const currentPosition = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            altitude: position.coords.altitude,
+                            heading: position.coords.heading,
+                            speed: position.coords.speed,
+                            accuracy: position.coords.accuracy,
+                            error: null,
+                        };
+
+                        this.props.storeCurrentLocation(currentPosition);
+                    },
+                    // TODO manage error when GPS is not activated
+                    (error) => {
+                        const currentPosition = {
+                            error: error.message,
+                        };
+                        this.props.storeCurrentLocation(currentPosition);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 20000,
+                        maximumAge: 1000
+                    },
+                );
+                const { navigate } = this.props.navigation;
+                navigate('ChooseModeScreen');
+            }.bind(this)
+        ).catch((error) => {
+            console.log(error.message);
+            ToastAndroid.show('Location services required, please enable them!',ToastAndroid.LONG);
+        });
     }
 }
 

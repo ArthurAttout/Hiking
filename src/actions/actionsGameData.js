@@ -223,7 +223,7 @@ export const storeCurrentLocation = (currentLocation) =>{
             type: CANCEL
         }
     }
-    //store.dispatch(setCurrentLocationAcquired(true));
+    store.dispatch(setCurrentLocationAcquired(true));
     return{
         type:STORE_CURRENT_LOCATION,
         latitude: currentLocation.latitude,

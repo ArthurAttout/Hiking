@@ -50,7 +50,8 @@ class GScreen extends React.Component {
                         latitudeDelta: 0.01,
                         longitudeDelta: 0.01,
                     }
-                )
+                );
+                this.props.checkPlayerInsideBeacon();
             },
             // TODO manage error when GPS is not activated
             (error) => {

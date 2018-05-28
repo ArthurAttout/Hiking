@@ -3,6 +3,7 @@ package com.hiking;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.showlocationservicesdialogbox.LocationServicesDialogBoxPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.reactlibrary.RNUUIDGeneratorPackage;
 import com.horcrux.svg.SvgPackage;
@@ -32,6 +33,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new LocationServicesDialogBoxPackage(),
             new VectorIconsPackage(),
             new RNUUIDGeneratorPackage(),
             new SvgPackage(),
