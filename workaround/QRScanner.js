@@ -208,7 +208,7 @@ class QRScannerRectView extends Component {
 
     //绘制扫描线
     _renderScanBar() {
-      if(!this.props.isShowScanBar) return;
+        if(!this.props.isShowScanBar) return;
         if (this.props.scanBarImage) {
             return <Image style={ {resizeMode: 'contain', width: this.getScanImageWidth()}}
                           source={this.props.scanBarImage}/>

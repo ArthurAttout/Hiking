@@ -1,17 +1,20 @@
 
 import store from '../config/store'
+import {fetchingTeams} from "./actionsJoinGame";
 export const FORCE_REFRESH= 'FORCE_REFRESH';
 export const CHANGE_GAMEMASTER_SIDE_MENU_OPENED = 'CHANGE_GAMEMASTER_SIDE_MENU_OPENED';
 export const SET_CONTINUOUS_REFRESH = 'SET_CONTINUOUS_REFRESH';
 export const UPDATE_POSITIONS = 'UPDATE_POSITIONS';
 export const FETCHING_NEW_POSITIONS  = 'FETCHING_NEW_POSITIONS';
 export const SET_INTERVAL_ID = "SET_INTERVAL_ID";
+export const CANCEL = 'CANCEL';
 export const FETCHED_NEW_POSITIONS= 'FETCHED_NEW_POSITIONS';
 export const REQUEST_MODAL_TEAM = 'REQUEST_MODAL_TEAM';
 export const START_GAME = 'START_GAME';
 export const ERROR_START = 'ERROR_START';
 export const FETCHING_START= 'FETCHING_START';
 export const START_FETCHED = 'START_FETCHED';
+export const TEAMS_FETCHED = 'TEAMS_FETCHED___';
 
 export const changeSideMenuOpened = (isOpen) => {
     return{
@@ -33,25 +36,24 @@ export const setContinuousRefresh = (value) => {
     }
 };
 
+export const cancel = () => {
+    return{
+        type:CANCEL
+    }
+};
+
 export const updatePositions = () => {
     return dispatch => {
+        if(!store.getState().gameMasterScreenReducer.continuousRefresh) dispatch(cancel());
+        console.log("positions updated !");
+        let gameCode = store.getState().joinGameReducer.gameCode;
         dispatch(fetchingNewPositions());
-        fetch("http://jservice.io/api/random")
+        fetch("https://hikong.masi-henallux.be:5000/" + gameCode + "/getTeamsStats")
             .then(function(response) {
                 return response.json();
             })
-            .then(function(result) {
-                dispatch(newPositionsFetched({
-                    teams:store.getState().gameMasterScreenReducer.teams.map((team) => {
-                        return{
-                            ...team,
-                            coordinate:{
-                                latitude: team.coordinate.latitude + 0.0001,
-                                longitude: team.coordinate.longitude + 0.0001,
-                            }
-                        }
-                    })
-                }))
+            .then(function(teams) {
+                dispatch(newPositionsFetched(teams))
         });
     }
 };
@@ -62,16 +64,39 @@ export const fetchingNewPositions = () => {
     }
 };
 
-export const newPositionsFetched = (positions) => {
+export const newPositionsFetched = (teams) => {
     return{
         type: FETCHED_NEW_POSITIONS,
-        newPositions: positions.teams,
+        teams: teams,
     }
 };
 
-export const showBeaconsOfTeam = (team) => {
+
+export const retrieveTeams = () => {
+    return dispatch =>{
+        let gameCode = store.getState().joinGameReducer.gameCode;
+        fetch("https://hikong.masi-henallux.be:5000/" + gameCode + "/getTeamsStats")
+            .then((response) => {
+                if(response.ok){
+                    return response.json();
+                }
+                return {
+                    hasError: true
+                }
+            })
+            .then((json) => {
+                if(!json.hasError){
+                    dispatch(teamsFetched(json));
+                }
+            });
+        dispatch(fetchingTeams());
+    }
+};
+
+export const teamsFetched = (teams) => {
     return{
-        type:""
+        type:TEAMS_FETCHED,
+        teams:teams
     }
 };
 
@@ -81,7 +106,8 @@ export const startGame = () => {
         fetch("https://hikong.masi-henallux.be:5000/" + gameCode +"/BattleReady")
             .then((response) => {
                 if(response.ok){
-                    dispatch(startFetched())
+                    dispatch(startFetched());
+                    dispatch(retrieveTeams());
                 }
                 else {
                     dispatch(errorStart("An error has occured, please try again later"));

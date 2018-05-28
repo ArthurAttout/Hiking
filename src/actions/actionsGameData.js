@@ -4,6 +4,7 @@ import {navigatorRef} from "../../App";
 import {NavigationActions} from 'react-navigation';
 import {GLOBAL_SETTINGS, prepareRequest} from "../utils/constants";
 import {ToastAndroid} from "react-native";
+import {CANCEL} from "./actionsGameMasterScreen";
 
 export const STORE_SERVER_DATA = 'STORE_SERVER_DATA';
 export const STORE_NEXT_BEACON = 'STORE_NEXT_BEACON';
@@ -80,15 +81,10 @@ export const confirmPoint = () => {
             nbBeacon: store.getState().gameDataReducer.currentCheckpoint
         };
         let request = prepareRequest(params, "POST");
-        console.log("Requesting next beacon with /confirmpoint");
-        console.log("Parameters");
-        console.log(params);
-        console.log("Request");
-        console.log(request);
+
         fetch('https://hikong.masi-henallux.be:5000/confirmpoint', request)
             .then((response) => {
-                console.log("Response :");
-                console.log(response);
+
                 if (response.ok) {
                     return response.json()
                 }
@@ -179,15 +175,10 @@ export const getLastBeacon = () => {
             playercode: store.getState().gameDataReducer.game.PlayerCode
         };
         let request = prepareRequest(params, "POST");
-        console.log("Requesting next beacon with /lastpoint");
-        console.log("Parameters");
-        console.log(params);
-        console.log("Request");
-        console.log(request);
+
         fetch('https://hikong.masi-henallux.be:5000/lastpoint', request)
             .then((response) => {
-                console.log("Response :");
-                console.log(response);
+
                 if (response.ok) {
                     return response.json()
                 }
@@ -227,7 +218,12 @@ export const storeNextBeacon = (nextBeacon) =>{
 };
 
 export const storeCurrentLocation = (currentLocation) =>{
-    store.dispatch(setCurrentLocationAcquired(true));
+    if(currentLocation.latitude === undefined || currentLocation.longitude === undefined){
+        return{
+            type: CANCEL
+        }
+    }
+    //store.dispatch(setCurrentLocationAcquired(true));
     return{
         type:STORE_CURRENT_LOCATION,
         latitude: currentLocation.latitude,
@@ -306,14 +302,10 @@ export const checkPlayerInsideBeacon = () => {
                     name: store.getState().gameDataReducer.teamInfo.name
                 };
                 let request = prepareRequest(params, "POST");
-                console.log("Getting game stats /end");
-                console.log("Parameters");
-                console.log(params);
-                console.log("Request");
-                console.log(request);
+
                 fetch('https://hikong.masi-henallux.be:5000/end', request)
                     .then((response) => {
-                        console.log(response);
+
                         if (response.ok) {
                             return response.json()
                         }
@@ -353,7 +345,7 @@ export const storeBearing = () => {
         // NB: 45 degrees less because arrow is already tilted at 45 degrees
         bearing = ((store.getState().gameDataReducer.currentLocation.heading - absoluteBearing) * -1) - 45;
     } else {
-        console.log("Current location heading not valid, using absoluteBearing");
+
         bearing = absoluteBearing;
     }
 
@@ -515,9 +507,6 @@ export const storeEndGameStats = (json) => {
 };
 
 export const shrinkZone = () => {
-    console.log("Shrink Zone shrinked from " + store.getState().gameDataReducer.settings.radius + "m to "
-    + (store.getState().gameDataReducer.settings.radius -
-            store.getState().gameDataReducer.settings.tresholdShrink) + "m");
 
     return{
         type: SHRINK_ZONE,

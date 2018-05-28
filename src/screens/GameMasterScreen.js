@@ -18,19 +18,16 @@ class Screen extends React.Component {
     }
 
     componentWillMount(){
-        if(this.props.continuousRefresh){
-            this.intervalID = setInterval(() => {
-                this.props.updatePositions();
-            },3000);
-        }else {
-            clearInterval(this.intervalID);
-        }
+        this.intervalID = setInterval(() => {
+            this.props.updatePositions();
+        },3000);
     }
 
     componentWillUnmount(){
-        console.log("kill interval");
         clearInterval(this.intervalID);
+        this.intervalID = undefined;
     }
+
 
     render() {
         const menu =
@@ -55,11 +52,21 @@ class Screen extends React.Component {
                         style={styles.map}
                         initialRegion={this.props.centerRegion}>
                         {
-                            this.props.teams.map((team) =>
-                                <Marker
-                                    pinColor={team.color}
-                                    key={JSON.stringify(team.id)}
-                                    coordinate={team.coordinate}/>)
+                            this.props.teams.map((team) =>{
+                                if(team.coordinate !== undefined){
+                                    return(
+                                        <Marker
+                                            pinColor={team.color}
+                                            key={JSON.stringify(team.id)}
+                                            coordinate={team.coordinate}/>
+                                    )
+                                }
+                                else
+                                {
+                                    return (<View/>)
+                                }
+
+                            })
                         }
                     </MapView>
                 </View>
@@ -89,7 +96,6 @@ function mapDispatchToProps(dispatch,own) {
         changeSideMenuOpened:(state) => dispatch(changeSideMenuOpened(state)),
         forceRefresh:() => dispatch(forceRefresh()),
         updatePositions:() => dispatch(updatePositions()),
-        setIntervalID:(id) => dispatch(setIntervalID(id)),
         setContinuousRefresh: () => dispatch(setContinuousRefresh()),
         showBeaconsOfTeam:(team) => dispatch(showBeaconsOfTeam()),
         startGame:() => dispatch(startGame()),

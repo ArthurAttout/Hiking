@@ -30,6 +30,8 @@ class GScreen extends React.Component {
         this.props.setCurrentLocationAcquired(false);
         navigator.geolocation.getCurrentPosition(
             (position) => {
+                console.log("curpos");
+                console.log(currentPosition)
                 const currentPosition = {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
@@ -65,6 +67,7 @@ class GScreen extends React.Component {
         );
 
         var watchID = navigator.geolocation.watchPosition((position) => {
+
                 let updatedLocation = {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
@@ -73,6 +76,7 @@ class GScreen extends React.Component {
                     speed: position.coords.speed,
                     accuracy: position.coords.accuracy
                 };
+                console.log(updatedLocation);
                 this.props.storeCurrentLocation(updatedLocation);
                 this.props.storeBearing();
                 this.props.checkPlayerInsideBeacon();

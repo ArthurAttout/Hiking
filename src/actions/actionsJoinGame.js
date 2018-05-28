@@ -134,16 +134,13 @@ export const joinTeam = (teamName, teamId) =>{
                 latitude:  store.getState().gameDataReducer.currentLocation.latitude,
                 longitude: store.getState().gameDataReducer.currentLocation.longitude,
             };
+
             let request = prepareRequest(params,"POST");
-            console.log("Joining team with /jointeam");
-            console.log("Parameters");
             console.log(params);
-            console.log("Request");
-            console.log(request);
+
             fetch('https://hikong.masi-henallux.be:5000/jointeam',request)
                 .then ((response) => {
-                    console.log("Response :");
-                    console.log(response);
+
                     if(response.ok){
                         return response.json()
                     }
@@ -165,15 +162,10 @@ export const joinTeam = (teamName, teamId) =>{
                                     playercode: store.getState().gameDataReducer.game.PlayerCode
                                 };
                                 let request = prepareRequest(params,"POST");
-                                console.log("Requesting first beacon with /firstpoint");
-                                console.log("Parameters");
-                                console.log(params);
-                                console.log("Request");
-                                console.log(request);
+
                                 fetch('https://hikong.masi-henallux.be:5000/firstpoint',request)
                                     .then ((response) => {
-                                        console.log("Response :");
-                                        console.log(response);
+
                                         if(response.ok){
                                             return response.json()
                                         }

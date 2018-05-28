@@ -1,7 +1,7 @@
 import {
     FORCE_REFRESH, SET_CONTINUOUS_REFRESH, CHANGE_GAMEMASTER_SIDE_MENU_OPENED,REQUEST_MODAL_TEAM,
     FETCHED_NEW_POSITIONS, FETCHING_NEW_POSITIONS, SET_INTERVAL_ID, UPDATE_POSITIONS, START_GAME,
-    ERROR_START,FETCHING_START,START_FETCHED
+    ERROR_START,FETCHING_START,START_FETCHED,TEAMS_FETCHED
 } from "../actions/actionsGameMasterScreen";
 
 let dataState = {
@@ -14,35 +14,8 @@ let dataState = {
         longitudeDelta: 0.0121,
     },
     teams:[
-        {
-            id:"a",
-            name:'Team Alpha',
-            color:"#4c00f0",
-            coordinate:{
-                latitude:  50.223867,
-                longitude: 5.334017,
-            }
-        },
-        {
-            id:"b",
-            name:'Team Beta',
-            color:"#f03500",
-            coordinate:{
-                latitude:  50.223687,
-                longitude: 5.335317,
-            }
-        },
-        {
-            id:"c",
-            name:'Team Gamma',
-            color:"#00f047",
-            coordinate:{
-                latitude:  50.223777,
-                longitude: 5.336017,
-            }
-        }
-    ],
-    continuousRefresh: true
+
+    ]
 };
 
 export default function gameMasterScreenReducer (state = dataState, action) {
@@ -60,11 +33,47 @@ export default function gameMasterScreenReducer (state = dataState, action) {
                 showProgressStatus: true,
             };
 
+        case TEAMS_FETCHED:
+            let newss = {
+                ...state,
+                teams: action.teams.map((team) => {
+                    let totLat = 0;
+                    let totLong = 0;
+                    team.players.forEach((player) => totLat += player.latitude);
+                    team.players.forEach((player) => totLong += player.longitude);
+
+                    return{
+                        ...team,
+                        id: team.idTeam,
+                        coordinate:{
+                            latitude: totLat / team.players.length,
+                            longitude: totLong /team.players.length,
+                        }
+                    }
+                }),
+                continuousRefresh: true,
+            };
+            console.log(newss);
+            return newss;
 
         case FETCHED_NEW_POSITIONS:
             return{
                 ...state,
-                teams: action.newPositions,
+                teams: action.teams.map((team) => {
+                    let totLat = 0;
+                    let totLong = 0;
+                    team.players.forEach((player) => totLat += player.latitude);
+                    team.players.forEach((player) => totLong += player.longitude);
+
+                    return{
+                        ...team,
+                        id: team.idTeam,
+                        coordinate:{
+                            latitude: totLat / team.players.length,
+                            longitude: totLong /team.players.length,
+                        }
+                    }
+                })
             };
 
         case START_GAME:

@@ -14,14 +14,21 @@ class GNSScreen extends React.Component {
 
     componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-        FCM.getFCMToken().then((t) => console.log(t))
-        FCM.on(FCMEvent.Notification, notif => {
-            console.log("notif received");
-            console.log(notif);
+        FCM.getFCMToken().then((t) => console.log(t));
 
+
+
+        FCM.on(FCMEvent.Notification, notif => {
             if(notif['startGameNow']){ //Expected notification
                 const { navigate } = this.props.navigation;
                 navigate("GameScreen");
+            }
+
+            if(notif['messageTeam']){ //Expected notification
+                FCM.presentLocalNotification({
+                    title: notif.fcm.title,
+                    body: notif.fcm.body,
+                    show_in_foreground: true});
             }
         });
     }

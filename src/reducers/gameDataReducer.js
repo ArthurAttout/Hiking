@@ -117,6 +117,9 @@ export default function gameDataReducer (state = dataState, action) {
                 }
             };
         case STORE_CURRENT_LOCATION:
+            console.log("Will set current");
+            console.log(action.latitude + " - " + action.longitude);
+            console.log("--------");
             return {
                 ...state,
                 currentLocation: {

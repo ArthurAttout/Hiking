@@ -4,6 +4,7 @@ import { registerKilledListener } from "../config/firebase/Listeners";
 import {COLORS} from '../utils/constants'
 import {connect} from "react-redux";
 import {storeCurrentLocation} from "../actions/actionsGameData";
+import FCM, {FCMEvent} from "react-native-fcm";
 
 class HScreen extends React.Component {
     static navigationOptions = {
@@ -17,8 +18,19 @@ class HScreen extends React.Component {
     }
 
     componentWillMount() {
+
+        FCM.on(FCMEvent.Notification, notif => {
+
+                FCM.presentLocalNotification({
+                    title: notif.fcm.title,
+                    body: notif.fcm.body,
+                    show_in_foreground: true});
+
+        });
+        console.log("aaaaa");
         navigator.geolocation.getCurrentPosition(
             (position) => {
+                console.log(position);
                 const currentPosition = {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
@@ -28,8 +40,7 @@ class HScreen extends React.Component {
                     accuracy: position.coords.accuracy,
                     error: null,
                 };
-                console.log("Got position for sending on join team");
-                console.log(currentPosition);
+
                 this.props.storeCurrentLocation(currentPosition);
             },
             // TODO manage error when GPS is not activated
