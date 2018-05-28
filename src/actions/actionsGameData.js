@@ -34,6 +34,8 @@ export const RESET_OUT_OF_ZONE_TIMER = 'RESET_OUT_OF_ZONE_TIMER';
 export const SET_GAME_OVER = 'SET_GAME_OVER';
 export const SET_CURRENT_LOCATION_ACQUIRED = 'SET_CURRENT_LOCATION_ACQUIRED';
 export const RESET_BACKOFF_ID = 'RESET_BACKOFF_ID';
+export const INCREMENT_CHECKPOINT = 'INCREMENT_CHECKPOINT';
+export const RESET_CHECKPOINT = 'RESET_CHECKPOINT';
 
 export const storeTeamInfo = (teamId) => {
     let teamInfo = store.getState().joinGameReducer.teamsList.find(x => (x.idTeam === teamId));
@@ -71,7 +73,9 @@ export const confirmPoint = () => {
             nameTeam: store.getState().gameDataReducer.teamInfo.name,
             namePlayer: store.getState().joinGameReducer.playerName,
             playercode: store.getState().gameDataReducer.game.PlayerCode,
-            lives: store.getState().gameDataReducer.teamInfo.lives
+            lives: store.getState().gameDataReducer.teamInfo.lives,
+            // TODO send checkpoint value
+            nbBeacon: store.getState().gameDataReducer.currentCheckpoint
         };
         let request = prepareRequest(params, "POST");
         console.log("Requesting next beacon with /confirmpoint");
@@ -434,10 +438,39 @@ export const onConfirmQRScan = (scannerData) =>{
 };
 
 export const decrementTeamLive = () => {
-    return {
-        type: DECREMENT_TEAM_LIVE,
-        teamLives: (store.getState().gameDataReducer.teamInfo.lives - 1)
-    }
+    //TODO implement API
+    let params = {
+        nameTeam: store.getState().gameDataReducer.teamInfo.name,
+        namePlayer: store.getState().joinGameReducer.playerName,
+        playercode: store.getState().gameDataReducer.game.PlayerCode
+    };
+    let request = prepareRequest(params, "PUT");
+    console.log("Refreshing position with /decrementlife");
+    console.log("Parameters");
+    console.log(params);
+    console.log("Request");
+    console.log(request);
+    fetch('https://hikong.masi-henallux.be:5000/decrementlife', request)
+        .then((response) => {
+            console.log("Response :");
+            console.log(response);
+            if (response.ok) {
+                return response.json()
+            }
+            else {
+                return {
+                    hasError: true
+                }
+            }
+        })
+        .then((json) => {
+            if (!json.hasError) {
+                return {
+                    type: DECREMENT_TEAM_LIVE,
+                    teamLives: (store.getState().gameDataReducer.teamInfo.lives - 1)
+                }
+            }
+        });
 };
 
 export const gameOver = () => {
@@ -579,6 +612,19 @@ export const setCurrentLocationAcquired = (boolean) => {
 export const resetBackOffId = () => {
     return {
         type: RESET_BACKOFF_ID
+    }
+};
+
+export const incrementCheckpoint =() => {
+    return {
+        type: INCREMENT_CHECKPOINT,
+        currentCheckpoint: (store.getState().gameDataReducer.currentCheckpoint + 1)
+    }
+};
+
+export const resetCheckpointCounter =() => {
+    return {
+        type: RESET_CHECKPOINT
     }
 };
 

@@ -5,9 +5,11 @@ import {
     STORE_TEAM_INFO, DECREMENT_TEAM_LIVE, SHRINK_ZONE, CENTER_REGION_CHANGED, STORE_TIMER_IDS,
     OUT_OF_ZONE_REQUEST_MODAL, OUT_OF_ZONE_CLOSE_MODAL, UPDATE_TEAM_LIVES, STORE_BACKOFF_ID,
     SET_BACKOFF_PROGRESS_STATUS, RESET_TIMER, UPDATE_TIMER, UPDATE_OUT_OF_ZONE_TIMER, RESET_OUT_OF_ZONE_TIMER,
-    SET_GAME_OVER, SET_CURRENT_LOCATION_ACQUIRED, RESET_BACKOFF_ID
+    SET_GAME_OVER, SET_CURRENT_LOCATION_ACQUIRED, RESET_BACKOFF_ID, INCREMENT_CHECKPOINT, RESET_CHECKPOINT
 } from '../actions/actionsGameData';
 import {GLOBAL_SETTINGS} from "../utils/constants";
+
+// TODO implement checkpoint counter
 
 let dataState = {
     admin: false,
@@ -64,6 +66,7 @@ let dataState = {
         accuracy: 0.0,
         error: null,
     },
+    currentCheckpoint: 0,
     mapViewVisible: false,
     bearing: 0,
     isPlayerInsideBeacon: false,
@@ -272,6 +275,16 @@ export default function gameDataReducer (state = dataState, action) {
             return{
                 ...state,
                 backOffTimeoutID: -1
+            };
+        case INCREMENT_CHECKPOINT:
+            return {
+                ...state,
+                currentCheckpoint: action.currentCheckpoint
+            };
+        case RESET_CHECKPOINT:
+            return {
+                ...state,
+                currentCheckpoint: 0
             };
         default:
             return state;
