@@ -44,17 +44,22 @@ export const cancel = () => {
 
 export const updatePositions = () => {
     return dispatch => {
-        if(!store.getState().gameMasterScreenReducer.continuousRefresh) dispatch(cancel());
-        console.log("positions updated !");
-        let gameCode = store.getState().joinGameReducer.gameCode;
-        dispatch(fetchingNewPositions());
-        fetch("https://hikong.masi-henallux.be:5000/" + gameCode + "/getTeamsStats")
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(teams) {
-                dispatch(newPositionsFetched(teams))
-        });
+
+        if(!store.getState().gameMasterScreenReducer.continuousRefresh){
+            dispatch(cancel());
+        }
+        else {
+            console.log("positions updated!");
+            let gameCode = store.getState().joinGameReducer.gameCode;
+            dispatch(fetchingNewPositions());
+            fetch("https://hikong.masi-henallux.be:5000/" + gameCode + "/getTeamsStats")
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(teams) {
+                    dispatch(newPositionsFetched(teams))
+            });
+        }
     }
 };
 

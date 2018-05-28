@@ -181,6 +181,13 @@ class HScreen extends React.Component {
     }
 }
 
+const mapStateToProps = (state,own) =>{
+    return{
+        ...own,
+        startGameNowRegistered: state.notificationsReducer.startGameNowRegistered
+    }
+};
+
 const mapDispatchToProps = (dispatch) =>{
     return {
         storeCurrentLocation: (currentLocation) => dispatch(storeCurrentLocation(currentLocation)),
@@ -188,7 +195,7 @@ const mapDispatchToProps = (dispatch) =>{
 };
 
 //Connect everything
-export default HomeScreen = connect(null, mapDispatchToProps)(HScreen);
+export default HomeScreen = connect(mapStateToProps, mapDispatchToProps)(HScreen);
 
 const styles = StyleSheet.create({
     container: {

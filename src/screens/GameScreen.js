@@ -16,6 +16,7 @@ import {
 } from "../actions/actionsGameData";
 import OutOfZoneModal from "./PlayerBeaconModals/OutOfZoneModal";
 import FCM, {FCMEvent} from "react-native-fcm";
+import {registerMessageTeam} from "../actions/notificationsActions";
 
 class GScreen extends React.Component {
 
@@ -26,6 +27,7 @@ class GScreen extends React.Component {
     }
 
     componentDidMount() {
+
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         this.props.setCurrentLocationAcquired(false);
         navigator.geolocation.getCurrentPosition(
@@ -55,6 +57,7 @@ class GScreen extends React.Component {
             },
             // TODO manage error when GPS is not activated
             (error) => {
+                console.log(error);
                 const currentPosition = {
                     error: error.message,
                 };
@@ -62,8 +65,8 @@ class GScreen extends React.Component {
             },
             {
                 enableHighAccuracy: true,
-                timeout: 20000,
-                maximumAge: 1000
+                timeout: 5000,
+                maximumAge: 3600000
             },
         );
 
@@ -125,6 +128,17 @@ class GScreen extends React.Component {
     }
 
     render() {
+        if(!this.props.messageTeamRegistered){
+            FCM.on(FCMEvent.Notification, notif => {
+                if(notif['messageTeam']){ //Expected notification
+                    FCM.presentLocalNotification({
+                        title: notif.fcm.title,
+                        body: notif.fcm.body,
+                        show_in_foreground: true});
+                }
+            });
+            this.props.registerMessageTeam();
+        }
         return (
             (!this.props.currentLocationAcquired) ?
                 <View style={{flex: 1, justifyContent: 'center'}}>
@@ -267,7 +281,8 @@ const mapStateToProps = (state, own) => {
         ids: state.gameDataReducer.ids,
         outOfZoneModalVisible: state.gameDataReducer.outOfZoneModalVisible,
         outOfZoneTimerSeconds: state.gameDataReducer.outOfZoneTimerSeconds,
-        currentLocationAcquired: state.gameDataReducer.currentLocationAcquired
+        currentLocationAcquired: state.gameDataReducer.currentLocationAcquired,
+        messageTeamRegistered: state.notificationsReducer.messageTeamRegistered,
     }
 };
 
@@ -287,7 +302,8 @@ function mapDispatchToProps(dispatch, own) {
         updateOutOfZoneTimer: (secondsRemaining) => dispatch(updateOutOfZoneTimer(secondsRemaining)),
         resetOutOfZoneTimer: () => dispatch(resetOutOfZoneTimer()),
         setGameOver: () => dispatch(setGameOver()),
-        setCurrentLocationAcquired: (boolean) => dispatch(setCurrentLocationAcquired(boolean))
+        setCurrentLocationAcquired: (boolean) => dispatch(setCurrentLocationAcquired(boolean)),
+        registerMessageTeam: () => dispatch(registerMessageTeam()),
     }
 }
 
