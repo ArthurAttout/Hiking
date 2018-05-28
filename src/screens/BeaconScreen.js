@@ -8,9 +8,7 @@ import {COLORS, GAME_MODES} from "../utils/constants";
 import {
     getNextBeacon, getNextBeaconNoConfirm,
     onCloseRiddleSolvingModal, onConfirmRiddleSolving, onRequestRiddleSolvingModal, resetTimer, riddleTimeOut,
-    setBackOffProgressStatus, setCurrentAnswer,
-    storeBackOffId,
-    storeNextBeacon, submitButtonPressed, updateTimer
+    setBackOffProgressStatus, setCurrentAnswer, storeNextBeacon, submitButtonPressed, updateTimer
 } from "../actions/actionsGameData";
 import SolveRiddleModal from "./PlayerBeaconModals/SolveRiddleModal";
 import {default as FCM, FCMEvent} from "react-native-fcm";
@@ -25,19 +23,24 @@ class BScreen extends React.Component {
     }
 
     componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         FCM.getFCMToken().then((t) => console.log(t));
         FCM.on(FCMEvent.Notification, notif => {
             console.log("notif received");
             console.log(notif);
 
             if(notif['confirmPoint']){ //Expected notification
-                if(this.props.ids.backOffTimeoutID !== null) {
-                    this.clearTimeout(this.props.ids.backOffTimeoutID);
-                    this.props.setBackOffProgressStatus(false);
-                }
                 this.props.getNextBeaconNoConfirm(notif['lives']);
             }
         });
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        return true;
     }
 
     render() {
@@ -97,11 +100,8 @@ class BScreen extends React.Component {
                         onTimeElapsed={() => {
                             // generate random backoff then send timeout
                             this.props.onCloseRiddleSolvingModal();
-                            this.props.setBackOffProgressStatus(true);
                             this.props.resetTimer();
-                            let backOffTimer = Math.floor(Math.random() * 2000) + 1;
-                            let backOffTimeoutID = this.setTimeout(this.props.riddleTimeOut(), backOffTimer);
-                            this.props.storeBackOffId(backOffTimeoutID);
+                            this.props.riddleTimeOut();
                         }}
                         allowFontScaling={true}
                         style={styles.countdownTimer}
@@ -127,17 +127,22 @@ class BScreen extends React.Component {
                 break;
         }
         return(
-            <TouchableNativeFeedback
-                background={TouchableNativeFeedback.Ripple('white')}
-                onPress={() => {this.handleOnPress()}}
-            >
+            this.props.showBackOffProgressStatus ?
                 <View style={styles.bottomView}>
-                    {this.props.showBackOffProgressStatus ?
                     <ActivityIndicator size="small" color="#ffffff"/>
-                    :
-                    <Text style={styles.bottomText}>{nextButton}</Text>}
                 </View>
-            </TouchableNativeFeedback>
+                :
+                <TouchableNativeFeedback
+                    background={TouchableNativeFeedback.Ripple('white')}
+                    onPress={() => {
+                        this.handleOnPress()
+                    }}
+                >
+                    <View style={styles.bottomView}>
+
+                        <Text style={styles.bottomText}>{nextButton}</Text>
+                    </View>
+                </TouchableNativeFeedback>
         );
     }
 
@@ -190,7 +195,6 @@ function mapDispatchToProps(dispatch, own) {
         getNextBeacon: () => dispatch(getNextBeacon()),
         getNextBeaconNoConfirm: (updatedLives) => dispatch(getNextBeaconNoConfirm(updatedLives)),
         riddleTimeOut: () => dispatch(riddleTimeOut()),
-        storeBackOffId: (backOffTimeoutID) => dispatch(storeBackOffId(backOffTimeoutID)),
         setBackOffProgressStatus: (boolean) => dispatch(setBackOffProgressStatus(boolean)),
         updateTimer: (secondsRemaining) => dispatch(updateTimer(secondsRemaining)),
         resetTimer: () => dispatch(resetTimer()),

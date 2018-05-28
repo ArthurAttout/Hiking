@@ -52,10 +52,7 @@ class JGScreen extends React.Component {
                 {
                     this.props.showProgressStatus ?
                         <ActivityIndicator/>
-
-
                         :
-
                         <TouchableNativeFeedback
                             background={TouchableNativeFeedback.Ripple('white')}
                             onPress={this.props.submit}>

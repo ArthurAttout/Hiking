@@ -1,5 +1,6 @@
 import React from 'react';
-import {AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableNativeFeedback, Dimensions} from 'react-native';
+import {AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableNativeFeedback, Dimensions, BackHandler
+    } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from "react-redux";
 import {COLORS} from "../utils/constants";
@@ -11,6 +12,20 @@ class BScreen extends React.Component {
 
     constructor(props) {
         super(props);
+    }
+
+    componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        const { navigate } = this.props.navigation;
+        navigate('HomeScreen');
+        return true;
     }
 
     // TODO implement sharing feature
@@ -43,9 +58,9 @@ class BScreen extends React.Component {
                             <Text style={styles.resultsPromptsText}>Position :</Text>
                         </View>
                         <View style={styles.results}>
-                            <Text style={styles.resultsText}>{this.props.gameStats.time} min</Text>
+                            <Text style={styles.resultsText}>{this.props.gameStats.time}</Text>
                             <Text style={styles.resultsText}>{this.props.gameStats.score} pts</Text>
-                            <Text style={styles.resultsText}>{this.props.gameStats.position}/{this.props.gameStats.totalTeams}</Text>
+                            <Text style={styles.resultsText}>{this.props.gameStats.classement}/{this.props.gameStats.totalTeams}</Text>
                         </View>
                     </View>
                 </View>

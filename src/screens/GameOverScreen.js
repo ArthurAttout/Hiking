@@ -1,6 +1,6 @@
 import React from 'react';
 import {AppRegistry, Text, View, StyleSheet, StatusBar, Image,
-    TouchableNativeFeedback, Dimensions } from 'react-native';
+    TouchableNativeFeedback, Dimensions, BackHandler } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import { connect } from "react-redux";
 import {COLORS} from "../utils/constants";
@@ -12,6 +12,18 @@ class GOScreen extends React.Component {
     constructor(props) {
         super(props);
         this.handleOnPress = this.handleOnPress.bind(this);
+    }
+
+    componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        return true;
     }
 
     render() {

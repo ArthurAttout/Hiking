@@ -26,10 +26,6 @@ class QRCScreen extends React.Component {
             console.log(notif);
 
             if(notif['confirmPoint']){ //Expected notification
-                if(this.props.ids.backOffTimeoutID !== null) {
-                    this.clearTimeout(this.props.ids.backOffTimeoutID);
-                    this.props.setBackOffProgressStatus(false);
-                }
                 this.props.getNextBeaconNoConfirm(notif['lives']);
             }
         });
@@ -58,11 +54,7 @@ class QRCScreen extends React.Component {
                     }}
                     onTimeElapsed={() => {
                         // generate random backoff then send timeout
-                        this.props.setBackOffProgressStatus(true);
-                        this.props.resetTimer();
-                        let backOffTimer = Math.floor(Math.random() * 2000) + 1;
-                        let backOffTimeoutID = this.setTimeout(this.props.riddleTimeOut(), backOffTimer);
-                        this.props.storeBackOffId(backOffTimeoutID);
+                        this.props.riddleTimeOut();
                     }}
                     allowFontScaling={true}
                     style={styles.countdownTimer}/>
@@ -136,7 +128,6 @@ function mapDispatchToProps(dispatch, own) {
         updateTimer: (secondsRemaining) => dispatch(updateTimer(secondsRemaining)),
         resetTimer: () => dispatch(resetTimer()),
         riddleTimeOut: () => dispatch(riddleTimeOut()),
-        storeBackOffId: (backOffTimeoutID) => dispatch(storeBackOffId(backOffTimeoutID)),
         onConfirmQRScan: (evt) => dispatch(onConfirmQRScan(evt))
     }
 }

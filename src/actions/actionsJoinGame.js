@@ -4,6 +4,7 @@ import store from '../config/store'
 import {prepareRequest} from "../utils/constants";
 import FCM, {FCMEvent} from "react-native-fcm";
 import {getNextBeaconNoConfirm, resetTimer, storeNextBeacon, storeServerData, storeTeamInfo} from "./actionsGameData";
+import {ToastAndroid} from "react-native";
 
 export const SUBMIT = 'SUBMIT';
 export const SET_PLAYER_NAME= 'SET_PLAYER_NAME';
@@ -200,6 +201,14 @@ export const joinTeam = (teamName, teamId) =>{
                                 routeName: "GameNotStartedScreen"
                             }));
                         }
+                    } else {
+                        // TODO manage 403 errors
+                        dispatch(playerStatusFetched("ERROR_CODE_FROM_SVR"));
+                        navigatorRef.dispatch(NavigationActions.navigate({
+                            routeName: "JoinGameScreen"
+                        }));
+                        ToastAndroid.show('This username is already taken ...',ToastAndroid.LONG);
+
                     }
                 })
 

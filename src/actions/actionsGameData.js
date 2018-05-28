@@ -32,6 +32,8 @@ export const RESET_TIMER ='RESET_TIMER';
 export const UPDATE_OUT_OF_ZONE_TIMER = 'UPDATE_OUT_OF_ZONE_TIMER';
 export const RESET_OUT_OF_ZONE_TIMER = 'RESET_OUT_OF_ZONE_TIMER';
 export const SET_GAME_OVER = 'SET_GAME_OVER';
+export const SET_CURRENT_LOCATION_ACQUIRED = 'SET_CURRENT_LOCATION_ACQUIRED';
+export const RESET_BACKOFF_ID = 'RESET_BACKOFF_ID';
 
 export const storeTeamInfo = (teamId) => {
     let teamInfo = store.getState().joinGameReducer.teamsList.find(x => (x.idTeam === teamId));
@@ -52,6 +54,18 @@ export const storeServerData = (json) =>{
 };
 
 export const getNextBeacon = () => {
+    return (dispatch) => {
+        dispatch(setBackOffProgressStatus(true));
+        // TODO calibrate backoff timer
+        let backOffTimer = Math.floor(Math.random() * 3000) + 1000;
+        let backOffTimeoutID = setTimeout(function(){dispatch(confirmPoint())}, backOffTimer);
+        console.log("Back off timer:");
+        console.log(backOffTimer);
+        dispatch(storeBackOffId(backOffTimeoutID));
+    }
+};
+
+export const confirmPoint = () => {
     return (dispatch) => {
         let params = {
             nameTeam: store.getState().gameDataReducer.teamInfo.name,
@@ -92,8 +106,15 @@ export const getNextBeacon = () => {
 
 export const getNextBeaconNoConfirm = (updatedLives) => {
     return (dispatch) => {
+        if(store.getState().gameDataReducer.backOffTimeoutID !== -1) {
+            clearTimeout(store.getState().gameDataReducer.backOffTimeoutID);
+            dispatch(setBackOffProgressStatus(false));
+        }
+
         dispatch(updateTeamLives(updatedLives));
-        if(store.getState().gameDataReducer.settings !== 0 && store.getState().gameDataReducer.teamInfo.lives <= 0) {
+
+        if(store.getState().gameDataReducer.settings.lives !== 0 &&
+            store.getState().gameDataReducer.teamInfo.lives <= 0) {
             // player who confirmed point got a game over
             store.dispatch(getLastBeacon());
         } else {
@@ -200,6 +221,7 @@ export const storeNextBeacon = (nextBeacon) =>{
 };
 
 export const storeCurrentLocation = (currentLocation) =>{
+    store.dispatch(setCurrentLocationAcquired(true));
     return{
         type:STORE_CURRENT_LOCATION,
         latitude: currentLocation.latitude,
@@ -476,10 +498,12 @@ export const onRegionChange = (newRegion) => {
     }
 };
 
-export const storeTimerIds = (ids) => {
+export const storeTimerIds = (watchID, shrinkIntervalID, refreshIntervalID) => {
     return {
         type: STORE_TIMER_IDS,
-        ids : ids
+        watchID: watchID,
+        shrinkIntervalID: shrinkIntervalID,
+        refreshIntervalID: refreshIntervalID,
     }
 };
 
@@ -502,6 +526,7 @@ export const riddleTimeOut = () => {
 };
 
 export const setBackOffProgressStatus = (boolean) => {
+    store.dispatch(resetBackOffId());
     return {
         type: SET_BACKOFF_PROGRESS_STATUS,
         showBackOffProgressStatus: boolean
@@ -544,4 +569,16 @@ export const setGameOver = () => {
     }
 };
 
+export const setCurrentLocationAcquired = (boolean) => {
+    return {
+        type: SET_CURRENT_LOCATION_ACQUIRED,
+        currentLocationAcquired: boolean
+    }
+};
+
+export const resetBackOffId = () => {
+    return {
+        type: RESET_BACKOFF_ID
+    }
+};
 

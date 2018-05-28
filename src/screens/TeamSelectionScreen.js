@@ -9,8 +9,6 @@ import {joinTeam,fetchTeams} from "../actions/actionsJoinGame";
 import {storeCurrentLocation} from "../actions/actionsGameData";
 import {COLORS} from "../utils/constants";
 
-
-// TODO disable the back button
 // TODO automatically remove keyboard if player left it
 
 class TSScreen extends React.Component {
@@ -20,18 +18,8 @@ class TSScreen extends React.Component {
         this._onTeamPress = this._onTeamPress.bind(this);
     }
 
-    componentDidMount() {
-        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-    }
-
-    handleBackButton() {
-        return true;
-    }
-
     componentWillMount(){
         this.props.fetchTeams();
-
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
     }
 
     render() {

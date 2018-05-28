@@ -1,5 +1,8 @@
 import React from 'react';
-import { AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableNativeFeedback } from 'react-native';
+import {
+    AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableNativeFeedback,
+    ActivityIndicator, BackHandler
+} from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { connect } from "react-redux";
@@ -8,11 +11,11 @@ import MapView, { Marker, Circle } from 'react-native-maps'
 import {
     setMapViewVisible, storeCurrentLocation, storeBearing,
     checkPlayerInsideBeacon, shrinkZone, refreshPosition, storeTimerIds, onRegionChange,
-    onCloseOutOfZoneModal, getLastBeacon, updateOutOfZoneTimer, resetOutOfZoneTimer, setGameOver
+    onCloseOutOfZoneModal, getLastBeacon, updateOutOfZoneTimer, resetOutOfZoneTimer, setGameOver,
+    setCurrentLocationAcquired
 } from "../actions/actionsGameData";
 import OutOfZoneModal from "./PlayerBeaconModals/OutOfZoneModal";
-
-// TODO Display activity icon when waiting for current position
+import FCM, {FCMEvent} from "react-native-fcm";
 
 class GScreen extends React.Component {
 
@@ -23,6 +26,8 @@ class GScreen extends React.Component {
     }
 
     componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+        this.props.setCurrentLocationAcquired(false);
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const currentPosition = {
@@ -40,8 +45,8 @@ class GScreen extends React.Component {
                     {
                         latitude: currentPosition.latitude,
                         longitude: currentPosition.longitude,
-                        latitudeDelta: 0.1,
-                        longitudeDelta: 0.1,
+                        latitudeDelta: 0.01,
+                        longitudeDelta: 0.01,
                     }
                 )
             },
@@ -95,35 +100,42 @@ class GScreen extends React.Component {
 
         var refreshIntervalID = setInterval(() => {this.props.refreshPosition()}, 30000);
 
-        let ids = {
-            watchId: watchID,
-            shrinkIntervalID: shrinkIntervalID,
-            refreshIntervalID: refreshIntervalID
-        };
-        this.props.storeTimerIds(ids);
+        this.props.storeTimerIds(watchID, shrinkIntervalID, refreshIntervalID);
 
     }
 
     componentWillUnmount() {
-        navigator.geolocation.clearWatch(this.props.ids.watchId);
-        if(this.props.settings.tresholdShrink !== 0) {
-            this.clearInterval(this.props.ids.shrinkIntervalID);
-        }
-        this.clearInterval(this.props.ids.refreshIntervalID);
+        if(this.props.watchID !== -1){
+            navigator.geolocation.clearWatch(this.props.watchId);}
+        if(this.props.settings.tresholdShrink !== 0 &&
+            this.props.shrinkIntervalID !== -1) {
+            this.clearInterval(this.props.shrinkIntervalID);}
+        if(this.props.refreshIntervalID !== -1){
+            this.clearInterval(this.props.refreshIntervalID);}
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        return true;
     }
 
     render() {
-        const { navigate } = this.props.navigation;
         return (
-            <View style={styles.container}>
-                <StatusBar
-                    backgroundColor={COLORS.Primary_accent}
-                    barStyle="light-content"
-                />
-                {this.renderMainView()}
-                {this.renderBottomNavigation()}
-                {this.renderModal()}
-            </View>
+            (!this.props.currentLocationAcquired) ?
+                <View style={{flex: 1, justifyContent: 'center'}}>
+                    <Text style={{textAlign: 'center'}}>{"Getting your precise location.\nHang on a second..."}</Text>
+                    <ActivityIndicator size="large" color={COLORS.Primary}/>
+                </View>
+                :
+                <View style={styles.container}>
+                    <StatusBar
+                        backgroundColor={COLORS.Primary_accent}
+                        barStyle="light-content"
+                    />
+                    {this.renderMainView()}
+                    {this.renderBottomNavigation()}
+                    {this.renderModal()}
+                </View>
         );
     }
 
@@ -139,8 +151,8 @@ class GScreen extends React.Component {
             const beacon = {
                 latitude: this.props.nextBeacon.latitude,
                 longitude: this.props.nextBeacon.longitude,
-                latitudeDelta: 0.1,
-                longitudeDelta: 0.1
+                latitudeDelta: 0,
+                longitudeDelta: 0
             };
             return (
                 <MapView
@@ -153,8 +165,8 @@ class GScreen extends React.Component {
                         coordinate={{
                             latitude: this.props.currentLocation.latitude,
                             longitude: this.props.currentLocation.longitude,
-                            latitudeDelta: 0.1,
-                            longitudeDelta: 0.1,
+                            latitudeDelta: 0,
+                            longitudeDelta: 0,
                         }}
                         image={require('../images/ic_directions_walk_black.png')}
                     />
@@ -249,7 +261,8 @@ const mapStateToProps = (state, own) => {
         centerRegion: state.gameDataReducer.centerRegion,
         ids: state.gameDataReducer.ids,
         outOfZoneModalVisible: state.gameDataReducer.outOfZoneModalVisible,
-        outOfZoneTimerSeconds: state.gameDataReducer.outOfZoneTimerSeconds
+        outOfZoneTimerSeconds: state.gameDataReducer.outOfZoneTimerSeconds,
+        currentLocationAcquired: state.gameDataReducer.currentLocationAcquired
     }
 };
 
@@ -262,13 +275,14 @@ function mapDispatchToProps(dispatch, own) {
         checkPlayerInsideBeacon: () => dispatch(checkPlayerInsideBeacon()),
         shrinkZone: () => dispatch(shrinkZone()),
         refreshPosition: () => dispatch(refreshPosition()),
-        storeTimerIds: () => dispatch(storeTimerIds()),
+        storeTimerIds: (watchID, shrinkIntervalID, refreshIntervalID) => dispatch(storeTimerIds(watchID, shrinkIntervalID, refreshIntervalID)),
         onRegionChange: (evt) => dispatch(onRegionChange(evt)),
         onCloseOutOfZoneModal: () => dispatch(onCloseOutOfZoneModal()),
         getLastBeacon: () => dispatch(getLastBeacon()),
         updateOutOfZoneTimer: (secondsRemaining) => dispatch(updateOutOfZoneTimer(secondsRemaining)),
         resetOutOfZoneTimer: () => dispatch(resetOutOfZoneTimer()),
-        setGameOver: () => dispatch(setGameOver())
+        setGameOver: () => dispatch(setGameOver()),
+        setCurrentLocationAcquired: (boolean) => dispatch(setCurrentLocationAcquired(boolean))
     }
 }
 

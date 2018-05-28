@@ -5,7 +5,7 @@ import {
     STORE_TEAM_INFO, DECREMENT_TEAM_LIVE, SHRINK_ZONE, CENTER_REGION_CHANGED, STORE_TIMER_IDS,
     OUT_OF_ZONE_REQUEST_MODAL, OUT_OF_ZONE_CLOSE_MODAL, UPDATE_TEAM_LIVES, STORE_BACKOFF_ID,
     SET_BACKOFF_PROGRESS_STATUS, RESET_TIMER, UPDATE_TIMER, UPDATE_OUT_OF_ZONE_TIMER, RESET_OUT_OF_ZONE_TIMER,
-    SET_GAME_OVER
+    SET_GAME_OVER, SET_CURRENT_LOCATION_ACQUIRED, RESET_BACKOFF_ID
 } from '../actions/actionsGameData';
 import {GLOBAL_SETTINGS} from "../utils/constants";
 
@@ -79,16 +79,15 @@ let dataState = {
         totalTeams: 99
     },
     centerRegion: null,
-    ids: {
-        watchId: null,
-        shrinkIntervalID: null,
-        refreshIntervalID: null,
-        backOffTimeoutID: null
-    },
+    watchID: -1,
+    shrinkIntervalID: -1,
+    refreshIntervalID: -1,
+    backOffTimeoutID: -1,
     showBackOffProgressStatus: false,
     timerSecondsRemaining: 0,
     outOfZoneTimerSeconds: GLOBAL_SETTINGS.OUT_OF_ZONE_TIMEOUT,
-    gameOver: false
+    gameOver: false,
+    currentLocationAcquired: false
 };
 
 export default function gameDataReducer (state = dataState, action) {
@@ -217,7 +216,9 @@ export default function gameDataReducer (state = dataState, action) {
         case STORE_TIMER_IDS:
             return {
                 ...state,
-                ids: action.ids
+                watchID: action.watchID,
+                shrinkIntervalID: action.shrinkIntervalID,
+                refreshIntervalID: action.refreshIntervalID,
             };
         case UPDATE_TEAM_LIVES:
             return {
@@ -230,10 +231,7 @@ export default function gameDataReducer (state = dataState, action) {
         case STORE_BACKOFF_ID:
             return {
                 ...state,
-                ids: {
-                    ...state.ids,
-                    backOffTimeoutID: action.backOffTimeoutID
-                }
+                backOffTimeoutID: action.backOffTimeoutID
             };
         case SET_BACKOFF_PROGRESS_STATUS:
             return {
@@ -264,6 +262,16 @@ export default function gameDataReducer (state = dataState, action) {
             return {
                 ...state,
                 gameOver: true
+            };
+        case SET_CURRENT_LOCATION_ACQUIRED:
+            return {
+                ...state,
+                currentLocationAcquired: action.currentLocationAcquired
+            };
+        case RESET_BACKOFF_ID:
+            return{
+                ...state,
+                backOffTimeoutID: -1
             };
         default:
             return state;
