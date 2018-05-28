@@ -6,10 +6,11 @@ import {
 } from 'react-native';
 import {connect} from "react-redux";
 import Menu from './GameMasterSideMenu'
-import MapView,{Marker} from 'react-native-maps';
+import MapView,{Marker,Circle} from 'react-native-maps';
 import SideMenu from 'react-native-side-menu'
 import {changeSideMenuOpened,forceRefresh,setContinuousRefresh,updatePositions,
         showBeaconsOfTeam,startGame,onRequestModal} from "../actions/actionsGameMasterScreen";
+import {shrinkZone} from "../actions/actionsGameData";
 
 class Screen extends React.Component {
 
@@ -21,6 +22,13 @@ class Screen extends React.Component {
         this.intervalID = setInterval(() => {
             this.props.updatePositions();
         },3000);
+
+        this.shrinkIntervalID = undefined;
+        if(this.props.settings.tresholdShrink !== 0) {
+            shrinkIntervalID = setInterval(() => {
+                this.props.shrinkZone()
+            }, 60000);
+        }
     }
 
     componentWillUnmount(){
@@ -30,6 +38,8 @@ class Screen extends React.Component {
 
 
     render() {
+        console.log("COntinuous refresh is : ");
+        console.log(this.props.continuousRefresh);
         const menu =
             <Menu
                 teams={this.props.teams}
@@ -68,6 +78,15 @@ class Screen extends React.Component {
 
                             })
                         }
+                        <Circle
+                            center={{
+                                latitude: this.props.settings.center_x,
+                                longitude: this.props.settings.center_y
+                            }}
+                            radius={this.props.settings.radius}
+                            strokeColor={'red'}
+                            strokeWidth={2}
+                        />
                     </MapView>
                 </View>
             </SideMenu>
@@ -78,6 +97,7 @@ class Screen extends React.Component {
 const mapStateToProps = (state, own) => {
     return {
         ...own,
+        settings: state.gameDataReducer.settings,
         sideMenuOpened: state.gameMasterScreenReducer.sideMenuOpened,
         centerRegion: state.gameMasterScreenReducer.centerRegion,
         continuousRefresh: state.gameMasterScreenReducer.continuousRefresh,
@@ -97,6 +117,7 @@ function mapDispatchToProps(dispatch,own) {
         forceRefresh:() => dispatch(forceRefresh()),
         updatePositions:() => dispatch(updatePositions()),
         setContinuousRefresh: () => dispatch(setContinuousRefresh()),
+        shrinkZone: () => dispatch(shrinkZone()),
         showBeaconsOfTeam:(team) => dispatch(showBeaconsOfTeam()),
         startGame:() => dispatch(startGame()),
         onRequestModal:(team) => dispatch(onRequestModal(team)),

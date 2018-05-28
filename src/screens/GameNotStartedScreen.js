@@ -3,7 +3,8 @@ import {AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableOpacity,
 import { connect } from "react-redux";
 import {COLORS} from "../utils/constants";
 import FCM, {FCMEvent} from "react-native-fcm";
-
+import {storeCurrentLocation} from "../actions/actionsGameData";
+import {registerMessageTeam} from "../actions/notificationsActions";
 
 class GNSScreen extends React.Component {
     static navigationOptions = {
@@ -14,23 +15,6 @@ class GNSScreen extends React.Component {
 
     componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-        FCM.getFCMToken().then((t) => console.log(t));
-
-
-
-        FCM.on(FCMEvent.Notification, notif => {
-            if(notif['startGameNow']){ //Expected notification
-                const { navigate } = this.props.navigation;
-                navigate("GameScreen");
-            }
-
-            if(notif['messageTeam']){ //Expected notification
-                FCM.presentLocalNotification({
-                    title: notif.fcm.title,
-                    body: notif.fcm.body,
-                    show_in_foreground: true});
-            }
-        });
     }
 
     componentWillUnmount() {
@@ -47,6 +31,16 @@ class GNSScreen extends React.Component {
     }
 
     render() {
+        if(!this.props.startGameNowRegistered){
+            FCM.on(FCMEvent.Notification, notif => {
+                if(notif['startGameNow']){ //Expected notification
+                    const { navigate } = this.props.navigation;
+                    navigate("GameScreen");
+                }
+            });
+            this.props.registerMessageTeam();
+        }
+
         const { navigate } = this.props.navigation;
         return (
             <View style={styles.container}>
@@ -85,8 +79,16 @@ const mapStateToProps = (state, own) => {
         playerName: state.joinGameReducer.playerName,
         gameCode: state.joinGameReducer.gameCode,
         teamName: state.joinGameReducer.teamName,
+        startGameNowRegistered: state.notificationsReducer.startGameNowRegistered,
     }
 };
+
+const mapDispatchToProps = (dispatch) =>{
+    return {
+        registerMessageTeam: () => dispatch(registerMessageTeam()),
+    }
+};
+
 
 //Connect everything
 export default GameNotStartedScreen = connect(mapStateToProps)(GNSScreen);

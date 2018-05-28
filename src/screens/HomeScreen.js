@@ -19,15 +19,6 @@ class HScreen extends React.Component {
 
     componentWillMount() {
 
-        FCM.on(FCMEvent.Notification, notif => {
-
-                FCM.presentLocalNotification({
-                    title: notif.fcm.title,
-                    body: notif.fcm.body,
-                    show_in_foreground: true});
-
-        });
-        console.log("aaaaa");
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 console.log(position);
@@ -106,6 +97,13 @@ class HScreen extends React.Component {
     }
 }
 
+const mapStateToProps = (state,own) =>{
+    return{
+        ...own,
+        startGameNowRegistered: state.notificationsReducer.startGameNowRegistered
+    }
+};
+
 const mapDispatchToProps = (dispatch) =>{
     return {
         storeCurrentLocation: (currentLocation) => dispatch(storeCurrentLocation(currentLocation)),
@@ -113,7 +111,7 @@ const mapDispatchToProps = (dispatch) =>{
 };
 
 //Connect everything
-export default HomeScreen = connect(null, mapDispatchToProps)(HScreen);
+export default HomeScreen = connect(mapStateToProps, mapDispatchToProps)(HScreen);
 
 const styles = StyleSheet.create({
     container: {

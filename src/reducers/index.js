@@ -6,9 +6,11 @@ import settingsReducer from './settingsReducer'
 import assignTeamsReducer from './assignTeamsReducer'
 import gameDataReducer from './gameDataReducer'
 import gameMasterScreenReducer from './gameMasterScreenReducer'
+import notificationsReducer from './notificationsReducer'
 
 const rootReducer = combineReducers({
     gameModesReducer,
+    notificationsReducer,
     settingsReducer,
     createGameMapReducer,
     assignTeamsReducer,
