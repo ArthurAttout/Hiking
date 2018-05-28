@@ -1,20 +1,24 @@
 import React from 'react';
-import {AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableNativeFeedback, Dimensions, BackHandler
-    } from 'react-native';
+import {AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableNativeFeedback, Dimensions, BackHandler,
+    Clipboard, Platform, ToastAndroid, AlertIOS} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from "react-redux";
-import {COLORS} from "../utils/constants";
+import {COLORS, SHARING_ICONS} from "../utils/constants";
+import Share, {ShareSheet, Button} from 'react-native-share';
+import {onCloseShare, onOpenShare} from "../actions/actionsGameData";
 
-class BScreen extends React.Component {
+class EGScreen extends React.Component {
     static navigationOptions = {
         header: null
     };
 
     constructor(props) {
         super(props);
+        this.onCancel = this.onCancel.bind(this);
+        this.onOpen = this.onOpen.bind(this);
     }
 
-    componentDidMount() {
+    /*componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     }
 
@@ -26,11 +30,29 @@ class BScreen extends React.Component {
         const { navigate } = this.props.navigation;
         navigate('HomeScreen');
         return true;
+    }*/
+
+    onCancel() {
+        console.log("CANCEL");
+        // replace with redux
+        this.props.onCloseShare();
+        //this.setState({visible:false});
+    }
+    onOpen() {
+        console.log("OPEN");
+        this.props.onOpenShare();
+        //this.setState({visible:true});
     }
 
     // TODO implement sharing feature
     render() {
-        console.log(this.props.gameStats);
+        //console.log(this.props.gameStats);
+        let shareOptions = {
+            title: "I just completed a trail on Hikong! Check it out!",
+            message: "I just completed a trail on Hikong! Check it out!",
+            url: ("https://hikong.masi-henallux.be/share/MDLKOZ"),  //+ this.props.game.PlayerCode),
+            subject: "Share Link"
+        };
         return (
             <View style={styles.container}>
                 <StatusBar
@@ -38,18 +60,18 @@ class BScreen extends React.Component {
                     barStyle="light-content"
                 />
                 <View style={styles.body}>
-                    <Text style={styles.titleText}>{"Congrats\n" + this.props.teamInfo.name + "!"}</Text>
-                    {(this.props.teamInfo.iconUrl === null) ?
+                    <Text style={styles.titleText}>{"Congrats\n"} /*+ this.props.teamInfo.name + "!"}*/</Text>
+                    {(/*this.props.teamInfo.iconUrl === null*/true) ?
                         <Icon.Button name="circle"
                                      size={(Dimensions.get('window').width * 0.45)}
-                                     color={this.props.teamInfo.ColorHex}
+                                     color={/*this.props.teamInfo.ColorHex*/'red'}
                                      backgroundColor='transparent'
                                      style={styles.iconStyle}/>
                         :
                         <Image
                             resizeMode={'contain'}
                             style={{width: (Dimensions.get('window').width * 0.45), height: (Dimensions.get('window').width * 0.45)}}
-                            source={{uri: this.props.teamInfo.iconUrl }}/>
+                            source={{uri: /*this.props.teamInfo.iconUrl*/ }}/>
                     }
                     <View style={styles.resultsView}>
                         <View style={styles.resultsPrompts}>
@@ -58,9 +80,9 @@ class BScreen extends React.Component {
                             <Text style={styles.resultsPromptsText}>Position :</Text>
                         </View>
                         <View style={styles.results}>
-                            <Text style={styles.resultsText}>{this.props.gameStats.time}</Text>
-                            <Text style={styles.resultsText}>{this.props.gameStats.score} pts</Text>
-                            <Text style={styles.resultsText}>{this.props.gameStats.classement}/{this.props.gameStats.totalTeams}</Text>
+                            <Text style={styles.resultsText}>{/*this.props.gameStats.time*/"3 hours"}</Text>
+                            <Text style={styles.resultsText}>{/*this.props.gameStats.score*/"69"} pts</Text>
+                            <Text style={styles.resultsText}>{/*this.props.gameStats.classement*/99}/{/*this.props.gameStats.totalTeams*/99}</Text>
                         </View>
                     </View>
                 </View>
@@ -68,13 +90,84 @@ class BScreen extends React.Component {
                 <TouchableNativeFeedback
                     background={TouchableNativeFeedback.Ripple('white')}
                     // TODO implement Sharing feature
-                    //onPress={() => {}}
+                    onPress={this.onOpen()}
                 >
                     <View style={styles.bottomView}>
                         <Icon size={24} color="white" name="share"/>
                         <Text style={styles.bottomText}>Share</Text>
                     </View>
                 </TouchableNativeFeedback>
+
+                <ShareSheet visible={this.props.shareVisible} onCancel={this.onCancel}>
+                    <Button iconSrc={{ uri: SHARING_ICONS.TWITTER_ICON }}
+                            onPress={()=>{
+                                this.onCancel();
+                                setTimeout(() => {
+                                    Share.shareSingle(Object.assign(shareOptions, {
+                                        "social": "twitter"
+                                    }));
+                                },300);
+                            }}>Twitter</Button>
+                    <Button iconSrc={{ uri: SHARING_ICONS.FACEBOOK_ICON }}
+                            onPress={()=>{
+                                this.onCancel();
+                                setTimeout(() => {
+                                    Share.shareSingle(Object.assign(shareOptions, {
+                                        "social": "facebook"
+                                    }));
+                                },300);
+                            }}>Facebook</Button>
+                    <Button iconSrc={{ uri: SHARING_ICONS.WHATSAPP_ICON }}
+                            onPress={()=>{
+                                this.onCancel();
+                                setTimeout(() => {
+                                    Share.shareSingle(Object.assign(shareOptions, {
+                                        "social": "whatsapp"
+                                    }));
+                                },300);
+                            }}>Whatsapp</Button>
+                    <Button iconSrc={{ uri: SHARING_ICONS.GOOGLE_PLUS_ICON }}
+                            onPress={()=>{
+                                this.onCancel();
+                                setTimeout(() => {
+                                    Share.shareSingle(Object.assign(shareOptions, {
+                                        "social": "googleplus"
+                                    }));
+                                },300);
+                            }}>Google +</Button>
+                    <Button iconSrc={{ uri: SHARING_ICONS.EMAIL_ICON }}
+                            onPress={()=>{
+                                this.onCancel();
+                                setTimeout(() => {
+                                    Share.shareSingle(Object.assign(shareOptions, {
+                                        "social": "email"
+                                    }));
+                                },300);
+                            }}>Email</Button>
+                    <Button
+                        iconSrc={{ uri: SHARING_ICONS.CLIPBOARD_ICON }}
+                        onPress={()=>{
+                            this.onCancel();
+                            setTimeout(() => {
+                                if(typeof shareOptions["url"] !== undefined) {
+                                    Clipboard.setString(shareOptions["url"]);
+                                    if (Platform.OS === "android") {
+                                        ToastAndroid.show('Link copied to clipboard', ToastAndroid.SHORT);
+                                    } else if (Platform.OS === "ios") {
+                                        AlertIOS.alert('Link copied to clipboard');
+                                    }
+                                }
+                            },300);
+                        }}>Copy Link</Button>
+                    <Button iconSrc={{ uri: MORE_ICON }}
+                            onPress={()=>{
+                                this.onCancel();
+                                setTimeout(() => {
+                                    Share.open(shareOptions)
+                                },300);
+                            }}>More</Button>
+                </ShareSheet>
+
             </View>
         );
     }
@@ -85,11 +178,21 @@ const mapStateToProps = state => {
     return {
         teamInfo: state.gameDataReducer.teamInfo,
         gameStats: state.gameDataReducer.gameStats,
+        game: state.gameDataReducer.game,
+        shareVisible: state.gameDataReducer.shareVisible
     }
 };
 
+function mapDispatchToProps(dispatch, own) {
+    return {
+        ...own,
+        onCloseShare: () => dispatch(onCloseShare()),
+        onOpenShare: () => dispatch(onOpenShare()),
+    }
+}
+
 //Connect everything
-export default BeaconScreen = connect(mapStateToProps)(BScreen);
+export default EndGameScreen = connect(mapStateToProps, mapDispatchToProps)(EGScreen);
 
 const styles = StyleSheet.create({
     container: {

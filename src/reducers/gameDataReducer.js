@@ -5,7 +5,8 @@ import {
     STORE_TEAM_INFO, DECREMENT_TEAM_LIVE, SHRINK_ZONE, CENTER_REGION_CHANGED, STORE_TIMER_IDS,
     OUT_OF_ZONE_REQUEST_MODAL, OUT_OF_ZONE_CLOSE_MODAL, UPDATE_TEAM_LIVES, STORE_BACKOFF_ID,
     SET_BACKOFF_PROGRESS_STATUS, RESET_TIMER, UPDATE_TIMER, UPDATE_OUT_OF_ZONE_TIMER, RESET_OUT_OF_ZONE_TIMER,
-    SET_GAME_OVER, SET_CURRENT_LOCATION_ACQUIRED, RESET_BACKOFF_ID, INCREMENT_CHECKPOINT, RESET_CHECKPOINT
+    SET_GAME_OVER, SET_CURRENT_LOCATION_ACQUIRED, RESET_BACKOFF_ID, INCREMENT_CHECKPOINT, RESET_CHECKPOINT,
+    ON_OPEN_SHARE, ON_CLOSE_SHARE
 } from '../actions/actionsGameData';
 import {GLOBAL_SETTINGS} from "../utils/constants";
 
@@ -90,7 +91,8 @@ let dataState = {
     timerSecondsRemaining: 0,
     outOfZoneTimerSeconds: GLOBAL_SETTINGS.OUT_OF_ZONE_TIMEOUT,
     gameOver: false,
-    currentLocationAcquired: false
+    currentLocationAcquired: false,
+    shareVisible: false
 };
 
 export default function gameDataReducer (state = dataState, action) {
@@ -285,6 +287,16 @@ export default function gameDataReducer (state = dataState, action) {
             return {
                 ...state,
                 currentCheckpoint: 0
+            };
+        case ON_CLOSE_SHARE:
+            return {
+                ...state,
+                shareVisible: false
+            };
+        case ON_OPEN_SHARE:
+            return {
+                ...state,
+                shareVisible: true
             };
         default:
             return state;

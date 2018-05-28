@@ -36,6 +36,8 @@ export const SET_CURRENT_LOCATION_ACQUIRED = 'SET_CURRENT_LOCATION_ACQUIRED';
 export const RESET_BACKOFF_ID = 'RESET_BACKOFF_ID';
 export const INCREMENT_CHECKPOINT = 'INCREMENT_CHECKPOINT';
 export const RESET_CHECKPOINT = 'RESET_CHECKPOINT';
+export const ON_CLOSE_SHARE = 'ON_CLOSE_SHARE';
+export const ON_OPEN_SHARE = 'ON_OPEN_SHARE'
 
 export const storeTeamInfo = (teamId) => {
     let teamInfo = store.getState().joinGameReducer.teamsList.find(x => (x.idTeam === teamId));
@@ -625,6 +627,18 @@ export const incrementCheckpoint =() => {
 export const resetCheckpointCounter =() => {
     return {
         type: RESET_CHECKPOINT
+    }
+};
+
+export const onCloseShare = () => {
+    return {
+        type: ON_CLOSE_SHARE
+    }
+};
+
+export const onOpenShare = () => {
+    return {
+        type: ON_OPEN_SHARE
     }
 };
 
