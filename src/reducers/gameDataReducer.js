@@ -92,7 +92,6 @@ let dataState = {
     outOfZoneTimerSeconds: GLOBAL_SETTINGS.OUT_OF_ZONE_TIMEOUT,
     gameOver: false,
     currentLocationAcquired: false,
-    shareVisible: false
 };
 
 export default function gameDataReducer (state = dataState, action) {
@@ -287,16 +286,6 @@ export default function gameDataReducer (state = dataState, action) {
             return {
                 ...state,
                 currentCheckpoint: 0
-            };
-        case ON_CLOSE_SHARE:
-            return {
-                ...state,
-                shareVisible: false
-            };
-        case ON_OPEN_SHARE:
-            return {
-                ...state,
-                shareVisible: true
             };
         default:
             return state;

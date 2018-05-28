@@ -3,6 +3,60 @@ package com.hiking;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.reactlibrary.RNUUIDGeneratorPackage;
+import com.horcrux.svg.SvgPackage;
+import com.github.xinthink.rnmk.ReactMaterialKitPackage;
+import com.airbnb.android.react.maps.MapsPackage;
+import com.imagepicker.ImagePickerPackage;
+import com.evollu.react.fcm.FIRMessagingPackage;
+import com.kishanjvaghela.cardview.RNCardViewPackage;
+import org.reactnative.camera.RNCameraPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.reactlibrary.RNUUIDGeneratorPackage;
+import com.horcrux.svg.SvgPackage;
+import com.github.xinthink.rnmk.ReactMaterialKitPackage;
+import com.airbnb.android.react.maps.MapsPackage;
+import com.imagepicker.ImagePickerPackage;
+import com.evollu.react.fcm.FIRMessagingPackage;
+import com.kishanjvaghela.cardview.RNCardViewPackage;
+import org.reactnative.camera.RNCameraPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.reactlibrary.RNUUIDGeneratorPackage;
+import com.horcrux.svg.SvgPackage;
+import com.github.xinthink.rnmk.ReactMaterialKitPackage;
+import com.airbnb.android.react.maps.MapsPackage;
+import com.imagepicker.ImagePickerPackage;
+import com.evollu.react.fcm.FIRMessagingPackage;
+import com.kishanjvaghela.cardview.RNCardViewPackage;
+import org.reactnative.camera.RNCameraPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.reactlibrary.RNUUIDGeneratorPackage;
+import com.horcrux.svg.SvgPackage;
+import com.github.xinthink.rnmk.ReactMaterialKitPackage;
+import com.airbnb.android.react.maps.MapsPackage;
+import com.imagepicker.ImagePickerPackage;
+import com.evollu.react.fcm.FIRMessagingPackage;
+import com.kishanjvaghela.cardview.RNCardViewPackage;
+import org.reactnative.camera.RNCameraPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.reactlibrary.RNUUIDGeneratorPackage;
+import com.horcrux.svg.SvgPackage;
+import com.github.xinthink.rnmk.ReactMaterialKitPackage;
+import com.airbnb.android.react.maps.MapsPackage;
+import com.imagepicker.ImagePickerPackage;
+import com.evollu.react.fcm.FIRMessagingPackage;
+import com.kishanjvaghela.cardview.RNCardViewPackage;
+import org.reactnative.camera.RNCameraPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.reactlibrary.RNUUIDGeneratorPackage;
+import com.horcrux.svg.SvgPackage;
+import com.github.xinthink.rnmk.ReactMaterialKitPackage;
+import com.airbnb.android.react.maps.MapsPackage;
+import com.imagepicker.ImagePickerPackage;
+import com.evollu.react.fcm.FIRMessagingPackage;
+import com.kishanjvaghela.cardview.RNCardViewPackage;
+import org.reactnative.camera.RNCameraPackage;
 import org.reactnative.camera.RNCameraPackage;
 import com.reactlibrary.RNUUIDGeneratorPackage;
 import com.github.xinthink.rnmk.ReactMaterialKitPackage;
@@ -32,6 +86,60 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new VectorIconsPackage(),
+            new RNUUIDGeneratorPackage(),
+            new SvgPackage(),
+            new ReactMaterialKitPackage(),
+            new MapsPackage(),
+            new ImagePickerPackage(),
+            new FIRMessagingPackage(),
+            new RNCardViewPackage(),
+            new RNCameraPackage(),
+            new VectorIconsPackage(),
+            new RNUUIDGeneratorPackage(),
+            new SvgPackage(),
+            new ReactMaterialKitPackage(),
+            new MapsPackage(),
+            new ImagePickerPackage(),
+            new FIRMessagingPackage(),
+            new RNCardViewPackage(),
+            new RNCameraPackage(),
+            new VectorIconsPackage(),
+            new RNUUIDGeneratorPackage(),
+            new SvgPackage(),
+            new ReactMaterialKitPackage(),
+            new MapsPackage(),
+            new ImagePickerPackage(),
+            new FIRMessagingPackage(),
+            new RNCardViewPackage(),
+            new RNCameraPackage(),
+            new VectorIconsPackage(),
+            new RNUUIDGeneratorPackage(),
+            new SvgPackage(),
+            new ReactMaterialKitPackage(),
+            new MapsPackage(),
+            new ImagePickerPackage(),
+            new FIRMessagingPackage(),
+            new RNCardViewPackage(),
+            new RNCameraPackage(),
+            new VectorIconsPackage(),
+            new RNUUIDGeneratorPackage(),
+            new SvgPackage(),
+            new ReactMaterialKitPackage(),
+            new MapsPackage(),
+            new ImagePickerPackage(),
+            new FIRMessagingPackage(),
+            new RNCardViewPackage(),
+            new RNCameraPackage(),
+            new VectorIconsPackage(),
+            new RNUUIDGeneratorPackage(),
+            new SvgPackage(),
+            new ReactMaterialKitPackage(),
+            new MapsPackage(),
+            new ImagePickerPackage(),
+            new FIRMessagingPackage(),
+            new RNCardViewPackage(),
+            new RNCameraPackage(),
             new RNCameraPackage(),
             new ImagePickerPackage(),
             new RNUUIDGeneratorPackage(),

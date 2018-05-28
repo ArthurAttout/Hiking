@@ -1,10 +1,9 @@
 import React from 'react';
 import {AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableNativeFeedback, Dimensions, BackHandler,
-    Clipboard, Platform, ToastAndroid, AlertIOS} from 'react-native';
+    Clipboard, Platform, Share} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from "react-redux";
 import {COLORS, SHARING_ICONS} from "../utils/constants";
-import Share, {ShareSheet, Button} from 'react-native-share';
 import {onCloseShare, onOpenShare} from "../actions/actionsGameData";
 
 class EGScreen extends React.Component {
@@ -14,8 +13,7 @@ class EGScreen extends React.Component {
 
     constructor(props) {
         super(props);
-        this.onCancel = this.onCancel.bind(this);
-        this.onOpen = this.onOpen.bind(this);
+        this.onClick = this.onClick.bind(this);
     }
 
     /*componentDidMount() {
@@ -32,27 +30,24 @@ class EGScreen extends React.Component {
         return true;
     }*/
 
-    onCancel() {
-        console.log("CANCEL");
-        // replace with redux
-        this.props.onCloseShare();
-        //this.setState({visible:false});
-    }
-    onOpen() {
-        console.log("OPEN");
-        this.props.onOpenShare();
-        //this.setState({visible:true});
+    onClick() {
+        Share.share({
+            message: "I just completed a trail on Hikong! Check it out!",
+            url: "https://hikong.masi-henallux.be/share/MDLKOZ",  //+ this.props.game.PlayerCode),
+            title: "I just completed a trail on Hikong! Check it out!"
+        }, {
+            // Android only:
+            dialogTitle: 'Share Hikong results',
+            // iOS only:
+            excludedActivityTypes: [
+                'com.apple.UIKit.activity.PostToTwitter'
+            ]
+        })
     }
 
     // TODO implement sharing feature
     render() {
         //console.log(this.props.gameStats);
-        let shareOptions = {
-            title: "I just completed a trail on Hikong! Check it out!",
-            message: "I just completed a trail on Hikong! Check it out!",
-            url: ("https://hikong.masi-henallux.be/share/MDLKOZ"),  //+ this.props.game.PlayerCode),
-            subject: "Share Link"
-        };
         return (
             <View style={styles.container}>
                 <StatusBar
@@ -71,7 +66,7 @@ class EGScreen extends React.Component {
                         <Image
                             resizeMode={'contain'}
                             style={{width: (Dimensions.get('window').width * 0.45), height: (Dimensions.get('window').width * 0.45)}}
-                            source={{uri: /*this.props.teamInfo.iconUrl*/ }}/>
+                            source={{uri: "https://www.longree.be/data/teamAtBoLo.png"/*this.props.teamInfo.iconUrl*/ }}/>
                     }
                     <View style={styles.resultsView}>
                         <View style={styles.resultsPrompts}>
@@ -90,84 +85,13 @@ class EGScreen extends React.Component {
                 <TouchableNativeFeedback
                     background={TouchableNativeFeedback.Ripple('white')}
                     // TODO implement Sharing feature
-                    onPress={this.onOpen()}
+                    onPress={this.onClick()}
                 >
                     <View style={styles.bottomView}>
                         <Icon size={24} color="white" name="share"/>
                         <Text style={styles.bottomText}>Share</Text>
                     </View>
                 </TouchableNativeFeedback>
-
-                <ShareSheet visible={this.props.shareVisible} onCancel={this.onCancel}>
-                    <Button iconSrc={{ uri: SHARING_ICONS.TWITTER_ICON }}
-                            onPress={()=>{
-                                this.onCancel();
-                                setTimeout(() => {
-                                    Share.shareSingle(Object.assign(shareOptions, {
-                                        "social": "twitter"
-                                    }));
-                                },300);
-                            }}>Twitter</Button>
-                    <Button iconSrc={{ uri: SHARING_ICONS.FACEBOOK_ICON }}
-                            onPress={()=>{
-                                this.onCancel();
-                                setTimeout(() => {
-                                    Share.shareSingle(Object.assign(shareOptions, {
-                                        "social": "facebook"
-                                    }));
-                                },300);
-                            }}>Facebook</Button>
-                    <Button iconSrc={{ uri: SHARING_ICONS.WHATSAPP_ICON }}
-                            onPress={()=>{
-                                this.onCancel();
-                                setTimeout(() => {
-                                    Share.shareSingle(Object.assign(shareOptions, {
-                                        "social": "whatsapp"
-                                    }));
-                                },300);
-                            }}>Whatsapp</Button>
-                    <Button iconSrc={{ uri: SHARING_ICONS.GOOGLE_PLUS_ICON }}
-                            onPress={()=>{
-                                this.onCancel();
-                                setTimeout(() => {
-                                    Share.shareSingle(Object.assign(shareOptions, {
-                                        "social": "googleplus"
-                                    }));
-                                },300);
-                            }}>Google +</Button>
-                    <Button iconSrc={{ uri: SHARING_ICONS.EMAIL_ICON }}
-                            onPress={()=>{
-                                this.onCancel();
-                                setTimeout(() => {
-                                    Share.shareSingle(Object.assign(shareOptions, {
-                                        "social": "email"
-                                    }));
-                                },300);
-                            }}>Email</Button>
-                    <Button
-                        iconSrc={{ uri: SHARING_ICONS.CLIPBOARD_ICON }}
-                        onPress={()=>{
-                            this.onCancel();
-                            setTimeout(() => {
-                                if(typeof shareOptions["url"] !== undefined) {
-                                    Clipboard.setString(shareOptions["url"]);
-                                    if (Platform.OS === "android") {
-                                        ToastAndroid.show('Link copied to clipboard', ToastAndroid.SHORT);
-                                    } else if (Platform.OS === "ios") {
-                                        AlertIOS.alert('Link copied to clipboard');
-                                    }
-                                }
-                            },300);
-                        }}>Copy Link</Button>
-                    <Button iconSrc={{ uri: MORE_ICON }}
-                            onPress={()=>{
-                                this.onCancel();
-                                setTimeout(() => {
-                                    Share.open(shareOptions)
-                                },300);
-                            }}>More</Button>
-                </ShareSheet>
-
             </View>
         );
     }
@@ -179,15 +103,12 @@ const mapStateToProps = state => {
         teamInfo: state.gameDataReducer.teamInfo,
         gameStats: state.gameDataReducer.gameStats,
         game: state.gameDataReducer.game,
-        shareVisible: state.gameDataReducer.shareVisible
     }
 };
 
 function mapDispatchToProps(dispatch, own) {
     return {
         ...own,
-        onCloseShare: () => dispatch(onCloseShare()),
-        onOpenShare: () => dispatch(onOpenShare()),
     }
 }
 

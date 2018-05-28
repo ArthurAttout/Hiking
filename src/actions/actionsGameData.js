@@ -630,15 +630,3 @@ export const resetCheckpointCounter =() => {
     }
 };
 
-export const onCloseShare = () => {
-    return {
-        type: ON_CLOSE_SHARE
-    }
-};
-
-export const onOpenShare = () => {
-    return {
-        type: ON_OPEN_SHARE
-    }
-};
-
