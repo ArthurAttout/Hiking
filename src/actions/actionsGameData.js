@@ -2,7 +2,7 @@ import store from "../config/store";
 import {calculateBearing, calculateDistance} from "../utils/geometryUtils";
 import {navigatorRef} from "../../App";
 import {NavigationActions} from 'react-navigation';
-import {prepareRequest} from "../utils/constants";
+import {GLOBAL_SETTINGS, prepareRequest} from "../utils/constants";
 import {ToastAndroid} from "react-native";
 
 export const STORE_SERVER_DATA = 'STORE_SERVER_DATA';
@@ -29,9 +29,13 @@ export const STORE_BACKOFF_ID = 'STORE_BACKOFF_ID';
 export const SET_BACKOFF_PROGRESS_STATUS = 'SET_BACKOFF_PROGRESS_STATUS';
 export const UPDATE_TIMER = 'UPDATE_TIMER';
 export const RESET_TIMER ='RESET_TIMER';
+export const UPDATE_OUT_OF_ZONE_TIMER = 'UPDATE_OUT_OF_ZONE_TIMER';
+export const RESET_OUT_OF_ZONE_TIMER = 'RESET_OUT_OF_ZONE_TIMER';
+export const SET_GAME_OVER = 'SET_GAME_OVER';
 
-
-export const storeTeamInfo = (teamInfo) => {
+export const storeTeamInfo = (teamId) => {
+    let teamInfo = store.getState().joinGameReducer.teamsList.find(x => (x.idTeam === teamId));
+    console.log(teamInfo);
     return{
         type: STORE_TEAM_INFO,
         teamInfo: teamInfo
@@ -50,7 +54,7 @@ export const storeServerData = (json) =>{
 export const getNextBeacon = () => {
     return (dispatch) => {
         let params = {
-            nameTeam: store.getState().joinGameReducer.teamInfo.name,
+            nameTeam: store.getState().gameDataReducer.teamInfo.name,
             namePlayer: store.getState().joinGameReducer.playerName,
             playercode: store.getState().gameDataReducer.game.PlayerCode,
             lives: store.getState().gameDataReducer.teamInfo.lives
@@ -244,8 +248,30 @@ export const refreshPosition = () => {
 
 export const checkPlayerInsideBeacon = () => {
     return (dispatch) => {
-        if (calculateDistance(store.getState().gameDataReducer.currentLocation,
-                store.getState().gameDataReducer.nextBeacon) < 5) {
+        // check if player is outside of the zone
+        // measure distance between user location and central point and compare to radius
+        let playerDistanceToCenter = calculateDistance(
+            store.getState().gameDataReducer.currentLocation,
+            {latitude: store.getState().gameDataReducer.settings.center_x,
+                longitude: store.getState().gameDataReducer.settings.center_y});
+
+        let playerDistanceToNextBeacon = calculateDistance(store.getState().gameDataReducer.currentLocation,
+            store.getState().gameDataReducer.nextBeacon);
+
+        console.log("Shrink zone radius");
+        console.log(store.getState().gameDataReducer.settings.radius);
+        console.log("Player distance to center");
+        console.log(playerDistanceToCenter);
+        console.log("Player distance to beacon");
+        console.log(playerDistanceToNextBeacon);
+
+        if(playerDistanceToCenter > store.getState().gameDataReducer.settings.radius &&
+                store.getState().gameDataReducer.gameOver !== true) {
+            store.dispatch(onRequestOutOfZoneModal());
+        } else if(playerDistanceToCenter < store.getState().gameDataReducer.settings.radius &&
+                    store.getState().gameDataReducer.outOfZoneModalVisible === true) {
+            dispatch(onCloseOutOfZoneModal());
+        } else if (playerDistanceToNextBeacon < GLOBAL_SETTINGS.BEACON_RADIUS_THRESHOLD) {
             if (store.getState().gameDataReducer.nextBeacon.lastBeacon === true) {
                 let params = {
                     playercode: store.getState().gameDataReducer.game.PlayerCode,
@@ -329,6 +355,7 @@ export const onRequestRiddleSolvingModal = () => {
 };
 
 export const onCloseOutOfZoneModal = () => {
+    store.dispatch(resetOutOfZoneTimer());
     return{
         type:OUT_OF_ZONE_CLOSE_MODAL,
     }
@@ -435,23 +462,6 @@ export const shrinkZone = () => {
     + (store.getState().gameDataReducer.settings.radius -
             store.getState().gameDataReducer.settings.tresholdShrink) + "m");
 
-    // check if player is outside of the zone
-    // measure distance between user location and central point and compare to radius
-    let playerDistanceToCenter = calculateDistance(
-        {
-            latitude: store.getState().gameDataReducer.currentLocation.latitude,
-            longitude: store.getState().gameDataReducer.currentLocation.longitude
-        },
-        {
-            latitude: store.getState().gameDataReducer.game.center_x,
-            longitude: store.getState().gameDataReducer.game.center_y
-        },
-    );
-
-    if(playerDistanceToCenter > store.getState().gameDataReducer.settings.radius){
-        store.dispatch(onRequestOutOfZoneModal());
-    }
-
     return{
         type: SHRINK_ZONE,
         shrinkZoneRadius: (store.getState().gameDataReducer.settings.radius -
@@ -510,6 +520,27 @@ export const resetTimer = () => {
     return {
         type: RESET_TIMER,
         timerSecondsRemaining: store.getState().gameDataReducer.settings.timerRiddle
+    }
+};
+
+export const updateOutOfZoneTimer = (secondsRemaining) => {
+    return {
+        type: UPDATE_OUT_OF_ZONE_TIMER,
+        outOfZoneTimerSeconds: secondsRemaining
+    }
+
+};
+
+export const resetOutOfZoneTimer = () => {
+    return {
+        type: RESET_OUT_OF_ZONE_TIMER,
+        outOfZoneTimerSeconds: GLOBAL_SETTINGS.OUT_OF_ZONE_TIMEOUT
+    }
+};
+
+export const setGameOver = () => {
+    return {
+        type: SET_GAME_OVER,
     }
 };
 

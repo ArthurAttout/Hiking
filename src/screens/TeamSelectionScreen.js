@@ -75,8 +75,8 @@ class TSScreen extends React.Component {
             [
                 {text: 'Cancel', onPress: () => null},
                 {text: 'OK', onPress: () => {
-                        const teamTitle = item.name;
-                        this.props.joinTeam(teamTitle);
+                        item.name;
+                        this.props.joinTeam(item.name, item.idTeam);
                     }
                 }
             ],
@@ -96,7 +96,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) =>{
     return {
         fetchTeams: () => dispatch(fetchTeams()),
-        joinTeam: (team) => dispatch(joinTeam(team)),
+        joinTeam: (teamName, teamId) => dispatch(joinTeam(teamName, teamId)),
         storeCurrentLocation: (currentLocation) => dispatch(storeCurrentLocation(currentLocation)),
     }
 };

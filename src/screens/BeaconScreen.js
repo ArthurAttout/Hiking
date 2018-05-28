@@ -14,6 +14,7 @@ import {
 } from "../actions/actionsGameData";
 import SolveRiddleModal from "./PlayerBeaconModals/SolveRiddleModal";
 import {default as FCM, FCMEvent} from "react-native-fcm";
+import TimerCountdown from "react-native-timer-countdown";
 
 class BScreen extends React.Component {
     constructor(props) {
@@ -85,7 +86,7 @@ class BScreen extends React.Component {
     renderTimer() {
         if( ((this.props.game.GameMode === GAME_MODES.RIDDLES) ||
                 (this.props.game.GameMode === GAME_MODES.RIDDLES_AND_QR_CODE)) &&
-                this.props.timerRiddle !== 0) {
+                this.props.settings.timerRiddle !== 0) {
             return (
                 <View style={styles.countdownView}>
                     <TimerCountdown

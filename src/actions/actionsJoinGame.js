@@ -3,7 +3,7 @@ import {NavigationActions} from 'react-navigation';
 import store from '../config/store'
 import {prepareRequest} from "../utils/constants";
 import FCM, {FCMEvent} from "react-native-fcm";
-import {getNextBeaconNoConfirm, resetTimer, storeNextBeacon, storeServerData} from "./actionsGameData";
+import {getNextBeaconNoConfirm, resetTimer, storeNextBeacon, storeServerData, storeTeamInfo} from "./actionsGameData";
 
 export const SUBMIT = 'SUBMIT';
 export const SET_PLAYER_NAME= 'SET_PLAYER_NAME';
@@ -121,7 +121,7 @@ export const inputCode = (gameCode,playerName) =>{
     }
 };
 
-export const joinTeam = (teamName) =>{
+export const joinTeam = (teamName, teamId) =>{
     return (dispatch) => {
         dispatch(setTeamName(teamName));
         FCM.getFCMToken().then((token) => {
@@ -204,7 +204,7 @@ export const joinTeam = (teamName) =>{
                 })
 
         });
-        dispatch(joinGameContd(teamName));
+        dispatch(joinGameContd(teamName, teamId));
     }
 };
 
@@ -233,10 +233,12 @@ export const teamsFetched = (teams) => {
     }
 };
 
-export const joinGameContd = (team) => {
+export const joinGameContd = (teamName, teamId) => {
+    store.dispatch(storeTeamInfo(teamId));
     return{
         type:JOIN_TEAM,
-        teamName:team,
+        teamName:teamName,
+        teamId:teamId
     }
 };
 export const toggleGameReady = () =>{

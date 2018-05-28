@@ -3,14 +3,16 @@ import { AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableNativeF
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { connect } from "react-redux";
-import {COLORS} from "../utils/constants";
+import {COLORS, GLOBAL_SETTINGS} from "../utils/constants";
 import MapView, { Marker, Circle } from 'react-native-maps'
 import {
     setMapViewVisible, storeCurrentLocation, storeBearing,
     checkPlayerInsideBeacon, shrinkZone, refreshPosition, storeTimerIds, onRegionChange,
-    onCloseOutOfZoneModal, getLastBeacon
+    onCloseOutOfZoneModal, getLastBeacon, updateOutOfZoneTimer, resetOutOfZoneTimer, setGameOver
 } from "../actions/actionsGameData";
 import OutOfZoneModal from "./PlayerBeaconModals/OutOfZoneModal";
+
+// TODO Display activity icon when waiting for current position
 
 class GScreen extends React.Component {
 
@@ -38,8 +40,8 @@ class GScreen extends React.Component {
                     {
                         latitude: currentPosition.latitude,
                         longitude: currentPosition.longitude,
-                        latitudeDelta: 0.0,
-                        longitudeDelta: 0.0,
+                        latitudeDelta: 0.1,
+                        longitudeDelta: 0.1,
                     }
                 )
             },
@@ -66,7 +68,6 @@ class GScreen extends React.Component {
                     speed: position.coords.speed,
                     accuracy: position.coords.accuracy
                 };
-                console.log(updatedLocation);
                 this.props.storeCurrentLocation(updatedLocation);
                 this.props.storeBearing();
                 this.props.checkPlayerInsideBeacon();
@@ -138,22 +139,22 @@ class GScreen extends React.Component {
             const beacon = {
                 latitude: this.props.nextBeacon.latitude,
                 longitude: this.props.nextBeacon.longitude,
-                latitudeDelta: 0.0,
-                longitudeDelta: 0.0
+                latitudeDelta: 0.1,
+                longitudeDelta: 0.1
             };
             return (
                 <MapView
                     style={styles.map}
                     region={this.props.centerRegion}
-                    followUserLocation={true}
+                    //followUserLocation={true}
                     //showsMyLocationButton={true}
                     onRegionChangeComplete={(evt) => {this.props.onRegionChange(evt)}}>
                     <Marker
                         coordinate={{
                             latitude: this.props.currentLocation.latitude,
                             longitude: this.props.currentLocation.longitude,
-                            latitudeDelta: 0.0,
-                            longitudeDelta: 0.0,
+                            latitudeDelta: 0.1,
+                            longitudeDelta: 0.1,
                         }}
                         image={require('../images/ic_directions_walk_black.png')}
                     />
@@ -172,6 +173,16 @@ class GScreen extends React.Component {
                         radius={this.props.settings.radius}
                         strokeColor={'red'}
                         strokeWidth={2}
+                    />
+                    <Circle
+                        center={{
+                            latitude: beacon.latitude,
+                            longitude: beacon.longitude
+                        }}
+                        radius={GLOBAL_SETTINGS.BEACON_RADIUS_THRESHOLD}
+                        strokeColor={'green'}
+                        fillColor={'#ccffcc'}
+                        strokeWidth={1}
                     />
                 </MapView>
             );
@@ -217,7 +228,11 @@ class GScreen extends React.Component {
             <OutOfZoneModal
                 modalVisible={this.props.outOfZoneModalVisible}
                 onCloseModal={this.props.onCloseOutOfZoneModal}
-                getLastBeacon={this.props.getLastBeacon}/>
+                getLastBeacon={this.props.getLastBeacon}
+                outOfZoneTimerSeconds={this.props.outOfZoneTimerSeconds}
+                updateOutOfZoneTimer={this.props.updateOutOfZoneTimer}
+                resetOutOfZoneTimer={this.props.resetOutOfZoneTimer}
+                setGameOver={this.props.setGameOver}/>
         );
     }
 }
@@ -233,7 +248,8 @@ const mapStateToProps = (state, own) => {
         bearing: state.gameDataReducer.bearing,
         centerRegion: state.gameDataReducer.centerRegion,
         ids: state.gameDataReducer.ids,
-        outOfZoneModalVisible: state.gameDataReducer.outOfZoneModalVisible
+        outOfZoneModalVisible: state.gameDataReducer.outOfZoneModalVisible,
+        outOfZoneTimerSeconds: state.gameDataReducer.outOfZoneTimerSeconds
     }
 };
 
@@ -249,7 +265,10 @@ function mapDispatchToProps(dispatch, own) {
         storeTimerIds: () => dispatch(storeTimerIds()),
         onRegionChange: (evt) => dispatch(onRegionChange(evt)),
         onCloseOutOfZoneModal: () => dispatch(onCloseOutOfZoneModal()),
-        getLastBeacon: () => dispatch(getLastBeacon())
+        getLastBeacon: () => dispatch(getLastBeacon()),
+        updateOutOfZoneTimer: (secondsRemaining) => dispatch(updateOutOfZoneTimer(secondsRemaining)),
+        resetOutOfZoneTimer: () => dispatch(resetOutOfZoneTimer()),
+        setGameOver: () => dispatch(setGameOver())
     }
 }
 

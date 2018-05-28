@@ -4,8 +4,10 @@ import {
     CONFIRM_RIDDLE_SOLVING, RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED, STORE_END_GAME_STATS,
     STORE_TEAM_INFO, DECREMENT_TEAM_LIVE, SHRINK_ZONE, CENTER_REGION_CHANGED, STORE_TIMER_IDS,
     OUT_OF_ZONE_REQUEST_MODAL, OUT_OF_ZONE_CLOSE_MODAL, UPDATE_TEAM_LIVES, STORE_BACKOFF_ID,
-    SET_BACKOFF_PROGRESS_STATUS, RESET_TIMER, UPDATE_TIMER
+    SET_BACKOFF_PROGRESS_STATUS, RESET_TIMER, UPDATE_TIMER, UPDATE_OUT_OF_ZONE_TIMER, RESET_OUT_OF_ZONE_TIMER,
+    SET_GAME_OVER
 } from '../actions/actionsGameData';
+import {GLOBAL_SETTINGS} from "../utils/constants";
 
 let dataState = {
     admin: false,
@@ -84,7 +86,9 @@ let dataState = {
         backOffTimeoutID: null
     },
     showBackOffProgressStatus: false,
-    timerSecondsRemaining: 0
+    timerSecondsRemaining: 0,
+    outOfZoneTimerSeconds: GLOBAL_SETTINGS.OUT_OF_ZONE_TIMEOUT,
+    gameOver: false
 };
 
 export default function gameDataReducer (state = dataState, action) {
@@ -245,6 +249,21 @@ export default function gameDataReducer (state = dataState, action) {
             return {
                 ...state,
                 timerSecondsRemaining: action.timerSecondsRemaining
+            };
+        case UPDATE_OUT_OF_ZONE_TIMER:
+            return {
+                ...state,
+                outOfZoneTimerSeconds: action.outOfZoneTimerSeconds
+            };
+        case RESET_OUT_OF_ZONE_TIMER:
+            return {
+                ...state,
+                outOfZoneTimerSeconds: action.outOfZoneTimerSeconds
+            };
+        case SET_GAME_OVER:
+            return {
+                ...state,
+                gameOver: true
             };
         default:
             return state;

@@ -18,7 +18,7 @@ export default class OutOfZoneModal extends React.Component{
         return(
             <Modal
                 onBackdropPress={() => {}}
-                isVisible={this.props.riddleSolvingModalVisible}>
+                isVisible={this.props.modalVisible}>
 
                 <View style={styles.container}>
                     <View  style={styles.textView}>
@@ -27,10 +27,15 @@ export default class OutOfZoneModal extends React.Component{
                     </View>
                     <View  style={styles.countdownView}>
                         <TimerCountdown
-                            initialSecondsRemaining={GLOBAL_SETTINGS.OUT_OF_ZONE_TIMEOUT}
+                            initialSecondsRemaining={this.props.outOfZoneTimerSeconds}
+                            onTick={(secondsRemaining) => {
+                                this.props.updateOutOfZoneTimer(secondsRemaining);
+                            }}
                             onTimeElapsed={() => {
                                 // TODO get last beacon
                                 Vibration.cancel();
+                                this.props.setGameOver()
+                                this.props.resetOutOfZoneTimer();
                                 this.props.getLastBeacon();
                             }}
                             allowFontScaling={true}

@@ -41,6 +41,7 @@ export default function joinGameReducer (state = dataState, action) {
             return {
                 ...state,
                 teamName:action.teamName,
+                teamId:action.teamId
             };
         case TOGGLE_GAME_READY:
             return {

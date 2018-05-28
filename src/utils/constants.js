@@ -14,7 +14,8 @@ export const COLORS = Object.freeze(
 
 export const GLOBAL_SETTINGS = Object.freeze(
     {
-        "OUT_OF_ZONE_TIMEOUT": 30000,   // in ms
+        "OUT_OF_ZONE_TIMEOUT": 180000,   // in ms
+        "BEACON_RADIUS_THRESHOLD": 5,   // in meters
     }
 );
 
