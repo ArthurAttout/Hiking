@@ -56,10 +56,7 @@ export default class SolveRiddleModal extends React.Component{
                                     { cancelable: false })}}
                             delayPressIn={0}>
                             <Text style={styles.buttonText}>
-                                {(this.props.settings.lives === 0)?
-                                    "Give up" :
-                                    "Give up (-2 lives)"
-                                }
+                                {"Give up"}
                             </Text>
                         </TouchableNativeFeedback>
 

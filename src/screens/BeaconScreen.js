@@ -97,6 +97,7 @@ class BScreen extends React.Component {
                     <TimerCountdown
                         initialSecondsRemaining={this.props.timerSecondsRemaining*1000}        // given in seconds
                         onTick={(secondsRemaining) => {
+                            console.log("onTick");
                             this.props.updateTimer(secondsRemaining);
                         }}
                         onTimeElapsed={() => {

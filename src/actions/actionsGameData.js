@@ -175,8 +175,7 @@ export const storeCurrentLocation = (currentLocation) =>{
             error: currentLocation.error,
         }
     } else {
-        store.dispatch(setCurrentLocationAcquired(true));
-        store.dispatch(resetLocationLongLoadTime);
+        //store.dispatch(setCurrentLocationAcquired(true));
         return {
             type: STORE_CURRENT_LOCATION,
             latitude: currentLocation.latitude,
@@ -239,11 +238,7 @@ export const checkPlayerInsideBeacon = () => {
                     store.getState().gameDataReducer.outOfZoneModalVisible === true) {
             dispatch(onCloseOutOfZoneModal());
         } else if (playerDistanceToNextBeacon < GLOBAL_SETTINGS.BEACON_RADIUS_THRESHOLD) {
-            // TODO check is player has already triggerred
-            console.log("isPlayerInsideBeacon:");
-            console.log(store.getState().gameDataReducer.isPlayerInsideBeacon);
             if(!store.getState().gameDataReducer.isPlayerInsideBeacon) {
-                console.log("Player has entered beacon for the first time, setting to true");
                 dispatch(playerInsideBeaconTrigger(true));
                 console.log(store.getState().gameDataReducer.isPlayerInsideBeacon);
                 if (store.getState().gameDataReducer.nextBeacon.lastBeacon === true) {
@@ -255,8 +250,7 @@ export const checkPlayerInsideBeacon = () => {
 
                     fetch('https://hikong.masi-henallux.be:5000/end', request)
                         .then((response) => {
-
-                            if (response === 200 && response.ok) {
+                            if (response.ok) {
                                 return response.json()
                             }
                             else {
@@ -272,6 +266,7 @@ export const checkPlayerInsideBeacon = () => {
                         })
                         .then((json) => {
                             if (!json.hasError) {
+                                console.log("EndScreenShould show here");
                                 dispatch(storeEndGameStats(json));
                                 navigatorRef.dispatch(NavigationActions.navigate({
                                     routeName: "EndGameScreen"

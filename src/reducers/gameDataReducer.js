@@ -258,7 +258,7 @@ export default function gameDataReducer (state = dataState, action) {
         case RESET_TIMER:
             return {
                 ...state,
-                timerSecondsRemaining: action.timerSecondsRemaining
+                timerSecondsRemaining: state.settings.timerRiddle
             };
         case UPDATE_OUT_OF_ZONE_TIMER:
             return {

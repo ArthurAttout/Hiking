@@ -58,6 +58,7 @@ class GScreen extends React.Component {
                             longitudeDelta: 0.01,});}
                 this.props.storeCurrentLocation(updatedLocation);
                 this.props.storeBearing();
+                this.props.setCurrentLocationAcquired(true);
                 this.props.checkPlayerInsideBeacon();
             },
             (error) => {
@@ -108,6 +109,7 @@ class GScreen extends React.Component {
                         longitudeDelta: 0.01,
                     }
                 );
+                this.props.setCurrentLocationAcquired(true);
                 this.props.checkPlayerInsideBeacon();
             },
             (error) => {
@@ -152,13 +154,15 @@ class GScreen extends React.Component {
             });
             this.props.registerMessageTeam();
         }
-        return (
-            (!this.props.currentLocationAcquired || this.props.showNextBeaconFetchActivity) ?
+        if (!this.props.currentLocationAcquired || this.props.showNextBeaconFetchActivity){
+            return (
                 <View style={{flex: 1, justifyContent: 'center'}}>
                     <Text style={{textAlign: 'center'}}>{"Getting your precise location.\nHang on a second..."}</Text>
                     <ActivityIndicator size="large" color={COLORS.Primary}/>
                 </View>
-                :
+            );
+        } else {
+            return (
                 <View style={styles.container}>
                     <StatusBar
                         backgroundColor={COLORS.Primary_accent}
@@ -168,7 +172,8 @@ class GScreen extends React.Component {
                     {this.renderBottomNavigation()}
                     {this.renderModal()}
                 </View>
-        );
+            );
+        }
     }
 
 
