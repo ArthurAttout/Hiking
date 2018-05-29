@@ -91,7 +91,7 @@ const mapDispatchToProps = (dispatch) =>{
 
 
 //Connect everything
-export default GameNotStartedScreen = connect(mapStateToProps)(GNSScreen);
+export default GameNotStartedScreen = connect(mapStateToProps,mapDispatchToProps)(GNSScreen);
 
 const styles = StyleSheet.create({
     container: {

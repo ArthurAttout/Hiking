@@ -1,18 +1,19 @@
 import React from 'react';
 import {
     AppRegistry, Text, View, StyleSheet, StatusBar, Image,
-    TouchableNativeFeedback, Dimensions, BackHandler, ActivityIndicator
+    TouchableNativeFeedback, Dimensions, BackHandler, ActivityIndicator, Alert
 } from 'react-native';
 import { connect } from "react-redux";
 import {COLORS, GAME_MODES} from "../utils/constants";
 import {
     getNextBeacon, getNextBeaconNoConfirm,
     onCloseRiddleSolvingModal, onConfirmRiddleSolving, onRequestRiddleSolvingModal, resetTimer, riddleTimeOut,
-    setBackOffProgressStatus, setCurrentAnswer, storeNextBeacon, submitButtonPressed, updateTimer
+    setBackOffProgressStatus, setCurrentAnswer, storeNextBeacon, submitButtonPressed, updateTeamLives, updateTimer
 } from "../actions/actionsGameData";
 import SolveRiddleModal from "./PlayerBeaconModals/SolveRiddleModal";
 import {default as FCM, FCMEvent} from "react-native-fcm";
 import TimerCountdown from "react-native-timer-countdown";
+import QRScannerView from "../../workaround/QRScanner";
 
 class BScreen extends React.Component {
     constructor(props) {
@@ -29,8 +30,11 @@ class BScreen extends React.Component {
             console.log("notif received");
             console.log(notif);
 
-            if(notif['confirmPoint']){ //Expected notification
-                this.props.getNextBeaconNoConfirm(notif['lives']);
+            if(notif['confirmPoint']){
+                this.props.getNextBeacon();
+                this.props.updateTeamLives(notif['lives']);
+            } else if(notif['decrementLife']) {
+                this.props.updateTeamLives(notif['lives'])
             }
         });
     }
@@ -126,24 +130,74 @@ class BScreen extends React.Component {
                 nextButton = "CAPTURE QR CODE";
                 break;
         }
-        return(
-            this.props.showBackOffProgressStatus ?
-                <View style={styles.bottomView}>
-                    <ActivityIndicator size="small" color="#ffffff"/>
-                </View>
-                :
-                <TouchableNativeFeedback
-                    background={TouchableNativeFeedback.Ripple('white')}
-                    onPress={() => {
-                        this.handleOnPress()
-                    }}
-                >
-                    <View style={styles.bottomView}>
-
-                        <Text style={styles.bottomText}>{nextButton}</Text>
+        if(this.props.game.GameMode !== GAME_MODES.RIDDLES_AND_QR_CODE) {
+            return (
+                this.props.showBackOffProgressStatus ?
+                    <View style={[styles.bottomView, {alignItems: 'center', justifyContent: 'center'}]}>
+                        <ActivityIndicator size="small" color="#ffffff"/>
                     </View>
-                </TouchableNativeFeedback>
-        );
+                    :
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('white')}
+                        onPress={() => {
+                            this.handleOnPress()
+                        }}
+                    >
+                        <View style={styles.bottomView}>
+
+                            <Text style={styles.bottomText}>{nextButton}</Text>
+                        </View>
+                    </TouchableNativeFeedback>
+            );
+        } else {
+            return (
+                this.props.showBackOffProgressStatus ?
+                    <View style={[styles.bottomView, {alignItems: 'center', justifyContent: 'center'}]}>
+                        <ActivityIndicator size="small" color="#ffffff"/>
+                    </View>
+                    :
+                    <View style={[styles.bottomView, {justifyContent:'space-between', flexDirection: 'row', padding: 0}]}>
+                        <TouchableNativeFeedback
+                            background={TouchableNativeFeedback.Ripple('white')}
+                            onPress={() => {
+                                Alert.alert(
+                                    'Give up?',
+                                    ((this.props.settings.lives === 0)?
+                                        'Are you certain you wish to give up this riddle?' :
+                                        'Are you certain you wish to give up this riddle?\nYou will lose 2 lives as a result.'),
+
+                                    [
+                                        {text: 'No, I\'ll keep trying', onPress: () => null},
+                                        {text: 'Yes, I give up', onPress: () => {
+                                                this.props.riddleTimeOut();
+                                            }
+                                        }
+                                    ],
+                                    { cancelable: false }
+                                )
+                            }}
+                        >
+                            <View style={{flex:2}}>
+                                <Text style={[styles.bottomText, {textAlign: 'left', height: '100%', textAlignVertical: 'center', paddingLeft: '5%'}]}>{
+                                    (this.props.settings.lives === 0)?
+                                    "Give up" :
+                                    "Give up (-2 lives)"
+                                }</Text>
+                            </View>
+                        </TouchableNativeFeedback>
+                        <TouchableNativeFeedback
+                            background={TouchableNativeFeedback.Ripple('white')}
+                            onPress={() => {
+                                this.handleOnPress()
+                            }}
+                        >
+                            <View style={{flex:2, height: '100%'}}>
+                                <Text style={[styles.bottomText, {textAlign: 'right', height: '100%', textAlignVertical: 'center', paddingRight: '5%'}]}>{nextButton}</Text>
+                            </View>
+                        </TouchableNativeFeedback>
+                    </View>
+            );
+        }
     }
 
     renderModal(){
@@ -153,6 +207,7 @@ class BScreen extends React.Component {
             currentAnswer = {this.props.currentAnswer}
             correctAnswer = {this.props.correctAnswer}
             game = {this.props.game}
+            settings = {this.props.settings}
             teamInfo = {this.props.teamInfo}
             isSubmitButtonPressed = {this.props.isSubmitButtonPressed}
             submitButtonPressed = {this.props.submitButtonPressed}
@@ -193,11 +248,11 @@ function mapDispatchToProps(dispatch, own) {
         setCurrentAnswer: (answer) => dispatch(setCurrentAnswer(answer)),
         submitButtonPressed: () => dispatch(submitButtonPressed()),
         getNextBeacon: () => dispatch(getNextBeacon()),
-        getNextBeaconNoConfirm: (updatedLives) => dispatch(getNextBeaconNoConfirm(updatedLives)),
         riddleTimeOut: () => dispatch(riddleTimeOut()),
         setBackOffProgressStatus: (boolean) => dispatch(setBackOffProgressStatus(boolean)),
         updateTimer: (secondsRemaining) => dispatch(updateTimer(secondsRemaining)),
         resetTimer: () => dispatch(resetTimer()),
+        updateTeamLives: (updatedLives) => dispatch(updateTeamLives(updatedLives)),
     }
 }
 

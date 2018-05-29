@@ -60,31 +60,16 @@ export const storeServerData = (json) =>{
 
 export const getNextBeacon = () => {
     return (dispatch) => {
-        dispatch(setBackOffProgressStatus(true));
-        // TODO calibrate backoff timer
-        let backOffTimer = Math.floor(Math.random() * 3000) + 1000;
-        let backOffTimeoutID = setTimeout(function(){dispatch(confirmPoint())}, backOffTimer);
-        console.log("Back off timer:");
-        console.log(backOffTimer);
-        dispatch(storeBackOffId(backOffTimeoutID));
-    }
-};
-
-export const confirmPoint = () => {
-    return (dispatch) => {
         let params = {
             nameTeam: store.getState().gameDataReducer.teamInfo.name,
             namePlayer: store.getState().joinGameReducer.playerName,
             playercode: store.getState().gameDataReducer.game.PlayerCode,
             lives: store.getState().gameDataReducer.teamInfo.lives,
-            // TODO send checkpoint value
             nbBeacon: store.getState().gameDataReducer.currentCheckpoint
         };
         let request = prepareRequest(params, "POST");
-
         fetch('https://hikong.masi-henallux.be:5000/confirmpoint', request)
             .then((response) => {
-
                 if (response.ok) {
                     return response.json()
                 }
@@ -98,6 +83,10 @@ export const confirmPoint = () => {
                 // TODO gerer cas d'erreur
                 if (!json.hasError) {
                     dispatch(storeNextBeacon(json));
+                    dispatch(incrementCheckpoint());
+                    dispatch(storeNextBeacon(json));
+                    // close modal if player had it open
+                    dispatch(onCloseRiddleSolvingModal());
                     navigatorRef.dispatch(NavigationActions.navigate({
                         routeName: "GameScreen"
                     }));
@@ -108,58 +97,28 @@ export const confirmPoint = () => {
 
 export const getNextBeaconNoConfirm = (updatedLives) => {
     return (dispatch) => {
-        if(store.getState().gameDataReducer.backOffTimeoutID !== -1) {
-            clearTimeout(store.getState().gameDataReducer.backOffTimeoutID);
-            dispatch(setBackOffProgressStatus(false));
-        }
-
-        dispatch(updateTeamLives(updatedLives));
 
         if(store.getState().gameDataReducer.settings.lives !== 0 &&
             store.getState().gameDataReducer.teamInfo.lives <= 0) {
             // player who confirmed point got a game over
             store.dispatch(getLastBeacon());
         } else {
-            let params = {
-                nameTeam: store.getState().joinGameReducer.teamName,
-                playercode: store.getState().gameDataReducer.game.PlayerCode
-            };
-            let request = prepareRequest(params, "POST");
-            console.log("Requesting next beacon with /nextpoint");
-            console.log("Parameters");
-            console.log(params);
-            console.log("Request");
-            console.log(request);
-            fetch('https://hikong.masi-henallux.be:5000/nextpoint', request)
-                .then((response) => {
-                    console.log("Response :");
-                    console.log(response);
-                    if (response.ok) {
-                        return response.json()
-                    }
-                    else {
-                        return {
-                            hasError: true
-                        }
-                    }
-                })
-                .then((json) => {
-                    // TODO gerer cas d'erreur
-                    if (!json.hasError) {
-                        dispatch(storeNextBeacon(json));
-                        // close modal if player had it open
-                        dispatch(onCloseRiddleSolvingModal());
-                        // check if this beacon is the last beacon
-                        navigatorRef.dispatch(NavigationActions.navigate({
-                            routeName: "GameScreen"
-                        }));
-                    }
-                })
         }
     }
 };
 
 export const updateTeamLives = (updatedLives) => {
+    return (dispatch) => {
+        if(store.getState().gameDataReducer.settings.lives !== 0 && updatedLives <= 0) {
+            store.dispatch(getLastBeacon());
+        } else {
+            dispatch(updateTeamLivesContd(updatedLives));
+        }
+    }
+
+};
+
+export const updateTeamLivesContd = (updatedLives) => {
     return {
         type: UPDATE_TEAM_LIVES,
         lives: updatedLives
@@ -432,39 +391,48 @@ export const onConfirmQRScan = (scannerData) =>{
 };
 
 export const decrementTeamLive = () => {
-    //TODO implement API
-    let params = {
-        nameTeam: store.getState().gameDataReducer.teamInfo.name,
-        namePlayer: store.getState().joinGameReducer.playerName,
-        playercode: store.getState().gameDataReducer.game.PlayerCode
-    };
-    let request = prepareRequest(params, "PUT");
-    console.log("Refreshing position with /decrementlife");
-    console.log("Parameters");
-    console.log(params);
-    console.log("Request");
-    console.log(request);
-    fetch('https://hikong.masi-henallux.be:5000/decrementlife', request)
-        .then((response) => {
-            console.log("Response :");
-            console.log(response);
-            if (response.ok) {
-                return response.json()
-            }
-            else {
-                return {
-                    hasError: true
+    return (dispatch) => {
+        let params = {
+            nameTeam: store.getState().gameDataReducer.teamInfo.name,
+            namePlayer: store.getState().joinGameReducer.playerName,
+            playercode: store.getState().gameDataReducer.game.PlayerCode
+        };
+        let request = prepareRequest(params, "PUT");
+        console.log("Refreshing position with /decrementlife");
+        console.log("Parameters");
+        console.log(params);
+        console.log("Request");
+        console.log(request);
+        fetch('https://hikong.masi-henallux.be:5000/decrementlife', request)
+            .then((response) => {
+                console.log("Response :");
+                console.log(response);
+                if (response.ok) {
+                    return response.json()
                 }
-            }
-        })
-        .then((json) => {
-            if (!json.hasError) {
-                return {
-                    type: DECREMENT_TEAM_LIVE,
-                    teamLives: (store.getState().gameDataReducer.teamInfo.lives - 1)
+                else {
+                    return {
+                        hasError: true
+                    }
                 }
-            }
-        });
+            })
+            .then((json) => {
+                if (!json.hasError) {
+                    dispatch(decrementLiveContd());
+                    if (store.getState().gameDataReducer.settings.lives !== 0 &&
+                        store.getState().gameDataReducer.teamInfo.lives <= 0) {
+                        store.dispatch(getLastBeacon());
+                    }
+                }
+            });
+    }
+};
+
+export const decrementLiveContd = () => {
+    return {
+        type: DECREMENT_TEAM_LIVE,
+        teamLives: (store.getState().gameDataReducer.teamInfo.lives - 1)
+    }
 };
 
 export const gameOver = () => {

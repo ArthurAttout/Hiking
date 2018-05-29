@@ -8,14 +8,51 @@ import {connect} from "react-redux";
 import {joinTeam,fetchTeams} from "../actions/actionsJoinGame";
 import {storeCurrentLocation} from "../actions/actionsGameData";
 import {COLORS} from "../utils/constants";
+import {default as FCM, FCMEvent} from "react-native-fcm";
 
 // TODO automatically remove keyboard if player left it
+
+class TeamItem extends React.PureComponent {
+    render() {
+        return (
+            <View>
+                <TouchableNativeFeedback
+                    background={TouchableNativeFeedback.Ripple('grey')}
+                    delayPressIn={0}
+                    onPress={() => this.props._onTeamPress(this.props.item)}>
+                    <View style={this.props.styles.teamsListView}>
+                        <Icon.Button name="circle"
+                                     size={50}
+                                     color={this.props.item.ColorHex}
+                                     backgroundColor='transparent'
+                                     style={this.props.styles.iconStyle}/>
+                        <Text style={this.props.styles.teamsListText}>
+                            {this.props.item.name}
+                        </Text>
+                    </View>
+                </TouchableNativeFeedback>
+            </View>
+        )
+    }
+}
 
 class TSScreen extends React.Component {
 
     constructor(props) {
         super(props);
         this._onTeamPress = this._onTeamPress.bind(this);
+    }
+
+    componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        return true;
     }
 
     componentWillMount(){
@@ -35,25 +72,36 @@ class TSScreen extends React.Component {
                     style={styles.teamsList}
                     keyExtractor={item => item.name}
                     renderItem={({ item }) => (
-                            <TouchableNativeFeedback
-                                background={TouchableNativeFeedback.Ripple('grey')}
-                                delayPressIn={0}
-                                onPress={() => this._onTeamPress(item)}>
-                                <View style={styles.teamsListView}>
-                                    <Icon.Button name="circle"
-                                                 size={50}
-                                                 color={item.ColorHex}
-                                                 backgroundColor='transparent'
-                                                 style={styles.iconStyle}/>
-                                    <Text style={styles.teamsListText}>
-                                        {item.name}
-                                    </Text>
-                                </View>
-                            </TouchableNativeFeedback>
+                        //this._renderFlatListItem(item)
+                        <TeamItem
+                            _onTeamPress={this._onTeamPress}
+                            item={item}
+                            styles={styles}
+                        />
                     )}
                 />
             </View>
         );
+    }
+
+    _renderFlatListItem(item) {
+        return (
+            <TouchableNativeFeedback
+                background={TouchableNativeFeedback.Ripple('grey')}
+                delayPressIn={0}
+                onPress={this._onTeamPress(item)}>
+                <View style={styles.teamsListView}>
+                    <Icon.Button name="circle"
+                                 size={50}
+                                 color={item.ColorHex}
+                                 backgroundColor='transparent'
+                                 style={styles.iconStyle}/>
+                    <Text style={styles.teamsListText}>
+                        {item.name}
+                    </Text>
+                </View>
+            </TouchableNativeFeedback>
+        )
     }
 
     _onTeamPress(item) {

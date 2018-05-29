@@ -1,7 +1,9 @@
 import React from 'react';
 import Modal from "react-native-modal";
-import {StyleSheet, ScrollView, TextInput,
-    View, Image, Text,FlatList, TouchableNativeFeedback, Dimensions, Vibration} from 'react-native';
+import {
+    StyleSheet, ScrollView, TextInput,
+    View, Image, Text, FlatList, TouchableNativeFeedback, Dimensions, Vibration, Alert
+} from 'react-native';
 import {COLORS, GAME_MODES} from "../../utils/constants";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -39,6 +41,35 @@ export default class SolveRiddleModal extends React.Component{
 
                     <View
                         style={styles.buttons}>
+
+                        <TouchableNativeFeedback
+                            background={TouchableNativeFeedback.Ripple('grey')}
+                            style={styles.button}
+                            onPress={() => {
+                                Alert.alert(
+                                    'Give up?',
+                                    ((this.props.settings.lives === 0)?
+                                        'Are you certain you wish to give up this riddle?' :
+                                        'Are you certain you wish to give up this riddle?\nYou will lose 2 lives as a result.'),
+
+                                    [
+                                        {text: 'No, I\'ll keep trying', onPress: () => null},
+                                        {text: 'Yes, I give up', onPress: () => {
+                                                this.props.riddleTimeOut();
+                                            }
+                                        }
+                                    ],
+                                    { cancelable: false }
+                                    )
+                            }}
+                            delayPressIn={0}>
+                            <Text style={styles.buttonText}>
+                                {(this.props.settings.lives === 0)?
+                                    "Give up" :
+                                    "Give up (-2 lives)"
+                                }
+                            </Text>
+                        </TouchableNativeFeedback>
 
                         <TouchableNativeFeedback
                             background={TouchableNativeFeedback.Ripple('grey')}
@@ -130,7 +161,7 @@ const styles = StyleSheet.create({
         alignItems:'flex-end'
     },
     button:{
-        flex: 2
+        flex: 3
     },
     buttonText: {
         fontSize:19,

@@ -30,6 +30,22 @@ class GScreen extends React.Component {
 
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         this.props.setCurrentLocationAcquired(false);
+
+        FCM.getFCMToken().then((t) => console.log(t));
+        FCM.on(FCMEvent.Notification, notif => {
+            console.log("notif received");
+            console.log(notif);
+
+            // todo check if this works, or else have JC change the Firebase message format
+            if(notif['confirmPoint'] === undefined ){ //Expected notification
+                this.props.updateTeamLives(notif['lives'])
+            }
+
+            /*if(notif['decrementLife']){
+                this.props.updateTeamLives(notif['lives'])
+            }*/
+        });
+
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 console.log("curpos");
