@@ -3,6 +3,7 @@ import store from '../config/store'
 import {fetchingTeams} from "./actionsJoinGame";
 import {prepareRequest} from "../utils/constants";
 export const FORCE_REFRESH= 'FORCE_REFRESH';
+export const SHOW_TEAM_BEACONS = 'SHOW_TEAM_BEACONS';
 export const CHANGE_GAMEMASTER_SIDE_MENU_OPENED = 'CHANGE_GAMEMASTER_SIDE_MENU_OPENED';
 export const SET_CONTINUOUS_REFRESH = 'SET_CONTINUOUS_REFRESH';
 export const UPDATE_POSITIONS = 'UPDATE_POSITIONS';
@@ -59,8 +60,8 @@ export const updatePositions = () => {
             console.log("positions updated!");
             let gameCode = store.getState().joinGameReducer.gameCode;
             dispatch(fetchingNewPositions());
-            //fetch("https://hikong.masi-henallux.be:5000/" + gameCode + "/getTeamsStats")
-            fetch("http://www.mocky.io/v2/5b0d291631000056009d5552")
+            fetch("https://hikong.masi-henallux.be:5000/" + gameCode + "/getTeamsStats")
+            //fetch("http://www.mocky.io/v2/5b0d291631000056009d5552")
                 .then(function(response) {
                     return response.json();
                 })
@@ -77,10 +78,10 @@ export const fetchingNewPositions = () => {
     }
 };
 
-export const newPositionsFetched = (teams) => {
+export const newPositionsFetched = (json) => {
     return{
         type: FETCHED_NEW_POSITIONS,
-        teams: teams,
+        teams: json.teams,
     }
 };
 
@@ -88,8 +89,8 @@ export const newPositionsFetched = (teams) => {
 export const retrieveTeams = () => {
     return dispatch =>{
         let gameCode = store.getState().joinGameReducer.gameCode;
-        //fetch("https://hikong.masi-henallux.be:5000/" + gameCode + "/getTeamsStats")
-        fetch("http://www.mocky.io/v2/5b0d291631000056009d5552")
+        fetch("https://hikong.masi-henallux.be:5000/" + gameCode + "/getTeamsStats")
+        //fetch("http://www.mocky.io/v2/5b0d291631000056009d5552")
             .then((response) => {
                 if(response.ok){
                     return response.json();
@@ -100,6 +101,8 @@ export const retrieveTeams = () => {
             })
             .then((json) => {
                 if(!json.hasError){
+                    console.log("Received json : ");
+                    console.log(json);
                     dispatch(teamsFetched(json));
                 }
             });
@@ -107,10 +110,11 @@ export const retrieveTeams = () => {
     }
 };
 
-export const teamsFetched = (teams) => {
+export const teamsFetched = (json) => {
+    console.log("Fetched teams. Size : " + json.teams.length);
     return{
         type:TEAMS_FETCHED,
-        teams:teams
+        teams:json.teams
     }
 };
 
@@ -174,6 +178,13 @@ export const setMessageTitle = (title) => {
     return{
         type: SET_MESSAGE_TITLE,
         title: title,
+    }
+};
+
+export const onShowTeamBeacons = (team) => {
+    return{
+        type: SHOW_TEAM_BEACONS,
+        team: team
     }
 };
 

@@ -1,7 +1,7 @@
 import {
     SUBMIT, JOIN_TEAM, TOGGLE_GAME_READY, SET_GAME_CODE, SET_PLAYER_NAME,
     FETCH_PLAYER_STATUS, PLAYER_STATUS_FETCHED, FETCH_TEAMS,FETCHING_TEAMS,
-    TEAMS_FETCHED,ERROR_WITH_INPUT, SET_TEAM_NAME
+    TEAMS_FETCHED,ERROR_WITH_INPUT, SET_TEAM_NAME,SET_IS_GAME_STARTED
 } from '../actions/actionsJoinGame';
 
 import {ToastAndroid} from 'react-native'
@@ -82,6 +82,12 @@ export default function joinGameReducer (state = dataState, action) {
             return{
                 ...state,
                 teamsList: action.teamsList
+            };
+
+        case SET_IS_GAME_STARTED :
+            return{
+                ...state,
+                isGameStarted: action.isStarted,
             };
 
         case FETCHING_TEAMS:

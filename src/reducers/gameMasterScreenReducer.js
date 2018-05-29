@@ -2,7 +2,7 @@ import {
     FORCE_REFRESH, SET_CONTINUOUS_REFRESH, CHANGE_GAMEMASTER_SIDE_MENU_OPENED,REQUEST_MODAL_TEAM,
     FETCHED_NEW_POSITIONS, FETCHING_NEW_POSITIONS, SET_INTERVAL_ID, UPDATE_POSITIONS, START_GAME,
     ERROR_START,FETCHING_START,START_FETCHED,TEAMS_FETCHED,SHOW_MESSAGING_MODAL,CLOSE_TEAM_MESSAGING_MODAL,
-    SET_MESSAGE_BODY,SET_MESSAGE_TITLE,MESSAGE_SENDING_FAILED,FETCHING_SENDING_MESSAGE
+    SET_MESSAGE_BODY,SET_MESSAGE_TITLE,MESSAGE_SENDING_FAILED,FETCHING_SENDING_MESSAGE,SHOW_TEAM_BEACONS
 } from "../actions/actionsGameMasterScreen";
 
 let dataState = {
@@ -15,6 +15,9 @@ let dataState = {
         longitudeDelta: 0.0121,
     },
     teams:[
+
+    ],
+    beaconsToShow:[
 
     ]
 };
@@ -34,8 +37,15 @@ export default function gameMasterScreenReducer (state = dataState, action) {
                 showProgressStatus: true,
             };
 
+        case SHOW_TEAM_BEACONS:
+            return{
+                ...state,
+                beaconsToShow: action.team.trip.beacons
+            };
+
         case TEAMS_FETCHED:
-            let newss = {
+            console.log("I have " + action.teams.length + " teams");
+            return {
                 ...state,
                 teams: action.teams.map((team) => {
                     let totLat = 0;
@@ -46,18 +56,19 @@ export default function gameMasterScreenReducer (state = dataState, action) {
                     return{
                         ...team,
                         id: team.idTeam,
+                        color: team.ColorHex,
                         coordinate:{
-                            latitude: totLat / team.players.length,
-                            longitude: totLong /team.players.length,
+                            latitude: team.players.length > 0 ? totLat / team.players.length : 0,
+                            longitude: team.players.length > 0 ? totLong / team.players.length : 0,
                         }
                     }
                 }),
                 continuousRefresh: true,
             };
-            console.log(newss);
-            return newss;
+
 
         case FETCHED_NEW_POSITIONS:
+            console.log("I have " + action.teams.length + " teams");
             return{
                 ...state,
                 teams: action.teams.map((team) => {
@@ -68,10 +79,11 @@ export default function gameMasterScreenReducer (state = dataState, action) {
 
                     return{
                         ...team,
+                        color: team.ColorHex,
                         id: team.idTeam,
                         coordinate:{
-                            latitude: totLat / team.players.length,
-                            longitude: totLong /team.players.length,
+                            latitude: team.players.length > 0 ? totLat / team.players.length : 0,
+                            longitude: team.players.length > 0 ? totLong / team.players.length : 0,
                         }
                     }
                 })
@@ -92,7 +104,7 @@ export default function gameMasterScreenReducer (state = dataState, action) {
             return{
                 ...state,
                 showProgressStart : true,
-                showStartButton: false
+                showStartButton: false,
             };
 
         case START_FETCHED:
@@ -100,6 +112,7 @@ export default function gameMasterScreenReducer (state = dataState, action) {
                 ...state,
                 showProgressStart: false,
                 showStartButton: false,
+                isGameStarted: true,
             };
 
         case ERROR_START:

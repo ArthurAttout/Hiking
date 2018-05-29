@@ -1,4 +1,5 @@
 import React from 'react';
+import IconFeather from 'react-native-vector-icons/Feather';
 import {COLORS, GAME_MODES} from '../utils/constants'
 import {StyleSheet, ScrollView, TextInput,FlatList,ActivityIndicator,
     View, Image, Text, TouchableNativeFeedback} from 'react-native';
@@ -64,6 +65,13 @@ export default class Menu extends React.Component{
                                             </Text>
                                         </View>
                                     </TouchableNativeFeedback>
+                                    <IconFeather.Button
+                                        name="map-pin"
+                                        color={COLORS.Secondary}
+                                        backgroundColor='transparent'
+                                        onPress={() => {this.props.onShowTeamBeacons(item)}}
+                                        background={TouchableNativeFeedback.Ripple('blue')}
+                                        delayPressIn={0}/>
                                 </View>
                             )}/>
                     </ScrollView>

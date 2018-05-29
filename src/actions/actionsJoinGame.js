@@ -12,6 +12,7 @@ export const PLAYER_STATUS_FETCHED = 'PLAYER_STATUS_FETCHED';
 export const ERROR_WITH_INPUT= 'ERROR_WITH_INPUT';
 export const SET_GAME_CODE ='SET_GAME_CODE';
 export const FETCH_PLAYER_STATUS = 'FETCH_PLAYER_STATUS';
+export const SET_IS_GAME_STARTED = 'SET_IS_GAME_STARTED';
 export const SET_TEAM_NAME= 'SET_TEAM_NAME';
 export const INPUT_CODE = 'INPUT_CODE';
 export const JOIN_TEAM = 'JOIN_TEAM';
@@ -59,6 +60,7 @@ export const submit = () =>{
                     dispatch(storeServerData(json));
                     dispatch(resetTimer());
                     if(json.admin){
+                        dispatch(setIsGameStarted(json.game.isStarted));
                         navigatorRef.dispatch(NavigationActions.navigate({
                             routeName:"GameMasterScreen",
                         }));
@@ -81,6 +83,13 @@ export const submit = () =>{
 export const errorWithInput = () => {
     return{
         type: ERROR_WITH_INPUT
+    }
+};
+
+export const setIsGameStarted = (value) => {
+    return{
+        type: SET_IS_GAME_STARTED,
+        isStarted: value
     }
 };
 
@@ -122,14 +131,18 @@ export const inputCode = (gameCode,playerName) =>{
 export const joinTeam = (teamName, teamId) =>{
     return (dispatch) => {
         dispatch(setTeamName(teamName));
+
+        let latitude = store.getState().gameDataReducer.currentLocation.latitude;
+        let longitude = store.getState().gameDataReducer.currentLocation.longitude;
+
         FCM.getFCMToken().then((token) => {
             let params = {
                 playercode: store.getState().joinGameReducer.gameCode,
                 pseudonyme: store.getState().joinGameReducer.playerName,
                 token: token,
                 name: teamName,
-                latitude:  store.getState().gameDataReducer.currentLocation.latitude,
-                longitude: store.getState().gameDataReducer.currentLocation.longitude,
+                latitude:  latitude === undefined ? 50.224107 : longitude,
+                longitude: longitude === undefined ? 5.339308 : longitude
             };
 
             let request = prepareRequest(params,"POST");

@@ -8,9 +8,13 @@ import {connect} from "react-redux";
 import Menu from './GameMasterSideMenu'
 import MapView,{Marker,Circle} from 'react-native-maps';
 import SideMenu from 'react-native-side-menu'
-import {changeSideMenuOpened,forceRefresh,setContinuousRefresh,updatePositions,showTeamMessagingModal,sendMessage,
-        showBeaconsOfTeam,startGame,onRequestModal,closeTeamMessagingModal,setMessageBody,setMessageTitle} from "../actions/actionsGameMasterScreen";
+import {
+    changeSideMenuOpened, forceRefresh, setContinuousRefresh, updatePositions, showTeamMessagingModal, sendMessage,
+    showBeaconsOfTeam, startGame, onRequestModal, closeTeamMessagingModal, setMessageBody, setMessageTitle,
+    onShowTeamBeacons, retrieveTeams
+} from "../actions/actionsGameMasterScreen";
 import {shrinkZone} from "../actions/actionsGameData";
+import tinycolor from 'tinycolor2'
 import TeamMessagingModal from "./TeamMessagingModal";
 
 class Screen extends React.Component {
@@ -20,6 +24,10 @@ class Screen extends React.Component {
     }
 
     componentWillMount(){
+        if(this.props.teams.length === 0 && this.props.isGameStarted){ //The game was already started when gameMaster entered
+            this.props.retrieveTeams();
+        }
+
         this.intervalID = setInterval(() => {
             this.props.updatePositions();
         },3000);
@@ -42,9 +50,11 @@ class Screen extends React.Component {
         const menu =
             <Menu
                 teams={this.props.teams}
+                onShowTeamBeacons={this.props.onShowTeamBeacons}
+                isGameStarted={this.props.isGameStarted}
                 onTeamPress={this.props.showTeamMessagingModal}
                 startGame={this.props.startGame}
-                showStartButton={this.props.showStartButton}
+                showStartButton={!this.props.isGameStarted}
                 showProgressStart={this.props.showProgressStart}
                 errorMessage={this.props.errorMessage}/>;
 
@@ -61,19 +71,27 @@ class Screen extends React.Component {
                         initialRegion={this.props.centerRegion}>
                         {
                             this.props.teams.map((team) =>{
-                                if(team.coordinate !== undefined){
-                                    return(
-                                        <Marker
-                                            pinColor={team.color}
-                                            key={JSON.stringify(team.id)}
-                                            coordinate={team.coordinate}/>
-                                    )
-                                }
-                                else
-                                {
-                                    return (<View/>)
-                                }
-
+                                return(
+                                    <Marker
+                                        key={team.id}
+                                        title={"Team : " + team.name}
+                                        pinColor={tinycolor(team.color).toHexString()}
+                                        coordinate={team.coordinate}/>
+                                )
+                            })
+                        }
+                        {
+                            this.props.beaconsToShow.map((beacon,index) => {
+                                console.log("Key : " + beacon.idBeacon);
+                                return(
+                                    <Marker
+                                        key={"Beacon__" + beacon.id}
+                                        title={beacon.name == null ?
+                                            "Beacon : " + index
+                                        :
+                                            "Beacon : " + beacon.name}
+                                        coordinate={beacon}/>
+                                )
                             })
                         }
                         <Circle
@@ -115,7 +133,9 @@ const mapStateToProps = (state, own) => {
         teamDestination: state.gameMasterScreenReducer.teamDestination,
         errorMessage: state.gameMasterScreenReducer.errorMessage,
         showProgressStart: state.gameMasterScreenReducer.showProgressStart,
+        beaconsToShow: state.gameMasterScreenReducer.beaconsToShow,
         messageTitle: state.gameMasterScreenReducer.messageTitle,
+        isGameStarted: state.joinGameReducer.isGameStarted,
         messageBody: state.gameMasterScreenReducer.messageBody,
         teamMessagingModalVisible: state.gameMasterScreenReducer.teamMessagingModalVisible,
     }
@@ -132,11 +152,13 @@ function mapDispatchToProps(dispatch,own) {
         showBeaconsOfTeam:(team) => dispatch(showBeaconsOfTeam()),
         startGame:() => dispatch(startGame()),
         onRequestModal:(team) => dispatch(onRequestModal(team)),
+        onShowTeamBeacons: (team) => dispatch(onShowTeamBeacons(team)),
         closeTeamMessagingModal:() => dispatch(closeTeamMessagingModal()),
         showTeamMessagingModal: (team) => dispatch(showTeamMessagingModal(team)),
         setMessageTitle: (title) => dispatch(setMessageTitle(title)),
         setMessageBody: (body) => dispatch(setMessageBody(body)),
         sendMessage: () => dispatch(sendMessage()),
+        retrieveTeams : () => dispatch(retrieveTeams()),
     }
 }
 

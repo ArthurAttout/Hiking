@@ -3,6 +3,7 @@ import {
     Alert, AppRegistry, Text, View, StyleSheet, TouchableNativeFeedback,
     FlatList, StatusBar, BackHandler, Keyboard
 } from 'react-native';
+import tinycolor from 'tinycolor2'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {connect} from "react-redux";
 import {joinTeam,fetchTeams} from "../actions/actionsJoinGame";
@@ -79,6 +80,26 @@ class TSScreen extends React.Component {
                 />
             </View>
         );
+    }
+
+    _renderFlatListItem(item) {
+        return (
+            <TouchableNativeFeedback
+                background={TouchableNativeFeedback.Ripple('grey')}
+                delayPressIn={0}
+                onPress={this._onTeamPress(item)}>
+                <View style={styles.teamsListView}>
+                    <Icon.Button name="circle"
+                                 size={50}
+                                 color={tinycolor(item.ColorHex)}
+                                 backgroundColor='transparent'
+                                 style={styles.iconStyle}/>
+                    <Text style={styles.teamsListText}>
+                        {item.name}
+                    </Text>
+                </View>
+            </TouchableNativeFeedback>
+        )
     }
 
     _onTeamPress(item) {

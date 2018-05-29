@@ -152,7 +152,7 @@ class RecapitulativeScreen extends React.Component {
         console.log(params);
 
         let request = prepareRequest(params,"POST");
-/*
+
         fetch('https://hikong.masi-henallux.be:5000/game',request)
             .then ((response) => {
                 console.log(response);
@@ -165,7 +165,7 @@ class RecapitulativeScreen extends React.Component {
             .catch((error) => {
 
                 console.error("Error  : " + error);
-            });*/
+            });
     }
 
     static standardizeNumber(input){
