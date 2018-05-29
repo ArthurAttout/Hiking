@@ -193,9 +193,12 @@ export const storeCurrentLocation = (currentLocation) =>{
 export const refreshPosition = () => {
     return () => {
         let params = {
-            pseudonyme: store.getState().joinGameReducer.playerName,
+            playercode: store.getState().gameDataReducer.game.PlayerCode,
             latitude: store.getState().gameDataReducer.currentLocation.latitude,
-            longitude: store.getState().gameDataReducer.currentLocation.longitude
+            longitude: store.getState().gameDataReducer.currentLocation.longitude,
+            nameTeam: store.getState().gameDataReducer.teamInfo.name,
+            namePlayer: store.getState().joinGameReducer.playerName
+
         };
         let request = prepareRequest(params, "PUT");
         fetch('https://hikong.masi-henallux.be:5000/refreshpos', request)
