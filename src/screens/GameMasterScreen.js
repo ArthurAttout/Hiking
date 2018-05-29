@@ -8,9 +8,10 @@ import {connect} from "react-redux";
 import Menu from './GameMasterSideMenu'
 import MapView,{Marker,Circle} from 'react-native-maps';
 import SideMenu from 'react-native-side-menu'
-import {changeSideMenuOpened,forceRefresh,setContinuousRefresh,updatePositions,
-        showBeaconsOfTeam,startGame,onRequestModal} from "../actions/actionsGameMasterScreen";
+import {changeSideMenuOpened,forceRefresh,setContinuousRefresh,updatePositions,showTeamMessagingModal,sendMessage,
+        showBeaconsOfTeam,startGame,onRequestModal,closeTeamMessagingModal,setMessageBody,setMessageTitle} from "../actions/actionsGameMasterScreen";
 import {shrinkZone} from "../actions/actionsGameData";
+import TeamMessagingModal from "./TeamMessagingModal";
 
 class Screen extends React.Component {
 
@@ -38,17 +39,14 @@ class Screen extends React.Component {
 
 
     render() {
-        console.log("COntinuous refresh is : ");
-        console.log(this.props.continuousRefresh);
         const menu =
             <Menu
                 teams={this.props.teams}
+                onTeamPress={this.props.showTeamMessagingModal}
                 startGame={this.props.startGame}
-                onRequestModal={this.props.onRequestModal}
                 showStartButton={this.props.showStartButton}
                 showProgressStart={this.props.showProgressStart}
-                errorMessage={this.props.errorMessage}
-                />;
+                errorMessage={this.props.errorMessage}/>;
 
         return (
             <SideMenu
@@ -89,6 +87,14 @@ class Screen extends React.Component {
                         />
                     </MapView>
                 </View>
+                <TeamMessagingModal
+                    setMessageTitle={this.props.setMessageTitle}
+                    setMessageBody={this.props.setMessageBody}
+                    sendMessage={this.props.sendMessage}
+                    showMessagingProgress={this.props.showMessagingProgress}
+                    teamDesination={this.props.teamDestination}
+                    closeTeamMessagingModal={this.props.closeTeamMessagingModal}
+                    teamMessagingModalVisible={this.props.teamMessagingModalVisible}/>
             </SideMenu>
         );
     }
@@ -105,8 +111,13 @@ const mapStateToProps = (state, own) => {
         intervalID: state.gameMasterScreenReducer.intervalID,
         showStartButton: state.gameMasterScreenReducer.showStartButton,
         gameStarted: state.gameMasterScreenReducer.gameStarted,
+        showMessagingProgress: state.gameMasterScreenReducer.showMessagingProgress,
+        teamDestination: state.gameMasterScreenReducer.teamDestination,
         errorMessage: state.gameMasterScreenReducer.errorMessage,
         showProgressStart: state.gameMasterScreenReducer.showProgressStart,
+        messageTitle: state.gameMasterScreenReducer.messageTitle,
+        messageBody: state.gameMasterScreenReducer.messageBody,
+        teamMessagingModalVisible: state.gameMasterScreenReducer.teamMessagingModalVisible,
     }
 };
 
@@ -121,6 +132,11 @@ function mapDispatchToProps(dispatch,own) {
         showBeaconsOfTeam:(team) => dispatch(showBeaconsOfTeam()),
         startGame:() => dispatch(startGame()),
         onRequestModal:(team) => dispatch(onRequestModal(team)),
+        closeTeamMessagingModal:() => dispatch(closeTeamMessagingModal()),
+        showTeamMessagingModal: (team) => dispatch(showTeamMessagingModal(team)),
+        setMessageTitle: (title) => dispatch(setMessageTitle(title)),
+        setMessageBody: (body) => dispatch(setMessageBody(body)),
+        sendMessage: () => dispatch(sendMessage()),
     }
 }
 

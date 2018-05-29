@@ -34,7 +34,6 @@ export default class SimpleModal extends React.Component{
                             style={{flex:1, justifyContent:'space-between',alignContent:'center',alignSelf:'center',flexDirection:"row",width:'100%',height:'100%'}}>
                             <TouchableNativeFeedback
                                 background={TouchableNativeFeedback.Ripple('grey')}
-                                //onPress={this._showPicker}
                                 onPress={()=>{console.log(this.props.currentCustomizingBeacon);this._showPicker()}}
                                 delayPressIn={0}>
                                 {

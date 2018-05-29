@@ -56,7 +56,7 @@ export default class Menu extends React.Component{
                                     style={styles.buttonViewStyle}>
                                     <TouchableNativeFeedback
                                         background={TouchableNativeFeedback.Ripple('white')}
-                                        onPress={() => {this.props.onRequestModal(item)}}
+                                        onPress={() => this.props.onTeamPress(item)}
                                         delayPressIn={0}>
                                         <View style={styles.nativeFeedbackStyle}>
                                             <Text style={styles.textStyleTeam}>

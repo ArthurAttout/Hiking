@@ -1,7 +1,8 @@
 import {
     FORCE_REFRESH, SET_CONTINUOUS_REFRESH, CHANGE_GAMEMASTER_SIDE_MENU_OPENED,REQUEST_MODAL_TEAM,
     FETCHED_NEW_POSITIONS, FETCHING_NEW_POSITIONS, SET_INTERVAL_ID, UPDATE_POSITIONS, START_GAME,
-    ERROR_START,FETCHING_START,START_FETCHED,TEAMS_FETCHED
+    ERROR_START,FETCHING_START,START_FETCHED,TEAMS_FETCHED,SHOW_MESSAGING_MODAL,CLOSE_TEAM_MESSAGING_MODAL,
+    SET_MESSAGE_BODY,SET_MESSAGE_TITLE,MESSAGE_SENDING_FAILED,FETCHING_SENDING_MESSAGE
 } from "../actions/actionsGameMasterScreen";
 
 let dataState = {
@@ -108,6 +109,46 @@ export default function gameMasterScreenReducer (state = dataState, action) {
                 showProgressStart: false,
                 showStartButton: true
             };
+
+        case SHOW_MESSAGING_MODAL:
+            return{
+                ...state,
+                teamMessagingModalVisible: true,
+                teamDestination: action.teamDestination
+            };
+
+        case CLOSE_TEAM_MESSAGING_MODAL:
+            return{
+                ...state,
+                teamMessagingModalVisible: false,
+                showMessagingProgress: false,
+            };
+
+        case FETCHING_SENDING_MESSAGE:
+            return{
+                ...state,
+                showMessagingProgress: true
+            };
+
+        case MESSAGE_SENDING_FAILED:
+            return{
+                ...state,
+                showMessagingProgress: false
+            };
+
+        case SET_MESSAGE_BODY:
+            return{
+                ...state,
+                messageBody: action.body
+            };
+
+        case SET_MESSAGE_TITLE:
+            return{
+                ...state,
+                messageTitle: action.title
+            };
+
+
         default:
             return state;
     }

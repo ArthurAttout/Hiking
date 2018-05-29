@@ -1,19 +1,26 @@
 
 import store from '../config/store'
 import {fetchingTeams} from "./actionsJoinGame";
+import {prepareRequest} from "../utils/constants";
 export const FORCE_REFRESH= 'FORCE_REFRESH';
 export const CHANGE_GAMEMASTER_SIDE_MENU_OPENED = 'CHANGE_GAMEMASTER_SIDE_MENU_OPENED';
 export const SET_CONTINUOUS_REFRESH = 'SET_CONTINUOUS_REFRESH';
 export const UPDATE_POSITIONS = 'UPDATE_POSITIONS';
 export const FETCHING_NEW_POSITIONS  = 'FETCHING_NEW_POSITIONS';
+export const FETCHING_SENDING_MESSAGE= 'FETCHING_SENDING_MESSAGE';
 export const SET_INTERVAL_ID = "SET_INTERVAL_ID";
 export const CANCEL = 'CANCEL';
 export const FETCHED_NEW_POSITIONS= 'FETCHED_NEW_POSITIONS';
+export const MESSAGE_SENDING_FAILED = 'MESSAGE_SENDING_FAILED';
+export const SET_MESSAGE_BODY = 'SET_MESSAGE_BODY';
 export const REQUEST_MODAL_TEAM = 'REQUEST_MODAL_TEAM';
 export const START_GAME = 'START_GAME';
 export const ERROR_START = 'ERROR_START';
+export const SHOW_MESSAGING_MODAL = 'SHOW_MESSAGING_MODAL';
+export const SET_MESSAGE_TITLE = 'SET_MESSAGE_TITLE';
 export const FETCHING_START= 'FETCHING_START';
 export const START_FETCHED = 'START_FETCHED';
+export const CLOSE_TEAM_MESSAGING_MODAL = 'CLOSE_TEAM_MESSAGING_MODAL';
 export const TEAMS_FETCHED = 'TEAMS_FETCHED___';
 
 export const changeSideMenuOpened = (isOpen) => {
@@ -53,6 +60,7 @@ export const updatePositions = () => {
             let gameCode = store.getState().joinGameReducer.gameCode;
             dispatch(fetchingNewPositions());
             fetch("https://hikong.masi-henallux.be:5000/" + gameCode + "/getTeamsStats")
+            //fetch("http://www.mocky.io/v2/5b0c8f2d330000d529b40059")
                 .then(function(response) {
                     return response.json();
                 })
@@ -81,6 +89,7 @@ export const retrieveTeams = () => {
     return dispatch =>{
         let gameCode = store.getState().joinGameReducer.gameCode;
         fetch("https://hikong.masi-henallux.be:5000/" + gameCode + "/getTeamsStats")
+        //fetch("http://www.mocky.io/v2/5b0c8f2d330000d529b40059")
             .then((response) => {
                 if(response.ok){
                     return response.json();
@@ -145,5 +154,72 @@ export const onRequestModal = (team) => {
     return{
         type:REQUEST_MODAL_TEAM,
         team: team,
+    }
+};
+
+export const closeTeamMessagingModal = () =>{
+    return{
+        type: CLOSE_TEAM_MESSAGING_MODAL
+    }
+};
+
+export const showTeamMessagingModal = (teamDestination) =>{
+    console.log("aaaaaaaaa");
+    return{
+        type: SHOW_MESSAGING_MODAL,
+        teamDestination: teamDestination
+    }
+};
+
+export const setMessageTitle = (title) => {
+    return{
+        type: SET_MESSAGE_TITLE,
+        title: title,
+    }
+};
+
+export const setMessageBody = (body) => {
+    return{
+        type: SET_MESSAGE_BODY,
+        body: body,
+    }
+};
+
+export const sendMessage = () => {
+    return dispatch =>{
+        let params = {
+            code:store.getState().joinGameReducer.gameCode,
+            nameTeam:store.getState().gameMasterScreenReducer.teamDestination.name,
+            message:{
+                title:store.getState().gameMasterScreenReducer.messageTitle,
+                body:store.getState().gameMasterScreenReducer.messageBody
+            }
+        };
+        console.log(params);
+        let request = prepareRequest(params,"POST");
+        fetch("https://hikong.masi-henallux.be:5000/message",request)
+            .then((response)=>{
+                if(response.ok){
+                    dispatch(closeTeamMessagingModal());
+                }
+                else
+                {
+                    dispatch(messageSendingFailed(""));
+                }
+            });
+        dispatch(fetchingSendingMessage());
+    }
+};
+
+export const fetchingSendingMessage = () =>{
+    return{
+        type: FETCHING_SENDING_MESSAGE
+    }
+};
+
+export const messageSendingFailed = (error) => {
+    return{
+        type: MESSAGE_SENDING_FAILED,
+        errorMessaging : error,
     }
 };
