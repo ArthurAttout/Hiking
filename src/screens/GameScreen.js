@@ -104,8 +104,7 @@ class GScreen extends React.Component {
             },
             {
                 enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 1000,
+                timeout: 20000,
                 distanceFilter: 1
             },
         );
@@ -138,7 +137,7 @@ class GScreen extends React.Component {
     }
 
     render() {
-        /*if(!this.props.messageTeamRegistered){
+        if(!this.props.messageTeamRegistered){
             FCM.on(FCMEvent.Notification, notif => {
                 if(notif['messageTeam']){ //Expected notification
                     FCM.presentLocalNotification({
@@ -148,8 +147,7 @@ class GScreen extends React.Component {
                 }
             });
             this.props.registerMessageTeam();
-        }*/
-
+        }
         return (
             (!this.props.currentLocationAcquired || this.props.showNextBeaconFetchActivity) ?
                 <View style={{flex: 1, justifyContent: 'center'}}>
