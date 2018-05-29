@@ -2,13 +2,14 @@ import store from "../config/store";
 import {calculateBearing, calculateDistance} from "../utils/geometryUtils";
 import {navigatorRef} from "../../App";
 import {NavigationActions} from 'react-navigation';
-import {GLOBAL_SETTINGS, prepareRequest} from "../utils/constants";
+import {GAME_MODES, GLOBAL_SETTINGS, prepareRequest} from "../utils/constants";
 import {ToastAndroid} from "react-native";
 import {CANCEL} from "./actionsGameMasterScreen";
 
 export const STORE_SERVER_DATA = 'STORE_SERVER_DATA';
 export const STORE_NEXT_BEACON = 'STORE_NEXT_BEACON';
 export const STORE_CURRENT_LOCATION = 'STORE_CURRENT_LOCATION';
+export const CANCEL_STORE_CURRENT_LOCATION = 'CANCEL_STORE_CURRENT_LOCATION';
 export const SET_MAP_VIEW_VISIBLE = 'SET_MAP_VIEW_VISIBLE';
 export const STORE_BEARING = 'STORE_BEARING';
 export const PLAYER_INSIDE_BEACON = 'PLAYER_INSIDE_BEACON';
@@ -26,8 +27,7 @@ export const STORE_TIMER_IDS = 'STORE_TIMER_IDS';
 export const OUT_OF_ZONE_CLOSE_MODAL = 'OUT_OF_ZONE_CLOSE_MODAL';
 export const OUT_OF_ZONE_REQUEST_MODAL = 'OUT_OF_ZONE_REQUEST_MODAL';
 export const UPDATE_TEAM_LIVES = 'UPDATE_TEAM_LIVES';
-export const STORE_BACKOFF_ID = 'STORE_BACKOFF_ID';
-export const SET_BACKOFF_PROGRESS_STATUS = 'SET_BACKOFF_PROGRESS_STATUS';
+export const SET_NEXTBEACON_FETCH_STATUS = 'SET_NEXTBEACON_FETCH_STATUS';
 export const UPDATE_TIMER = 'UPDATE_TIMER';
 export const RESET_TIMER ='RESET_TIMER';
 export const UPDATE_OUT_OF_ZONE_TIMER = 'UPDATE_OUT_OF_ZONE_TIMER';
@@ -38,7 +38,9 @@ export const RESET_BACKOFF_ID = 'RESET_BACKOFF_ID';
 export const INCREMENT_CHECKPOINT = 'INCREMENT_CHECKPOINT';
 export const RESET_CHECKPOINT = 'RESET_CHECKPOINT';
 export const ON_CLOSE_SHARE = 'ON_CLOSE_SHARE';
-export const ON_OPEN_SHARE = 'ON_OPEN_SHARE'
+export const ON_OPEN_SHARE = 'ON_OPEN_SHARE';
+export const LOCATION_LONG_LOAD_TIME = 'LOCATION_LONG_LOAD_TIME';
+export const RESET_LOCATION_LOAD_TIME = 'RESET_LOCATION_LOAD_TIME';
 
 export const storeTeamInfo = (teamId) => {
     let teamInfo = store.getState().joinGameReducer.teamsList.find(x => (x.idTeam === teamId));
@@ -60,6 +62,7 @@ export const storeServerData = (json) =>{
 
 export const getNextBeacon = () => {
     return (dispatch) => {
+        dispatch(setNextBeaconFetchActivity(true));
         let params = {
             nameTeam: store.getState().gameDataReducer.teamInfo.name,
             namePlayer: store.getState().joinGameReducer.playerName,
@@ -68,9 +71,11 @@ export const getNextBeacon = () => {
             nbBeacon: store.getState().gameDataReducer.currentCheckpoint
         };
         let request = prepareRequest(params, "POST");
+        console.log(request);
         fetch('https://hikong.masi-henallux.be:5000/confirmpoint', request)
             .then((response) => {
                 if (response.ok) {
+                    console.log(response);
                     return response.json()
                 }
                 else {
@@ -84,26 +89,16 @@ export const getNextBeacon = () => {
                 if (!json.hasError) {
                     dispatch(storeNextBeacon(json));
                     dispatch(incrementCheckpoint());
-                    dispatch(storeNextBeacon(json));
                     // close modal if player had it open
+                    dispatch(onCloseOutOfZoneModal());
                     dispatch(onCloseRiddleSolvingModal());
+                    dispatch(playerInsideBeaconTrigger(false));
+                    dispatch(setNextBeaconFetchActivity(false));
                     navigatorRef.dispatch(NavigationActions.navigate({
                         routeName: "GameScreen"
                     }));
                 }
             })
-    }
-};
-
-export const getNextBeaconNoConfirm = (updatedLives) => {
-    return (dispatch) => {
-
-        if(store.getState().gameDataReducer.settings.lives !== 0 &&
-            store.getState().gameDataReducer.teamInfo.lives <= 0) {
-            // player who confirmed point got a game over
-            store.dispatch(getLastBeacon());
-        } else {
-        }
     }
 };
 
@@ -179,19 +174,24 @@ export const storeNextBeacon = (nextBeacon) =>{
 export const storeCurrentLocation = (currentLocation) =>{
     if(currentLocation.latitude === undefined || currentLocation.longitude === undefined){
         return{
-            type: CANCEL
+            type: CANCEL_STORE_CURRENT_LOCATION,
+            error: currentLocation.error,
         }
-    }
-    store.dispatch(setCurrentLocationAcquired(true));
-    return{
-        type:STORE_CURRENT_LOCATION,
-        latitude: currentLocation.latitude,
-        longitude: currentLocation.longitude,
-        altitude: currentLocation.altitude,
-        heading: currentLocation.heading,
-        speed: currentLocation.speed,
-        accuracy: currentLocation.accuracy,
-        error: currentLocation.error,
+    } else {
+        store.dispatch(setCurrentLocationAcquired(true));
+        store.dispatch(resetLocationLongLoadTime);
+        if(store.getState().gameDataReducer.notifyUserID !== -1)
+            clearTimeout(store.getState().gameDataReducer.notifyUserID);
+        return {
+            type: STORE_CURRENT_LOCATION,
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude,
+            altitude: currentLocation.altitude,
+            heading: currentLocation.heading,
+            speed: currentLocation.speed,
+            accuracy: currentLocation.accuracy,
+            error: 0,
+        }
     }
 };
 
@@ -241,13 +241,6 @@ export const checkPlayerInsideBeacon = () => {
         let playerDistanceToNextBeacon = calculateDistance(store.getState().gameDataReducer.currentLocation,
             store.getState().gameDataReducer.nextBeacon);
 
-        console.log("Shrink zone radius");
-        console.log(store.getState().gameDataReducer.settings.radius);
-        console.log("Player distance to center");
-        console.log(playerDistanceToCenter);
-        console.log("Player distance to beacon");
-        console.log(playerDistanceToNextBeacon);
-
         if(playerDistanceToCenter > store.getState().gameDataReducer.settings.radius &&
                 store.getState().gameDataReducer.gameOver !== true) {
             store.dispatch(onRequestOutOfZoneModal());
@@ -255,39 +248,56 @@ export const checkPlayerInsideBeacon = () => {
                     store.getState().gameDataReducer.outOfZoneModalVisible === true) {
             dispatch(onCloseOutOfZoneModal());
         } else if (playerDistanceToNextBeacon < GLOBAL_SETTINGS.BEACON_RADIUS_THRESHOLD) {
-            if (store.getState().gameDataReducer.nextBeacon.lastBeacon === true) {
-                let params = {
-                    playercode: store.getState().gameDataReducer.game.PlayerCode,
-                    name: store.getState().gameDataReducer.teamInfo.name
-                };
-                let request = prepareRequest(params, "POST");
+            // TODO check is player has already triggerred
+            console.log("isPlayerInsideBeacon:");
+            console.log(store.getState().gameDataReducer.isPlayerInsideBeacon);
+            if(!store.getState().gameDataReducer.isPlayerInsideBeacon) {
+                console.log("Player has entered beacon for the first time, setting to true");
+                dispatch(playerInsideBeaconTrigger(true));
+                console.log(store.getState().gameDataReducer.isPlayerInsideBeacon);
+                if (store.getState().gameDataReducer.nextBeacon.lastBeacon === true) {
+                    let params = {
+                        playercode: store.getState().gameDataReducer.game.PlayerCode,
+                        name: store.getState().gameDataReducer.teamInfo.name
+                    };
+                    let request = prepareRequest(params, "POST");
 
-                fetch('https://hikong.masi-henallux.be:5000/end', request)
-                    .then((response) => {
+                    fetch('https://hikong.masi-henallux.be:5000/end', request)
+                        .then((response) => {
 
-                        if (response.ok) {
-                            return response.json()
-                        }
-                        else {
-                            return {
-                                hasError: true
+                            if (response.ok) {
+                                return response.json()
                             }
-                        }
-                    })
-                    .then((json) => {
-                        if (!json.hasError) {
-                            dispatch(storeEndGameStats(json));
-                        }
-                    });
-                navigatorRef.dispatch(NavigationActions.navigate({
-                    routeName: "EndGameScreen"
-                }));
+                            else {
+                                return {
+                                    hasError: true
+                                }
+                            }
+                        })
+                        .then((json) => {
+                            if (!json.hasError) {
+                                dispatch(storeEndGameStats(json));
+                                navigatorRef.dispatch(NavigationActions.navigate({
+                                    routeName: "EndGameScreen"
+                                }));
+                            }
+                        });
+                } else {
+                    navigatorRef.dispatch(NavigationActions.navigate({
+                        routeName: "BeaconScreen"
+                    }));
+                }
             } else {
-                navigatorRef.dispatch(NavigationActions.navigate({
-                    routeName: "BeaconScreen"
-                }));
+                console.log("Player is already inside the beacon, skipping navigating to beacon screen");
             }
         }
+    }
+};
+
+export const playerInsideBeaconTrigger = (boolean) => {
+    return {
+        type: PLAYER_INSIDE_BEACON,
+        isPlayerInsideBeacon: boolean
     }
 };
 
@@ -421,7 +431,7 @@ export const decrementTeamLive = () => {
                     dispatch(decrementLiveContd());
                     if (store.getState().gameDataReducer.settings.lives !== 0 &&
                         store.getState().gameDataReducer.teamInfo.lives <= 0) {
-                        store.dispatch(getLastBeacon());
+                        dispatch(getLastBeacon());
                     }
                 }
             });
@@ -431,7 +441,6 @@ export const decrementTeamLive = () => {
 export const decrementLiveContd = () => {
     return {
         type: DECREMENT_TEAM_LIVE,
-        teamLives: (store.getState().gameDataReducer.teamInfo.lives - 1)
     }
 };
 
@@ -490,38 +499,38 @@ export const onRegionChange = (newRegion) => {
     }
 };
 
-export const storeTimerIds = (watchID, shrinkIntervalID, refreshIntervalID) => {
+export const storeTimerIds = (watchID, shrinkIntervalID, refreshIntervalID, notifyUserID) => {
     return {
         type: STORE_TIMER_IDS,
         watchID: watchID,
         shrinkIntervalID: shrinkIntervalID,
         refreshIntervalID: refreshIntervalID,
-    }
-};
-
-export const storeBackOffId = (backOffTimeoutID) => {
-    return {
-        type: STORE_BACKOFF_ID,
-        backOffTimeoutID: backOffTimeoutID
+        notifyUserID: notifyUserID,
     }
 };
 
 export const riddleTimeOut = () => {
-    store.dispatch(decrementTeamLive());
-    store.dispatch(decrementTeamLive());
-    ToastAndroid.show('The answer was: ' + store.getState().gameDataReducer.nextBeacon.answer,ToastAndroid.LONG);
-    if(store.getState().gameDataReducer.teamInfo.lives <= 0){
-        store.dispatch(getLastBeacon());
-    } else {
-        store.dispatch(getNextBeacon());
+    return (dispatch) => {
+        dispatch(decrementTeamLive());
+        dispatch(decrementTeamLive());
+        if (store.getState().gameDataReducer.game.GameMode === GAME_MODES.RIDDLES) {
+            ToastAndroid.show('The answer was: ' + store.getState().gameDataReducer.nextBeacon.answer, ToastAndroid.LONG);
+        }
+
+        if (store.getState().gameDataReducer.teamInfo.lives <= 0) {
+            console.log("Attempting to get lastBeacon");
+            dispatch(getLastBeacon());
+        } else {
+            console.log("Attempting to get nextBeacon");
+            dispatch(getNextBeacon());
+        }
     }
 };
 
-export const setBackOffProgressStatus = (boolean) => {
-    store.dispatch(resetBackOffId());
+export const setNextBeaconFetchActivity = (boolean) => {
     return {
-        type: SET_BACKOFF_PROGRESS_STATUS,
-        showBackOffProgressStatus: boolean
+        type: SET_NEXTBEACON_FETCH_STATUS,
+        showNextBeaconFetchActivity: boolean
     }
 };
 
@@ -574,16 +583,27 @@ export const resetBackOffId = () => {
     }
 };
 
-export const incrementCheckpoint =() => {
+export const incrementCheckpoint = () => {
     return {
         type: INCREMENT_CHECKPOINT,
-        currentCheckpoint: (store.getState().gameDataReducer.currentCheckpoint + 1)
+        //currentCheckpoint: (store.getState().gameDataReducer.currentCheckpoint + 1)
     }
 };
 
-export const resetCheckpointCounter =() => {
+export const resetCheckpointCounter = () => {
     return {
         type: RESET_CHECKPOINT
     }
 };
 
+export const currentLocationLongLoadTime = () => {
+    return {
+        type: LOCATION_LONG_LOAD_TIME
+    }
+};
+
+export const resetLocationLongLoadTime = () => {
+    return {
+        type: RESET_LOCATION_LOAD_TIME
+    }
+};

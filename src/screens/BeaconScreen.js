@@ -132,7 +132,7 @@ class BScreen extends React.Component {
         }
         if(this.props.game.GameMode !== GAME_MODES.RIDDLES_AND_QR_CODE) {
             return (
-                this.props.showBackOffProgressStatus ?
+                this.props.showNextBeaconFetchActivity ?
                     <View style={[styles.bottomView, {alignItems: 'center', justifyContent: 'center'}]}>
                         <ActivityIndicator size="small" color="#ffffff"/>
                     </View>
@@ -151,7 +151,7 @@ class BScreen extends React.Component {
             );
         } else {
             return (
-                this.props.showBackOffProgressStatus ?
+                (this.props.showNextBeaconFetchActivity) ?
                     <View style={[styles.bottomView, {alignItems: 'center', justifyContent: 'center'}]}>
                         <ActivityIndicator size="small" color="#ffffff"/>
                     </View>
@@ -233,7 +233,7 @@ const mapStateToProps = (state, own) => {
         correctAnswer: state.gameDataReducer.correctAnswer,
         isSubmitButtonPressed: state.gameDataReducer.isSubmitButtonPressed,
         ids: state.gameDataReducer.ids,
-        showBackOffProgressStatus: state.gameDataReducer.showBackOffProgressStatus,
+        showNextBeaconFetchActivity: state.gameDataReducer.showNextBeaconFetchActivity,
         timerSecondsRemaining: state.gameDataReducer.timerSecondsRemaining
     }
 };

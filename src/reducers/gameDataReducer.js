@@ -4,9 +4,9 @@ import {
     CONFIRM_RIDDLE_SOLVING, RIDDLE_SOLVING_SUBMIT_BUTTON_PRESSED, STORE_END_GAME_STATS,
     STORE_TEAM_INFO, DECREMENT_TEAM_LIVE, SHRINK_ZONE, CENTER_REGION_CHANGED, STORE_TIMER_IDS,
     OUT_OF_ZONE_REQUEST_MODAL, OUT_OF_ZONE_CLOSE_MODAL, UPDATE_TEAM_LIVES, STORE_BACKOFF_ID,
-    SET_BACKOFF_PROGRESS_STATUS, RESET_TIMER, UPDATE_TIMER, UPDATE_OUT_OF_ZONE_TIMER, RESET_OUT_OF_ZONE_TIMER,
+    SET_NEXTBEACON_FETCH_STATUS, RESET_TIMER, UPDATE_TIMER, UPDATE_OUT_OF_ZONE_TIMER, RESET_OUT_OF_ZONE_TIMER,
     SET_GAME_OVER, SET_CURRENT_LOCATION_ACQUIRED, RESET_BACKOFF_ID, INCREMENT_CHECKPOINT, RESET_CHECKPOINT,
-    ON_OPEN_SHARE, ON_CLOSE_SHARE
+    ON_OPEN_SHARE, ON_CLOSE_SHARE, CANCEL_STORE_CURRENT_LOCATION, LOCATION_LONG_LOAD_TIME, RESET_LOCATION_LOAD_TIME
 } from '../actions/actionsGameData';
 import {GLOBAL_SETTINGS} from "../utils/constants";
 
@@ -87,11 +87,13 @@ let dataState = {
     shrinkIntervalID: -1,
     refreshIntervalID: -1,
     backOffTimeoutID: -1,
-    showBackOffProgressStatus: false,
+    notifyUserID: -1,
+    showNextBeaconFetchActivity: false,
     timerSecondsRemaining: 0,
     outOfZoneTimerSeconds: GLOBAL_SETTINGS.OUT_OF_ZONE_TIMEOUT,
     gameOver: false,
     currentLocationAcquired: false,
+    locationLoadTimeLong: false
 };
 
 export default function gameDataReducer (state = dataState, action) {
@@ -126,6 +128,13 @@ export default function gameDataReducer (state = dataState, action) {
                     heading: action.heading,
                     speed: action.speed,
                     accuracy: action.accuracy,
+                    error: action.error,
+                }
+            };
+        case CANCEL_STORE_CURRENT_LOCATION:
+            return {
+                ...state,
+                currentLocation: {
                     error: action.error,
                 }
             };
@@ -201,7 +210,7 @@ export default function gameDataReducer (state = dataState, action) {
                 ...state,
                 teamInfo: {
                     ...state.teamInfo,
-                    lives: action.teamLives
+                    lives: state.teamInfo.lives -1
                 }
             };
         case SHRINK_ZONE:
@@ -237,10 +246,10 @@ export default function gameDataReducer (state = dataState, action) {
                 ...state,
                 backOffTimeoutID: action.backOffTimeoutID
             };
-        case SET_BACKOFF_PROGRESS_STATUS:
+        case SET_NEXTBEACON_FETCH_STATUS:
             return {
                 ...state,
-                showBackOffProgressStatus: action.showBackOffProgressStatus
+                showNextBeaconFetchActivity: action.showNextBeaconFetchActivity
             };
         case UPDATE_TIMER:
             return {
@@ -280,12 +289,22 @@ export default function gameDataReducer (state = dataState, action) {
         case INCREMENT_CHECKPOINT:
             return {
                 ...state,
-                currentCheckpoint: action.currentCheckpoint
+                currentCheckpoint: (state.currentCheckpoint + 1)
             };
         case RESET_CHECKPOINT:
             return {
                 ...state,
                 currentCheckpoint: 0
+            };
+        case LOCATION_LONG_LOAD_TIME:
+            return {
+                ...state,
+                locationLoadTimeLong: true
+            };
+        case RESET_LOCATION_LOAD_TIME:
+            return {
+                ...state,
+                locationLoadTimeLong: false
             };
         default:
             return state;

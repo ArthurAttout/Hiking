@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     AppRegistry, Text, View, StyleSheet, StatusBar, Image, TouchableNativeFeedback,
-    ActivityIndicator, BackHandler
+    ActivityIndicator, BackHandler, ToastAndroid
 } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
@@ -12,11 +12,12 @@ import {
     setMapViewVisible, storeCurrentLocation, storeBearing,
     checkPlayerInsideBeacon, shrinkZone, refreshPosition, storeTimerIds, onRegionChange,
     onCloseOutOfZoneModal, getLastBeacon, updateOutOfZoneTimer, resetOutOfZoneTimer, setGameOver,
-    setCurrentLocationAcquired
+    setCurrentLocationAcquired, currentLocationLongLoadTime
 } from "../actions/actionsGameData";
 import OutOfZoneModal from "./PlayerBeaconModals/OutOfZoneModal";
 import FCM, {FCMEvent} from "react-native-fcm";
 import {registerMessageTeam} from "../actions/notificationsActions";
+import store from "../config/store";
 
 class GScreen extends React.Component {
 
@@ -27,7 +28,6 @@ class GScreen extends React.Component {
     }
 
     componentDidMount() {
-
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         this.props.setCurrentLocationAcquired(false);
 
@@ -36,20 +36,13 @@ class GScreen extends React.Component {
             console.log("notif received");
             console.log(notif);
 
-            // todo check if this works, or else have JC change the Firebase message format
-            if(notif['confirmPoint'] === undefined ){ //Expected notification
+            if(notif['decrementLife']){
                 this.props.updateTeamLives(notif['lives'])
             }
-
-            /*if(notif['decrementLife']){
-                this.props.updateTeamLives(notif['lives'])
-            }*/
         });
-
+        var notifyUserID = -1;
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                console.log("curpos");
-                console.log(currentPosition)
                 const currentPosition = {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
@@ -78,6 +71,9 @@ class GScreen extends React.Component {
                     error: error.message,
                 };
                 this.props.storeCurrentLocation(currentPosition);
+                notifyUserID = setTimeout(() => {
+                    this.props.currentLocationLongLoadTime()
+                }, 3000);
             },
             {
                 enableHighAccuracy: true,
@@ -96,9 +92,26 @@ class GScreen extends React.Component {
                     speed: position.coords.speed,
                     accuracy: position.coords.accuracy
                 };
+                console.log("WatchPosition");
                 console.log(updatedLocation);
+                console.log(this.props.currentLocation.error);
+                console.log(this.props.currentLocationAcquired);
+                console.log(this.props.centerRegion);
+                if(this.props.currentLocation.error !== 0 &&
+                    !this.props.currentLocationAcquired &&
+                    this.props.centerRegion === null) {
+                    this.props.onRegionChange(
+                        {
+                            latitude: updatedLocation.latitude,
+                            longitude: updatedLocation.longitude,
+                            latitudeDelta: 0.01,
+                            longitudeDelta: 0.01,
+                        }
+                    );
+                }
                 this.props.storeCurrentLocation(updatedLocation);
                 this.props.storeBearing();
+
                 this.props.checkPlayerInsideBeacon();
             },
             (error) => {
@@ -124,7 +137,7 @@ class GScreen extends React.Component {
 
         var refreshIntervalID = setInterval(() => {this.props.refreshPosition()}, 30000);
 
-        this.props.storeTimerIds(watchID, shrinkIntervalID, refreshIntervalID);
+        this.props.storeTimerIds(watchID, shrinkIntervalID, refreshIntervalID, notifyUserID);
 
     }
 
@@ -156,10 +169,16 @@ class GScreen extends React.Component {
             this.props.registerMessageTeam();
         }
         return (
-            (!this.props.currentLocationAcquired) ?
+            (!this.props.currentLocationAcquired ||
+                this.props.showNextBeaconFetchActivity) ?
                 <View style={{flex: 1, justifyContent: 'center'}}>
                     <Text style={{textAlign: 'center'}}>{"Getting your precise location.\nHang on a second..."}</Text>
                     <ActivityIndicator size="large" color={COLORS.Primary}/>
+                    {(this.props.locationLoadTimeLong) ?
+                        <Text style={{textAlign: 'center'}}>{"This is taking longer than expected..." +
+                        "Try moving around the area to shake things up a bit"}</Text>
+                    :
+                        <Text style={{textAlign: 'center'}}>{""}</Text>}
                 </View>
                 :
                 <View style={styles.container}>
@@ -299,6 +318,8 @@ const mapStateToProps = (state, own) => {
         outOfZoneTimerSeconds: state.gameDataReducer.outOfZoneTimerSeconds,
         currentLocationAcquired: state.gameDataReducer.currentLocationAcquired,
         messageTeamRegistered: state.notificationsReducer.messageTeamRegistered,
+        locationLoadTimeLong: state.gameDataReducer.locationLoadTimeLong,
+        showNextBeaconFetchActivity: state.gameDataReducer.showNextBeaconFetchActivity
     }
 };
 
@@ -311,7 +332,9 @@ function mapDispatchToProps(dispatch, own) {
         checkPlayerInsideBeacon: () => dispatch(checkPlayerInsideBeacon()),
         shrinkZone: () => dispatch(shrinkZone()),
         refreshPosition: () => dispatch(refreshPosition()),
-        storeTimerIds: (watchID, shrinkIntervalID, refreshIntervalID) => dispatch(storeTimerIds(watchID, shrinkIntervalID, refreshIntervalID)),
+        currentLocationLongLoadTime: () => dispatch(currentLocationLongLoadTime()),
+        storeTimerIds: (watchID, shrinkIntervalID, refreshIntervalID, notifyUserID) => dispatch(storeTimerIds(watchID,
+            shrinkIntervalID, refreshIntervalID, notifyUserID)),
         onRegionChange: (evt) => dispatch(onRegionChange(evt)),
         onCloseOutOfZoneModal: () => dispatch(onCloseOutOfZoneModal()),
         getLastBeacon: () => dispatch(getLastBeacon()),

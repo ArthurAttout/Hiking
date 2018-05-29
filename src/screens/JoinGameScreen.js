@@ -7,6 +7,7 @@ import { TextInputLayout } from "rn-textinputlayout";
 import {COLORS} from '../utils/constants'
 import {connect} from "react-redux";
 import {submit,setGameCode,setPlayerName} from "../actions/actionsJoinGame";
+import {resetCheckpointCounter} from "../actions/actionsGameData";
 
 class JGScreen extends React.Component {
     constructor(props) {
@@ -15,6 +16,7 @@ class JGScreen extends React.Component {
 
     render() {
         const { navigate } = this.props.navigation;
+        this.props.resetCheckpointCounter();
         return (
             <View style={styles.container}>
                 <StatusBar
@@ -82,6 +84,7 @@ function mapDispatchToProps(dispatch, own) {
         submit: () => dispatch(submit()),
         setGameCode: (value) => dispatch(setGameCode(value)),
         setPlayerName: (value) => dispatch(setPlayerName(value)),
+        resetCheckpointCounter: () => dispatch(resetCheckpointCounter())
     }
 }
 

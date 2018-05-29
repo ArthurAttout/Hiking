@@ -1,11 +1,10 @@
 import React from 'react';
 import { QRScannerView } from 'ac-qrcode';
 import {connect} from "react-redux";
-import {Toast, Text, Dimensions, StyleSheet, View, BackHandler} from "react-native";
+import {Toast, Text, Dimensions, StyleSheet, View, BackHandler, ActivityIndicator} from "react-native";
 import TimerCountdown from "react-native-timer-countdown";
 import {
-    onConfirmQRScan, resetTimer, riddleTimeOut, setBackOffProgressStatus,
-    updateTimer
+    onConfirmQRScan, resetTimer, riddleTimeOut, updateTimer
 } from "../actions/actionsGameData";
 import {default as FCM, FCMEvent} from "react-native-fcm";
 import {COLORS, GAME_MODES} from "../utils/constants";
@@ -28,6 +27,8 @@ class QRCScreen extends React.Component {
     handleBackButton() {
         const { navigate } = this.props.navigation;
         navigate('BeaconScreen');
+        // must return true to avoid looping on navigation
+        return true;
     }
 
     componentDidMount() {
@@ -49,14 +50,16 @@ class QRCScreen extends React.Component {
 
     render() {
         return (
-
-            < QRScannerView
-                onScanResultReceived={(evt) => this.handleScanResult(evt)}
-                renderTopBarView={() => this._renderTitleBar()}
-                renderBottomMenuView={() => this._renderMenu()}
-                hintText={"Searching for a QR code..."}
-                hintTextStyle={styles.hintText}
-            />
+            (this.props.showNextBeaconFetchActivity) ?
+                <ActivityIndicator size="large" color={COLORS.Primary}/>
+                :
+                < QRScannerView
+                    onScanResultReceived={(evt) => this.handleScanResult(evt)}
+                    renderTopBarView={() => this._renderTitleBar()}
+                    renderBottomMenuView={() => this._renderMenu()}
+                    hintText={"Searching for a QR code..."}
+                    hintTextStyle={styles.hintText}
+                />
         )
     }
 
@@ -94,13 +97,10 @@ class QRCScreen extends React.Component {
     _renderMenu() {
         return (
             <View style={styles.bottomView}>
-                {this.props.showBackOffProgressStatus ?
-                    <ActivityIndicator size="large" color="#ffffff"/>
-                    :
                     <Text
                         style={styles.riddleText}>
                         {this.props.nextBeacon.statement}
-                    </Text>}
+                    </Text>
             </View>
         )
     }
@@ -141,14 +141,13 @@ const mapStateToProps = (state, own) => {
         ids: state.gameDataReducer.ids,
         nextBeacon: state.gameDataReducer.nextBeacon,
         timerSecondsRemaining: state.gameDataReducer.timerSecondsRemaining,
-        showBackOffProgressStatus: state.gameDataReducer.showBackOffProgressStatus,
+        showNextBeaconFetchActivity: state.gameDataReducer.showNextBeaconFetchActivity,
     }
 };
 
 function mapDispatchToProps(dispatch, own) {
     return {
         ...own,
-        setBackOffProgressStatus: (boolean) => dispatch(setBackOffProgressStatus(boolean)),
         updateTimer: (secondsRemaining) => dispatch(updateTimer(secondsRemaining)),
         resetTimer: () => dispatch(resetTimer()),
         riddleTimeOut: () => dispatch(riddleTimeOut()),
