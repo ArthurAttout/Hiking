@@ -49,19 +49,11 @@ export default class SolveRiddleModal extends React.Component{
                                 Alert.alert(
                                     'Give up?',
                                     ((this.props.settings.lives === 0)?
-                                        'Are you certain you wish to give up this riddle?' :
+                                        'Give up this riddle?' :
                                         'Are you certain you wish to give up this riddle?\nYou will lose 2 lives as a result.'),
-
-                                    [
-                                        {text: 'No, I\'ll keep trying', onPress: () => null},
-                                        {text: 'Yes, I give up', onPress: () => {
-                                                this.props.riddleTimeOut();
-                                            }
-                                        }
-                                    ],
-                                    { cancelable: false }
-                                    )
-                            }}
+                                    [   {text: 'No, I\'ll keep trying', onPress: () => null},
+                                        {text: 'Yes, I give up', onPress: () => {this.props.riddleTimeOut();}}],
+                                    { cancelable: false })}}
                             delayPressIn={0}>
                             <Text style={styles.buttonText}>
                                 {(this.props.settings.lives === 0)?
@@ -100,10 +92,9 @@ export default class SolveRiddleModal extends React.Component{
     }
 
     renderStars() {
-        if(this.props.game.GameMode !== GAME_MODES.NORMAL){
+        if(this.props.game.GameMode !== GAME_MODES.NORMAL && this.props.settings.lives >0){
             let stars = [];
-
-            for(let i = this.props.game.lives; i > 0; i--) {
+            for(let i = this.props.settings.lives; i > 0; i--) {
                 if(this.props.teamInfo.lives < i){
                     stars.push(
                         <Icon key={i} style={{color: 'red'}} size={(Dimensions.get('window').height * 0.04)}
@@ -116,7 +107,6 @@ export default class SolveRiddleModal extends React.Component{
                     )
                 }
             }
-
             return stars;
         }
     }

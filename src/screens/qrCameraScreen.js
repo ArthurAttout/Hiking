@@ -15,7 +15,7 @@ class QRCScreen extends React.Component {
     constructor(props) {
         super(props);
         this.handleScanResult = this.handleScanResult.bind(this);
-        this._renderTitleBar = this._renderTitleBar.bind(this);
+        this.renderTitleBar = this.renderTitleBar.bind(this);
         this.renderStars = this.renderStars.bind(this);
         this.handleBackButton = this.handleBackButton.bind(this)
     }
@@ -27,7 +27,6 @@ class QRCScreen extends React.Component {
     handleBackButton() {
         const { navigate } = this.props.navigation;
         navigate('BeaconScreen');
-        // must return true to avoid looping on navigation
         return true;
     }
 
@@ -36,9 +35,6 @@ class QRCScreen extends React.Component {
         FCM.getFCMToken().then((t) => console.log(t));
         FCM.getFCMToken().then((t) => console.log(t));
         FCM.on(FCMEvent.Notification, notif => {
-            console.log("notif received");
-            console.log(notif);
-
             if(notif['confirmPoint']){
                 this.props.getNextBeacon();
                 this.props.updateTeamLives(notif['lives']);
@@ -55,7 +51,7 @@ class QRCScreen extends React.Component {
                 :
                 < QRScannerView
                     onScanResultReceived={(evt) => this.handleScanResult(evt)}
-                    renderTopBarView={() => this._renderTitleBar()}
+                    renderTopBarView={() => this.renderTitleBar()}
                     renderBottomMenuView={() => this._renderMenu()}
                     hintText={"Searching for a QR code..."}
                     hintTextStyle={styles.hintText}
@@ -63,7 +59,7 @@ class QRCScreen extends React.Component {
         )
     }
 
-    _renderTitleBar(){
+    renderTitleBar(){
         if(this.props.settings.timerRiddle === 0){
             return (
                 <View style={styles.topView}>
@@ -106,7 +102,7 @@ class QRCScreen extends React.Component {
     }
 
     renderStars() {
-        if(this.props.game.GameMode !== GAME_MODES.NORMAL){
+        if(this.props.game.GameMode !== GAME_MODES.NORMAL && this.props.settings.lives > 0){
             let stars = [];
             for(let i = this.props.settings.lives; i > 0; i--) {
                 if(this.props.teamInfo.lives < i){
@@ -126,7 +122,6 @@ class QRCScreen extends React.Component {
     }
 
     handleScanResult(evt) {
-        console.log('Type: ' + e.type + '\nData: ' + e.data);
         this.props.onConfirmQRScan(evt)
     }
 }
@@ -138,7 +133,6 @@ const mapStateToProps = (state, own) => {
         game: state.gameDataReducer.game,
         settings: state.gameDataReducer.settings,
         teamInfo: state.gameDataReducer.teamInfo,
-        ids: state.gameDataReducer.ids,
         nextBeacon: state.gameDataReducer.nextBeacon,
         timerSecondsRemaining: state.gameDataReducer.timerSecondsRemaining,
         showNextBeaconFetchActivity: state.gameDataReducer.showNextBeaconFetchActivity,

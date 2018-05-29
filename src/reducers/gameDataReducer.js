@@ -86,7 +86,6 @@ let dataState = {
     watchID: -1,
     shrinkIntervalID: -1,
     refreshIntervalID: -1,
-    backOffTimeoutID: -1,
     notifyUserID: -1,
     showNextBeaconFetchActivity: false,
     timerSecondsRemaining: 0,

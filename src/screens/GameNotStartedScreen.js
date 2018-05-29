@@ -22,7 +22,6 @@ class GNSScreen extends React.Component {
     }
 
     handleBackButton() {
-        //ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
         return true;
     }
 
@@ -41,7 +40,6 @@ class GNSScreen extends React.Component {
             this.props.registerMessageTeam();
         }
 
-        const { navigate } = this.props.navigation;
         return (
             <View style={styles.container}>
                 <StatusBar

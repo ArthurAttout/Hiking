@@ -32,7 +32,6 @@ export default class OutOfZoneModal extends React.Component{
                                 this.props.updateOutOfZoneTimer(secondsRemaining);
                             }}
                             onTimeElapsed={() => {
-                                // TODO get last beacon
                                 Vibration.cancel();
                                 this.props.setGameOver()
                                 this.props.resetOutOfZoneTimer();

@@ -4,7 +4,7 @@ import {navigatorRef} from "../../App";
 import {NavigationActions} from 'react-navigation';
 import {GAME_MODES, GLOBAL_SETTINGS, prepareRequest} from "../utils/constants";
 import {ToastAndroid} from "react-native";
-import {CANCEL} from "./actionsGameMasterScreen";
+import {playerStatusFetched} from "./actionsJoinGame";
 
 export const STORE_SERVER_DATA = 'STORE_SERVER_DATA';
 export const STORE_NEXT_BEACON = 'STORE_NEXT_BEACON';
@@ -44,7 +44,6 @@ export const RESET_LOCATION_LOAD_TIME = 'RESET_LOCATION_LOAD_TIME';
 
 export const storeTeamInfo = (teamId) => {
     let teamInfo = store.getState().joinGameReducer.teamsList.find(x => (x.idTeam === teamId));
-    console.log(teamInfo);
     return{
         type: STORE_TEAM_INFO,
         teamInfo: teamInfo
@@ -85,7 +84,6 @@ export const getNextBeacon = () => {
                 }
             })
             .then((json) => {
-                // TODO gerer cas d'erreur
                 if (!json.hasError) {
                     dispatch(storeNextBeacon(json));
                     dispatch(incrementCheckpoint());
@@ -122,7 +120,6 @@ export const updateTeamLivesContd = (updatedLives) => {
 };
 
 export const getLastBeacon = () => {
-    // TODO implement the API
     return (dispatch) => {
         let params = {
             nameTeam: store.getState().joinGameReducer.teamName,
@@ -180,8 +177,6 @@ export const storeCurrentLocation = (currentLocation) =>{
     } else {
         store.dispatch(setCurrentLocationAcquired(true));
         store.dispatch(resetLocationLongLoadTime);
-        if(store.getState().gameDataReducer.notifyUserID !== -1)
-            clearTimeout(store.getState().gameDataReducer.notifyUserID);
         return {
             type: STORE_CURRENT_LOCATION,
             latitude: currentLocation.latitude,
@@ -203,15 +198,8 @@ export const refreshPosition = () => {
             longitude: store.getState().gameDataReducer.currentLocation.longitude
         };
         let request = prepareRequest(params, "PUT");
-        /*console.log("Refreshing position with /refreshpos");
-        console.log("Parameters");
-        console.log(params);
-        console.log("Request");
-        console.log(request);*/
         fetch('https://hikong.masi-henallux.be:5000/refreshpos', request)
             .then((response) => {
-                /*console.log("Response :");
-                console.log(response);*/
                 if (response.ok) {
                     return response.json()
                 }
@@ -223,7 +211,7 @@ export const refreshPosition = () => {
             })
             .then((json) => {
                 if (!json.hasError) {
-                    // TODO gerer cas d'erreur?
+                    // if errors, do nothing, refresh will take place in the next 30 seconds
                 }
             });
     }
@@ -265,10 +253,15 @@ export const checkPlayerInsideBeacon = () => {
                     fetch('https://hikong.masi-henallux.be:5000/end', request)
                         .then((response) => {
 
-                            if (response.ok) {
+                            if (response === 200 && response.ok) {
                                 return response.json()
                             }
                             else {
+                                if(response.status === 403) {
+                                    if (response.text() === "TEAM_INVALID")
+                                        ToastAndroid.show('The requested team does not exist...', ToastAndroid.LONG);
+                                }
+                                console.log(response);
                                 return {
                                     hasError: true
                                 }
@@ -421,6 +414,16 @@ export const decrementTeamLive = () => {
                     return response.json()
                 }
                 else {
+                    if(response.status === 403) {
+                        if (response.text() === "PLAYER_DOESNT_EXIST") {
+                            ToastAndroid.show('The player sent in request does not exist...', ToastAndroid.LONG);
+                        } else if (response.text() === "TEAM_INVALID") {
+                            ToastAndroid.show('The team send in request is not valid...', ToastAndroid.LONG);
+                        } else if (response.text() === "GAME_DOESNT_EXIST") {
+                            ToastAndroid.show('The game does not exist...', ToastAndroid.LONG);
+                        }
+                    }
+                    console.log(response);
                     return {
                         hasError: true
                     }

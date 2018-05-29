@@ -14,9 +14,13 @@ class JGScreen extends React.Component {
         super(props);
     }
 
+    componentDidMount() {
+        this.props.resetCheckpointCounter();
+    }
+
     render() {
         const { navigate } = this.props.navigation;
-        this.props.resetCheckpointCounter();
+
         return (
             <View style={styles.container}>
                 <StatusBar

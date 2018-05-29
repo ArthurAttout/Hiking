@@ -6,14 +6,12 @@ import {
 import { connect } from "react-redux";
 import {COLORS, GAME_MODES} from "../utils/constants";
 import {
-    getNextBeacon, getNextBeaconNoConfirm,
-    onCloseRiddleSolvingModal, onConfirmRiddleSolving, onRequestRiddleSolvingModal, resetTimer, riddleTimeOut,
-    setBackOffProgressStatus, setCurrentAnswer, storeNextBeacon, submitButtonPressed, updateTeamLives, updateTimer
+    getNextBeacon, onCloseRiddleSolvingModal, onConfirmRiddleSolving, onRequestRiddleSolvingModal,
+    resetTimer, riddleTimeOut, setCurrentAnswer, storeNextBeacon, submitButtonPressed, updateTeamLives, updateTimer
 } from "../actions/actionsGameData";
 import SolveRiddleModal from "./PlayerBeaconModals/SolveRiddleModal";
 import {default as FCM, FCMEvent} from "react-native-fcm";
 import TimerCountdown from "react-native-timer-countdown";
-import QRScannerView from "../../workaround/QRScanner";
 
 class BScreen extends React.Component {
     constructor(props) {
@@ -102,7 +100,6 @@ class BScreen extends React.Component {
                             this.props.updateTimer(secondsRemaining);
                         }}
                         onTimeElapsed={() => {
-                            // generate random backoff then send timeout
                             this.props.onCloseRiddleSolvingModal();
                             this.props.resetTimer();
                             this.props.riddleTimeOut();
@@ -132,19 +129,15 @@ class BScreen extends React.Component {
         }
         if(this.props.game.GameMode !== GAME_MODES.RIDDLES_AND_QR_CODE) {
             return (
-                this.props.showNextBeaconFetchActivity ?
+                (this.props.showNextBeaconFetchActivity) ?
                     <View style={[styles.bottomView, {alignItems: 'center', justifyContent: 'center'}]}>
                         <ActivityIndicator size="small" color="#ffffff"/>
                     </View>
                     :
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('white')}
-                        onPress={() => {
-                            this.handleOnPress()
-                        }}
-                    >
+                        onPress={() => {this.handleOnPress()}}>
                         <View style={styles.bottomView}>
-
                             <Text style={styles.bottomText}>{nextButton}</Text>
                         </View>
                     </TouchableNativeFeedback>
@@ -232,7 +225,6 @@ const mapStateToProps = (state, own) => {
         currentAnswer: state.gameDataReducer.currentAnswer,
         correctAnswer: state.gameDataReducer.correctAnswer,
         isSubmitButtonPressed: state.gameDataReducer.isSubmitButtonPressed,
-        ids: state.gameDataReducer.ids,
         showNextBeaconFetchActivity: state.gameDataReducer.showNextBeaconFetchActivity,
         timerSecondsRemaining: state.gameDataReducer.timerSecondsRemaining
     }
@@ -241,7 +233,6 @@ const mapStateToProps = (state, own) => {
 function mapDispatchToProps(dispatch, own) {
     return {
         ...own,
-        storeNextBeacon: (nextBeacon) => dispatch(storeNextBeacon(nextBeacon)),
         onCloseRiddleSolvingModal: () => dispatch(onCloseRiddleSolvingModal()),
         onRequestRiddleSolvingModal: () => dispatch(onRequestRiddleSolvingModal()),
         onConfirmRiddleSolving: () => dispatch(onConfirmRiddleSolving()),
@@ -249,7 +240,6 @@ function mapDispatchToProps(dispatch, own) {
         submitButtonPressed: () => dispatch(submitButtonPressed()),
         getNextBeacon: () => dispatch(getNextBeacon()),
         riddleTimeOut: () => dispatch(riddleTimeOut()),
-        setBackOffProgressStatus: (boolean) => dispatch(setBackOffProgressStatus(boolean)),
         updateTimer: (secondsRemaining) => dispatch(updateTimer(secondsRemaining)),
         resetTimer: () => dispatch(resetTimer()),
         updateTeamLives: (updatedLives) => dispatch(updateTeamLives(updatedLives)),

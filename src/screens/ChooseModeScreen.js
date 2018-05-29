@@ -22,6 +22,38 @@ class Screen extends React.Component {
         this._onClickInfo = this._onClickInfo.bind(this);
     }
 
+    componentDidMount() {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const currentPosition = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    altitude: position.coords.altitude,
+                    heading: position.coords.heading,
+                    speed: position.coords.speed,
+                    accuracy: position.coords.accuracy,
+                    error: null,
+                };
+                this.props.storeCurrentLocation(currentPosition);
+                console.log("initial Geolocation was a success");
+                console.log(currentPosition);
+            },
+            (error) => {
+                const currentPosition = {
+                    error: error.message,
+                };
+                this.props.storeCurrentLocation(currentPosition);
+                console.log("initial Geolocation was a failure");
+                console.log(currentPosition);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 3600000
+            },
+        );
+    }
+
     render() {
         if(this.props.loading){
             return(

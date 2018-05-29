@@ -29,16 +29,21 @@ export const setTeamName = (teamName) => {
 
 export const submit = () =>{
     return dispatch => {
+        dispatch(fetchPlayerStatus());
         let params = {
             code: store.getState().joinGameReducer.gameCode
         };
         let request = prepareRequest(params,"POST");
         fetch('https://hikong.masi-henallux.be:5000/joingame',request)
             .then ((response) => {
-                if(response.ok){
+                if(response.status && response.ok){
                     return response.json()
                 }
                 else {
+                    if(response.status === 403) {
+                        if (response.text() === "code invalide")
+                            ToastAndroid.show('The code entered is invalid...', ToastAndroid.LONG);
+                    }
                     return {
                         hasError: true
                     }
@@ -53,19 +58,13 @@ export const submit = () =>{
                 {
                     dispatch(storeServerData(json));
                     dispatch(resetTimer());
-                    console.log("Game Data");
-                    console.log("isAdmin");
-                    console.log(store.getState().gameDataReducer.admin);
-                    console.log("Game");
-                    console.log(store.getState().gameDataReducer.game);
-                    console.log("Settings");
-                    console.log(store.getState().gameDataReducer.settings);
                     if(json.admin){
                         navigatorRef.dispatch(NavigationActions.navigate({
                             routeName:"GameMasterScreen",
                         }));
                     }
                     else {
+                        dispatch(playerStatusFetched(""));
                         navigatorRef.dispatch(NavigationActions.navigate({
                             routeName:"TeamSelectionScreen"
                         }));
@@ -76,8 +75,6 @@ export const submit = () =>{
             .catch((error) => {
                 console.error("Error  : " + error);
             });
-
-        dispatch(fetchPlayerStatus());
     };
 };
 
@@ -140,11 +137,20 @@ export const joinTeam = (teamName, teamId) =>{
 
             fetch('https://hikong.masi-henallux.be:5000/jointeam',request)
                 .then ((response) => {
-
-                    if(response.ok){
+                    if(response.status === 200 && response.ok){
                         return response.json()
                     }
                     else {
+                        if(response.status === 403) {
+                            if (response.text() === "PSEUDO_TAKEN") {
+                                ToastAndroid.show('The username entered is already taken...', ToastAndroid.LONG);
+                            } else if (response.text() === "TEAM_INVALID") {
+                                ToastAndroid.show('The requested team does not exist...', ToastAndroid.LONG);
+                            } else if (response.text() === "GAME_DOESNT_EXIST") {
+                                ToastAndroid.show('The game does not exist...', ToastAndroid.LONG);
+                            }
+                        }
+                        console.log(response);
                         return {
                             hasError: true
                         }
@@ -152,7 +158,7 @@ export const joinTeam = (teamName, teamId) =>{
                 })
                 .then ((json) => {
                     if(!json.hasError) {
-                        // check if gane has started
+                        // check if game has started
                         if (store.getState().gameDataReducer.game.isStarted) {
                             // check if the first checkpoint must be fetched
                             if(store.getState().gameDataReducer.teamInfo.Checkpoint === 0){
@@ -162,11 +168,9 @@ export const joinTeam = (teamName, teamId) =>{
                                     playercode: store.getState().gameDataReducer.game.PlayerCode
                                 };
                                 let request = prepareRequest(params,"POST");
-
                                 fetch('https://hikong.masi-henallux.be:5000/firstpoint',request)
                                     .then ((response) => {
-
-                                        if(response.ok){
+                                        if(response.status === 200){
                                             return response.json()
                                         }
                                         else {
@@ -182,8 +186,7 @@ export const joinTeam = (teamName, teamId) =>{
                                     })
                             } else {
                                 // get next checkpoint
-                                console.log("First beacon to request is not the first point in track")
-                                dispatch(getNextBeaconNoConfirm())
+                                dispatch(getNextBeacon())
                             }
                             navigatorRef.dispatch(NavigationActions.navigate({
                                 routeName: "GameScreen"
@@ -194,13 +197,9 @@ export const joinTeam = (teamName, teamId) =>{
                             }));
                         }
                     } else {
-                        // TODO manage 403 errors
-                        dispatch(playerStatusFetched("ERROR_CODE_FROM_SVR"));
                         navigatorRef.dispatch(NavigationActions.navigate({
                             routeName: "JoinGameScreen"
                         }));
-                        ToastAndroid.show('This username is already taken ...',ToastAndroid.LONG);
-
                     }
                 })
 

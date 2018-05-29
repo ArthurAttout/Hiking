@@ -6,10 +6,6 @@ import { connect } from "react-redux";
 import {COLORS} from "../utils/constants";
 
 class EGScreen extends React.Component {
-    static navigationOptions = {
-        header: null
-    };
-
     constructor(props) {
         super(props);
     }
@@ -23,8 +19,8 @@ class EGScreen extends React.Component {
     }
 
     handleBackButton() {
-        const { navigate } = this.props.navigation;
-        navigate('HomeScreen');
+        /*const { navigate } = this.props.navigation;
+        navigate('HomeScreen');*/
         return true;
     }
 
@@ -56,9 +52,7 @@ class EGScreen extends React.Component {
         });
     }
 
-    // TODO implement sharing feature
     render() {
-        //console.log(this.props.gameStats);
         return (
             <View style={styles.container}>
                 <StatusBar
@@ -95,8 +89,7 @@ class EGScreen extends React.Component {
 
                 <TouchableNativeFeedback
                     background={TouchableNativeFeedback.Ripple('white')}
-                    // TODO implement Sharing feature
-                    onPress={() => { this.onClick();}}
+                    onPress={() => {this.onClick();}}
                 >
                     <View style={styles.bottomView}>
                         <Icon size={24} color="white" name="share"/>
