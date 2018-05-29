@@ -150,6 +150,7 @@ android {
 }
 
 dependencies {
+    api project(':react-native-android-location-services-dialog-box')
     api project(':react-native-uuid-generator')
     api project(':react-native-image-picker')
     api project(':react-native-camera')
