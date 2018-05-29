@@ -2,6 +2,8 @@
 import store from '../config/store'
 import {fetchingTeams} from "./actionsJoinGame";
 import {prepareRequest} from "../utils/constants";
+import {setIsGameStarted} from "./actionsJoinGame";
+
 export const FORCE_REFRESH= 'FORCE_REFRESH';
 export const SHOW_TEAM_BEACONS = 'SHOW_TEAM_BEACONS';
 export const CHANGE_GAMEMASTER_SIDE_MENU_OPENED = 'CHANGE_GAMEMASTER_SIDE_MENU_OPENED';
@@ -126,6 +128,7 @@ export const startGame = () => {
                 if(response.ok){
                     dispatch(startFetched());
                     dispatch(retrieveTeams());
+                    dispatch(setIsGameStarted(true));
                 }
                 else {
                     dispatch(errorStart("An error has occured, please try again later"));

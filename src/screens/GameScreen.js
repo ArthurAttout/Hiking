@@ -38,43 +38,7 @@ class GScreen extends React.Component {
             }
         });
 
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                let currentPosition = {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
-                    altitude: position.coords.altitude,
-                    heading: position.coords.heading,
-                    speed: position.coords.speed,
-                    accuracy: position.coords.accuracy,
-                    error: null,
-                };
-                this.props.storeCurrentLocation(currentPosition);
-                this.props.storeBearing();
-                this.props.onRegionChange(
-                    {
-                        latitude: currentPosition.latitude,
-                        longitude: currentPosition.longitude,
-                        latitudeDelta: 0.01,
-                        longitudeDelta: 0.01,
-                    }
-                );
-                this.props.checkPlayerInsideBeacon();
-            },
-            (error) => {
-                console.log(error);
-                const currentPosition = {
-                    error: error.message,
-                };
-                this.props.storeCurrentLocation(currentPosition);
-                ToastAndroid.show('The GPS is taking some time, trying moving around for a better signal.', ToastAndroid.LONG);
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 3600000
-            },
-        );
+        this.getCurrentPosition();
 
         var watchID = navigator.geolocation.watchPosition((position) => {
                 let updatedLocation = {
@@ -120,6 +84,46 @@ class GScreen extends React.Component {
 
         this.props.storeTimerIds(watchID, shrinkIntervalID, refreshIntervalID);
 
+    }
+
+    getCurrentPosition(){
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                let currentPosition = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    altitude: position.coords.altitude,
+                    heading: position.coords.heading,
+                    speed: position.coords.speed,
+                    accuracy: position.coords.accuracy,
+                    error: null,
+                };
+                this.props.storeCurrentLocation(currentPosition);
+                this.props.storeBearing();
+                this.props.onRegionChange(
+                    {
+                        latitude: currentPosition.latitude,
+                        longitude: currentPosition.longitude,
+                        latitudeDelta: 0.01,
+                        longitudeDelta: 0.01,
+                    }
+                );
+                this.props.checkPlayerInsideBeacon();
+            },
+            (error) => {
+                console.log(error);
+                const currentPosition = {
+                    error: error.message,
+                };
+                this.props.storeCurrentLocation(currentPosition);
+                ToastAndroid.show('The GPS is taking some time, trying moving around for a better signal.', ToastAndroid.LONG);
+                this.getCurrentPosition();
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 5000
+            },
+        );
     }
 
     componentWillUnmount() {
