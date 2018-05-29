@@ -59,8 +59,8 @@ export const updatePositions = () => {
             console.log("positions updated!");
             let gameCode = store.getState().joinGameReducer.gameCode;
             dispatch(fetchingNewPositions());
-            fetch("https://hikong.masi-henallux.be:5000/" + gameCode + "/getTeamsStats")
-            //fetch("http://www.mocky.io/v2/5b0c8f2d330000d529b40059")
+            //fetch("https://hikong.masi-henallux.be:5000/" + gameCode + "/getTeamsStats")
+            fetch("http://www.mocky.io/v2/5b0d291631000056009d5552")
                 .then(function(response) {
                     return response.json();
                 })
@@ -88,8 +88,8 @@ export const newPositionsFetched = (teams) => {
 export const retrieveTeams = () => {
     return dispatch =>{
         let gameCode = store.getState().joinGameReducer.gameCode;
-        fetch("https://hikong.masi-henallux.be:5000/" + gameCode + "/getTeamsStats")
-        //fetch("http://www.mocky.io/v2/5b0c8f2d330000d529b40059")
+        //fetch("https://hikong.masi-henallux.be:5000/" + gameCode + "/getTeamsStats")
+        fetch("http://www.mocky.io/v2/5b0d291631000056009d5552")
             .then((response) => {
                 if(response.ok){
                     return response.json();
@@ -164,7 +164,6 @@ export const closeTeamMessagingModal = () =>{
 };
 
 export const showTeamMessagingModal = (teamDestination) =>{
-    console.log("aaaaaaaaa");
     return{
         type: SHOW_MESSAGING_MODAL,
         teamDestination: teamDestination

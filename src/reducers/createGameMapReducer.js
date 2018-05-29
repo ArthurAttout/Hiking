@@ -159,7 +159,7 @@ export default function createGameMapReducer(state = dataState, action){
                         ...newState,
                         currentTrack:{
                             ...newState.currentTrack,
-                            path: newState.currentTrack.path.concat({
+                            path: newState.currentTrack.path.filter((item) => item.id !== state.beaconFinishLine.id).concat({
                                 id:action.touchedBeacon.id,
                                 latitude:action.touchedBeacon.coordinate.latitude,
                                 longitude:action.touchedBeacon.coordinate.longitude,
@@ -168,12 +168,13 @@ export default function createGameMapReducer(state = dataState, action){
                     }
                 }
 
-                if(newState.currentTrack.path.length === newState.currentTrack.beacons.length + 1){ //The user has linked all beacons and the finish line
+                if(newState.currentTrack.path.length === newState.currentTrack.beacons.length){ //The user has linked all beacons and the finish line
                     return{
                         ...newState,
                         confirmLinkedBeacons:true
                     }
                 }
+                console.log(newState.currentTrack.path);
                 return newState;
             }
             return state;
@@ -184,7 +185,9 @@ export default function createGameMapReducer(state = dataState, action){
                 coordinate:{
                     latitude: action.coord.latitude,
                     longitude: action.coord.longitude,
-                }
+                },
+                latitude: action.coord.latitude,
+                longitude: action.coord.longitude,
             };
 
             return {
@@ -210,7 +213,7 @@ export default function createGameMapReducer(state = dataState, action){
                             ...newBeaconFinish,
                             latitude: newBeaconFinish.coordinate.latitude,
                             longitude: newBeaconFinish.coordinate.longitude,
-                        }),
+                        }) ,
                         path: (track.path.filter((item) => item.id !== state.beaconFinishLine.id)).concat({
                             ...newBeaconFinish,
                             latitude: newBeaconFinish.coordinate.latitude,
@@ -628,7 +631,7 @@ export default function createGameMapReducer(state = dataState, action){
         case SET_CURRENT_BEACON_RIDDLE_ANSWER:
             return setCurrentRiddle(state,{
                 ... state.currentCustomizingBeacon.riddle,
-                answer: action.statement,
+                answer: action.answer,
             });
 
         case SET_CURRENT_BEACON_RIDDLE_STATEMENT:
